@@ -1,0 +1,5 @@
+cnpm i -g flow-bin
+
+flow init
+
+flow check
