@@ -4,13 +4,14 @@
 
 
 # 工具组件
-* [flow静态检查工具](https://github.com/xwjie/VueStudyNote/tree/master/component-flow)
-* [rollup代码打包工具](https://github.com/xwjie/VueStudyNote/tree/master/component-rollup)
+>* [flow静态检查工具](https://github.com/xwjie/VueStudyNote/tree/master/component-flow)
+>* [rollup代码打包工具](https://github.com/xwjie/VueStudyNote/tree/master/component-rollup)
 
 
 # 框架编写（计划功能）
 
 * [编译环境搭建（rollup+flow+babel）](https://github.com/xwjie/VueStudyNote/issues/1)
+* [编译环境搭建2（引入开发和发布环境打包脚本）](https://github.com/xwjie/VueStudyNote/issues/2)
 * 生成语法树
 * 生成render函数
 * 生成虚拟dom
