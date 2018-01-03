@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Xiao框架之helloworld</title>
+	<script src="../dist/xiao.js"></script>
+</head>
+<body>
+<div id="demo">
+	<h1>{{message}}</h1>
+</div>
+
+<script>
+	new Xiao({
+		el: '#demo',
+		data: {
+			message: '当你看到这句话的时候，表示框架工作正常'
+		} 
+	});
+
+</script>
+
+</body>
+</html>
