@@ -1,8 +1,8 @@
 {
   "name": "component-rollup",
   "version": "1.0.0",
-  "description": "rollup demo",
-  "main": "bundle-babel.js",
+  "description": "xiao framework 2018.01",
+  "main": "src/main.js",
   "dependencies": {},
   "devDependencies": {
     "babel-core": "^6.26.0",
@@ -15,7 +15,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rollup -w -c rollup.config.dev.js",
+    "build": "rollup -w -c rollup.config.build.js",
     "prebuild": "flow check"
   },
   "keywords": [],
