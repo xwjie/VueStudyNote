@@ -1,5 +1,5 @@
 //@flow
-//²Î¿¼ D:\OutPut\VUE\vue\src\core\util\debug.js
+//copy from D:\OutPut\VUE\vue\src\core\util\debug.js
 
 import { noop } from '../shared/util'
 

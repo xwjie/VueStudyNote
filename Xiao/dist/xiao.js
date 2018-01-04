@@ -13,7 +13,7 @@
  */
 function noop(a, b, c) {}
 
-//�ο� D:\OutPut\VUE\vue\src\core\util\debug.js
+//copy from D:\OutPut\VUE\vue\src\core\util\debug.js
 
 var warn = noop;
 
@@ -23,15 +23,23 @@ var warn = noop;
   };
 }
 
+var classCallCheck = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
+
 // D:\OutPut\VUE\vue\src\core\instance\index.js
 
-function Xiao(options) {
+var Xiao = function Xiao(options) {
+  classCallCheck(this, Xiao);
+
   if ("development" !== 'production' && !(this instanceof Xiao)) {
     warn('Xiao is a constructor and should be called with the `new` keyword');
   }
 
   console.log('main start', options);
-}
+};
 
 return Xiao;
 
