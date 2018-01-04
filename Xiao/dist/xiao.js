@@ -42,8 +42,29 @@ function mountComponent(vm, el, hydrating) {}
  * Query an element selector if it's not an element already.
  */
 
+// D:\OutPut\VUE\vue\src\platforms\web\util\index.js
 function query(el) {
-  return '';
+    if (typeof el === 'string') {
+        var selected = document.querySelector(el);
+        if (!selected) {
+            "development" !== 'production' && warn('Cannot find element: ' + el);
+            return document.createElement('div');
+        }
+        return selected;
+    } else {
+        return el;
+    }
+}
+
+// D:\OutPut\VUE\vue\src\platforms\web\entry-runtime-with-compiler.js
+function getOuterHTML(el) {
+    if (el.outerHTML) {
+        return el.outerHTML;
+    } else {
+        var container = document.createElement('div');
+        container.appendChild(el.cloneNode(true));
+        return container.innerHTML;
+    }
 }
 
 // export function query (el: string | Element): Element {
@@ -87,6 +108,9 @@ var createClass = function () {
 
 // D:\OutPut\VUE\vue\src\core\instance\index.js
 
+// 
+var uid = 100;
+
 //fixme
 var inBrowser = true;
 
@@ -99,25 +123,41 @@ var Xiao = function () {
     }
 
     this.$options = options || {};
+    this._uid = uid++;
 
-    log('main start', options);
+    log('main start', this);
+
+    this._init(this.$options);
   }
+  //properties
+
 
   createClass(Xiao, [{
     key: '$mount',
-    value: function $mount(el, // | Element
-    hydrating) {
+    value: function $mount(el, hydrating) {
+      var element = query(el);
 
-      el = el && inBrowser ? query(el) : ''; //fixme undefined
-      return mountComponent(this, el, hydrating);
+      if (!this.$options.template) {
+        this.$options.template = getOuterHTML(element);
+      }
+
+      if (!this.$options.template && !element) {
+        warn("options.el && options.template all null");
+        return;
+      }
+
+      this.$el = element;
+      log('$mount', this);
+
+      return mountComponent(this, element, hydrating);
     }
   }, {
     key: '_init',
     value: function _init(options) {
-      var vm = this;
+      var el = options.el;
 
-      if (vm.$options.el) {
-        vm.$mount(vm.$options.el);
+      if (el && inBrowser) {
+        this.$mount(el);
       }
     }
   }]);

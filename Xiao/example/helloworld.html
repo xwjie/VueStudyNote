@@ -9,9 +9,47 @@
 	<h1>{{message}}</h1>
 </div>
 
+<div id="demo2">
+
+</div>
+
+
+<div id="demo3">
+
+</div>
+
+<div id="demo4">
+
+</div>
+
 <script>
 	new Xiao({
 		el: '#demo',
+		data: {
+			message: '当你看到这句话的时候，表示框架工作正常'
+		} 
+	});
+	
+	new Xiao({
+		el: '#demo2',
+		template: '<h1>{{message}}</h1>',
+		data: {
+			message: '当你看到这句话的时候，表示框架工作正常'
+		} 
+	});
+	
+	var app = new Xiao({
+		template: '<h1>{{message}}</h1>',
+		data: {
+			message: '当你看到这句话的时候，表示框架工作正常'
+		} 
+	});
+	
+	app.$mount("#demo3");
+	
+	new Xiao({
+		el: document.querySelector('#demo4'),
+		template: '<h1>{{message}}</h1>',
 		data: {
 			message: '当你看到这句话的时候，表示框架工作正常'
 		} 

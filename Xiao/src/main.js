@@ -3,15 +3,20 @@
 
 import { warn, log } from './util'
 import { mountComponent } from './lifecycle'
-import { query } from './util/web'
+import { query, getOuterHTML } from './util/web'
 
-let uid = 0;
+// 
+let uid = 100;
 
 //fixme
 let inBrowser = true;
 
 class Xiao {
+  //properties
   _uid: number;
+
+  $el: ?Element;
+
   $options: Object;
 
   constructor(options: Object) {
@@ -22,26 +27,38 @@ class Xiao {
     }
 
     this.$options = options || {};
+    this._uid = uid++;
 
-    log('main start', options);
+    log('main start', this);
+
+    this._init(this.$options);
   }
 
-  $mount(
-    el?: string,// | Element
-    hydrating?: boolean
-  ) {
+  $mount(el: Element | string, hydrating?: boolean) {
+    let element = query(el);
 
-    el = el && inBrowser ? query(el) : '' //fixme undefined
-    return mountComponent(this, el, hydrating)
-  }
-
-  _init(options?: Object) {
-    const vm = this;
-
-
-    if (vm.$options.el) {
-      vm.$mount(vm.$options.el);
+    if (!this.$options.template) {
+      this.$options.template = getOuterHTML(element);
     }
+
+    if (!this.$options.template && !element) {
+      warn("options.el && options.template all null");
+      return;
+    }
+
+    this.$el = element;
+    log('$mount', this);
+
+    return mountComponent(this, element, hydrating)
+  }
+
+  _init(options: Object) {
+    let el: string | Element = options.el;
+
+    if (el && inBrowser) {
+      this.$mount(el);
+    }
+
   }
 }
 

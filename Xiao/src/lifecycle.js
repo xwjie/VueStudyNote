@@ -5,7 +5,7 @@ import Xiao from './main'
 
 export function mountComponent(
     vm: Xiao,
-    el: string,
+    el: ?Element,
     hydrating?: boolean    
 ){}
 // export function mountComponent(
