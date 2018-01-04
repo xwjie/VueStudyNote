@@ -20,7 +20,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "rollup -c rollup.config.dev.js",
+    "dev": "rollup  -c rollup.config.dev.js",
     "build": "rollup -c rollup.config.build.js",
     "prebuild": "flow check",
     "predev": "flow check"
