@@ -1,7 +1,7 @@
 // @flow
 // D:\OutPut\VUE\vue\src\core\instance\index.js
 
-import { warn } from './util'
+import { warn, log } from './util'
 import { mountComponent } from './lifecycle'
 import { query } from './util/web'
 
@@ -11,6 +11,8 @@ let uid = 0;
 let inBrowser = true;
 
 class Xiao {
+  _uid : number;
+  $options : Object;
 
   constructor(options: Object) {
     if (process.env.NODE_ENV !== 'production' &&
@@ -21,19 +23,7 @@ class Xiao {
 
     this.$options = options || {};
 
-    console.log('main start', options);
-  }
-
-  get _uid(): number {
-    return uid++;
-  }
-
-  get $options(): Object{
-    return {};
-  }
-
-  set $options(options: Object){
-
+    log('main start', options);
   }
 
   $mount(

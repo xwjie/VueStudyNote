@@ -9,9 +9,12 @@ export default [{
     format: 'umd',
     name: 'Xiao'
   },
-  plugins: [ 
-  	resolve(),
+  plugins: [
+    resolve(),
     babel({
+      presets: [
+        "es2015-rollup", "stage-0"
+      ],
       exclude: 'node_modules/**' // only transpile our source code
     }),
     replace({

@@ -16,11 +16,14 @@ function noop(a, b, c) {}
 //copy from D:\OutPut\VUE\vue\src\core\util\debug.js
 
 var warn = noop;
+var log = noop;
 
 {
   warn = function warn(msg) {
     console.error('[Xiao warn]: ' + msg);
   };
+
+  log = console.log;
 }
 
 // D:\OutPut\VUE\vue\src\core\instance\lifecycle.js
@@ -86,8 +89,6 @@ var createClass = function () {
 
 // D:\OutPut\VUE\vue\src\core\instance\index.js
 
-var uid = 0;
-
 //fixme
 var inBrowser = true;
 
@@ -101,7 +102,7 @@ var Xiao = function () {
 
     this.$options = options || {};
 
-    console.log('main start', options);
+    log('main start', options);
   }
 
   createClass(Xiao, [{
@@ -121,17 +122,6 @@ var Xiao = function () {
         vm.$mount(vm.$options.el);
       }
     }
-  }, {
-    key: '_uid',
-    get: function get$$1() {
-      return uid++;
-    }
-  }, {
-    key: '$options',
-    get: function get$$1() {
-      return {};
-    },
-    set: function set$$1(options) {}
   }]);
   return Xiao;
 }();
