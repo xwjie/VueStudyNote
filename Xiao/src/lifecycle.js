@@ -1,9 +1,10 @@
 /* @flow */
 // D:\OutPut\VUE\vue\src\core\instance\lifecycle.js
+import Xiao from './main'
 
 
 export function mountComponent(
-    vm: Object,
+    vm: Xiao,
     el: string,
     hydrating?: boolean    
 ){}

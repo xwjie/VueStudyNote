@@ -4,8 +4,8 @@
 
 
 # 工具组件
->* [flow静态检查工具](https://github.com/xwjie/VueStudyNote/tree/master/component-flow)
->* [rollup代码打包工具](https://github.com/xwjie/VueStudyNote/tree/master/component-rollup)
+* [flow静态检查工具](https://github.com/xwjie/VueStudyNote/tree/master/component-flow)
+* [rollup代码打包工具](https://github.com/xwjie/VueStudyNote/tree/master/component-rollup)
 
 
 # 框架编写（计划功能）
@@ -24,3 +24,7 @@
 * 实现支持filter
 * 支持wath属性
 * 支持computed属性
+
+# 信息
+
+* flow 0.62

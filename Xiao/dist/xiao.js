@@ -27,8 +27,6 @@ var log = noop;
 }
 
 // D:\OutPut\VUE\vue\src\core\instance\lifecycle.js
-
-
 function mountComponent(vm, el, hydrating) {}
 // export function mountComponent(
 //     vm: Xiao,

@@ -11,8 +11,8 @@ let uid = 0;
 let inBrowser = true;
 
 class Xiao {
-  _uid : number;
-  $options : Object;
+  _uid: number;
+  $options: Object;
 
   constructor(options: Object) {
     if (process.env.NODE_ENV !== 'production' &&
@@ -45,4 +45,4 @@ class Xiao {
   }
 }
 
-export default Xiao;
+export default Xiao

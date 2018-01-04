@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "xiao framework 2018.01",
   "main": "src/main.js",
+  "typings": "types.d.ts",
   "dependencies": {
     "lodash": "^4.17.4"
   },
