@@ -312,7 +312,7 @@ function makeMap(str) {
 function mountComponent(vm, el, hydrating) {
     var results = '';
 
-    var htmlString = "<p id=test>hello <i>world";
+    var htmlString = "<p id=test>{{message}}hello <i>world</i></p>";
 
     HTMLParser(htmlString, {
         start: function start(tag, attrs, unary) {

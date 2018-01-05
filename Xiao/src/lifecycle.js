@@ -2,7 +2,7 @@
 import Xiao from './main'
 import { warn, log } from './util/debug'
 
-import {HTMLParser, HTMLtoXML, HTMLtoDOM} from './compiler/htmlparser'
+import { HTMLParser, HTMLtoXML, HTMLtoDOM } from './compiler/htmlparser'
 
 // D:\OutPut\VUE\vue\src\core\instance\lifecycle.js
 export function mountComponent(
@@ -10,9 +10,9 @@ export function mountComponent(
     el: Element,
     hydrating?: boolean
 ) {
-    let results : string = '';
-    
-    const htmlString: string = "<p id=test>hello <i>world";
+    let results: string = '';
+
+    const htmlString: string = "<p id=test>{{message}}hello <i>world</i></p>";
 
     HTMLParser(htmlString, {
         start: function (tag, attrs, unary) {
