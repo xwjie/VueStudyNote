@@ -13,7 +13,7 @@ flow init
 
 # 配置
 
-执行 `flow init` 。当前目前生成 `.flowconfig`。
+执行 `flow init` 。会在当前目录生成 `.flowconfig` 配置文件。
 
 ```
 [ignore]
@@ -186,7 +186,7 @@ declare type MyType = {
 
 ```
 
-表示类型 MyType有2个字段，code为numbre类型，msg为文本，可以为空。
+表示类型 `MyType` 有2个字段，code 为 numbre 类型， msg 为文本，可以为空。
 
 
 flow配置文件中 `[libs]` 增加配置
@@ -204,17 +204,17 @@ flow
 
 // @flow
 function check(n: number): MyType {
-	if( n > 0){
-		return {
-			code: 0
-		}
-	}
-	else{
-  		return {
-  			code: 1,
-  			msg: 'number must > 0'
-  		};
-	}
+  if( n > 0){
+    return {
+      code: 0
+    }
+  }
+  else{
+      return {
+        code: 1,
+        msg: 'number must > 0'
+      };
+  }
 }
 
 check(2); 
