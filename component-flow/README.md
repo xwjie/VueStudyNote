@@ -175,7 +175,7 @@ src\demo1.js -> lib\demo1.js
 
 # 自定义类型
 
-新建一个目录，如叫 `flow` ，里面新建一个js文件
+新建一个目录，如叫 `flow` ，里面新建一个js文件，名字随意。使用 `declare type` 声明类型。
 
 ```JavaScript
 // mytypes.js
