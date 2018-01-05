@@ -13,11 +13,10 @@ flow init
 
 # 配置
 
-.flowconfig
+执行 `flow init` 。当前目前生成 `.flowconfig`。
 
 ```
 [ignore]
-.*/node_modules/.*
 .*/lib/.*
 
 [include]
@@ -104,7 +103,7 @@ square("2");
 
 # 检查通过才编译
 
-使用webpack的 `prebuild` 钩子来实现。
+使用npm的 `prebuild` 钩子来实现。
 
 >任何脚本 `script` （包括自定义）都可以增加 `pre` ， `post` 2个钩子。
 
@@ -116,7 +115,7 @@ square("2");
   },
 ```
 
-再次运行 `npm run build` 编译代码。flow检查会报错，*不会* 执行编译操作。
+再次运行 `npm run build` 编译代码。flow会检查，如果报错，**不会** 执行编译操作。
 
 ```
 
@@ -173,3 +172,53 @@ src\demo1.js -> lib\demo1.js
 
 
 检查成功，并编译新代码。
+
+# 自定义类型
+
+新建一个目录，如叫 `flow` ，里面新建一个js文件
+
+```JavaScript
+// mytypes.js
+declare type MyType = {
+    code: number;
+    msg?: string;
+};
+
+```
+
+表示类型 MyType有2个字段，code为numbre类型，msg为文本，可以为空。
+
+
+flow配置文件中 `[libs]` 增加配置
+
+```
+
+[libs]
+flow
+
+```
+
+编写测试代码，`check` 函数返回 `MyType` 类型。
+
+```JavaScript
+
+// @flow
+function check(n: number): MyType {
+	if( n > 0){
+		return {
+			code: 0
+		}
+	}
+	else{
+  		return {
+  			code: 1,
+  			msg: 'number must > 0'
+  		};
+	}
+}
+
+check(2); 
+check(-2); 
+```
+
+完成。重新运行测试即可。
