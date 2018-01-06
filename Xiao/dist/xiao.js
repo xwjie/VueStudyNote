@@ -16,27 +16,20 @@ function noop(a, b, c) {}
 //copy from D:\OutPut\VUE\vue\src\core\util\debug.js
 
 var warn = noop;
-var log = noop;
-var error = noop;
-
-{
-  error = warn = function warn(msg) {
-    console.error('[Xiao warn]: ' + msg);
-  };
-
-  log = console.log;
-}
 
 var isFunction = function isFunction(f) {
     return typeof f == 'function';
 };
 
+// D:\OutPut\VUE\vue\src\shared\util.js
 /**
- * Strict object type check. Only returns true
- * for plain JavaScript objects.
+ * Get the raw type string of a value e.g. [object Object]
  */
 
 
+/**
+ * Check whether the object has the property.
+ */
 
 
 /**
@@ -65,16 +58,24 @@ function isReserved(str) {
  * Define a property.
  */
 
+
+/**
+ * Parse simple path.
+ */
+
 function vnode(sel, data, children, text, elm) {
     var key = data === undefined ? undefined : data.key;
     return { sel: sel, data: data, children: children,
         text: text, elm: elm, key: key };
 }
 
+//# sourceMappingURL=vnode.js.map
+
 var array = Array.isArray;
 function primitive(s) {
     return typeof s === 'string' || typeof s === 'number';
 }
+//# sourceMappingURL=is.js.map
 
 function createElement(tagName) {
     return document.createElement(tagName);
@@ -138,6 +139,12 @@ var htmlDomApi = {
     isText: isText,
     isComment: isComment,
 };
+
+//# sourceMappingURL=htmldomapi.js.map
+
+//# sourceMappingURL=h.js.map
+
+//# sourceMappingURL=thunk.js.map
 
 function isUndef(s) { return s === undefined; }
 function isDef(s) { return s !== undefined; }
@@ -437,16 +444,8 @@ function init(modules, domApi) {
         return vnode$$1;
     };
 }
+//# sourceMappingURL=snabbdom.js.map
 
-function unwrapExports (x) {
-	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
-}
-
-function createCommonjsModule(fn, module) {
-	return module = { exports: {} }, fn(module, module.exports), module.exports;
-}
-
-var _class = createCommonjsModule(function (module, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 function updateClass(oldVnode, vnode) {
     var cur, name, elm = vnode.elm, oldClass = oldVnode.data.class, klass = vnode.data.class;
@@ -470,13 +469,8 @@ function updateClass(oldVnode, vnode) {
 }
 exports.classModule = { create: updateClass, update: updateClass };
 exports.default = exports.classModule;
+//# sourceMappingURL=class.js.map
 
-});
-
-var _class$1 = unwrapExports(_class);
-var _class_1 = _class.classModule;
-
-var props = createCommonjsModule(function (module, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 function updateProps(oldVnode, vnode) {
     var key, cur, old, elm = vnode.elm, oldProps = oldVnode.data.props, props = vnode.data.props;
@@ -501,13 +495,8 @@ function updateProps(oldVnode, vnode) {
 }
 exports.propsModule = { create: updateProps, update: updateProps };
 exports.default = exports.propsModule;
+//# sourceMappingURL=props.js.map
 
-});
-
-var props$1 = unwrapExports(props);
-var props_1 = props.propsModule;
-
-var style = createCommonjsModule(function (module, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var raf = (typeof window !== 'undefined' && window.requestAnimationFrame) || setTimeout;
 var nextFrame = function (fn) { raf(function () { raf(fn); }); };
@@ -592,13 +581,8 @@ exports.styleModule = {
     remove: applyRemoveStyle
 };
 exports.default = exports.styleModule;
+//# sourceMappingURL=style.js.map
 
-});
-
-var style$1 = unwrapExports(style);
-var style_1 = style.styleModule;
-
-var eventlisteners = createCommonjsModule(function (module, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 function invokeHandler(handler, vnode, event) {
     if (typeof handler === "function") {
@@ -692,57 +676,23 @@ exports.eventListenersModule = {
     destroy: updateEventListeners
 };
 exports.default = exports.eventListenersModule;
+//# sourceMappingURL=eventlisteners.js.map
 
-});
-
-var eventlisteners$1 = unwrapExports(eventlisteners);
-var eventlisteners_1 = eventlisteners.eventListenersModule;
-
-var vnode_1 = createCommonjsModule(function (module, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
-function vnode(sel, data, children, text, elm) {
-    var key = data === undefined ? undefined : data.key;
-    return { sel: sel, data: data, children: children,
-        text: text, elm: elm, key: key };
-}
-exports.vnode = vnode;
-exports.default = vnode;
-
-});
-
-unwrapExports(vnode_1);
-var vnode_2 = vnode_1.vnode;
-
-var is = createCommonjsModule(function (module, exports) {
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.array = Array.isArray;
-function primitive(s) {
-    return typeof s === 'string' || typeof s === 'number';
-}
-exports.primitive = primitive;
-
-});
-
-unwrapExports(is);
-var is_1 = is.array;
-var is_2 = is.primitive;
-
-var h_1 = createCommonjsModule(function (module, exports) {
-Object.defineProperty(exports, "__esModule", { value: true });
-
-
-function addNS(data, children, sel) {
+var vnode_1 = require("./vnode");
+var is = require("./is");
+function addNS$1(data, children, sel) {
     data.ns = 'http://www.w3.org/2000/svg';
     if (sel !== 'foreignObject' && children !== undefined) {
         for (var i = 0; i < children.length; ++i) {
             var childData = children[i].data;
             if (childData !== undefined) {
-                addNS(childData, children[i].children, children[i].sel);
+                addNS$1(childData, children[i].children, children[i].sel);
             }
         }
     }
 }
-function h(sel, b, c) {
+function h$3(sel, b, c) {
     var data = {}, children, text, i;
     if (c !== undefined) {
         data = b;
@@ -778,29 +728,24 @@ function h(sel, b, c) {
     }
     if (sel[0] === 's' && sel[1] === 'v' && sel[2] === 'g' &&
         (sel.length === 3 || sel[3] === '.' || sel[3] === '#')) {
-        addNS(data, children, sel);
+        addNS$1(data, children, sel);
     }
     return vnode_1.vnode(sel, data, children, text, undefined);
 }
-exports.h = h;
+exports.h = h$3;
 
-exports.default = h;
-
-});
-
-var h$3 = unwrapExports(h_1);
-var h_2 = h_1.h;
+exports.default = h$3;
+//# sourceMappingURL=h.js.map
 
 var patch = init([// Init patch function with chosen modules
-_class$1, // makes it easy to toggle classes
-props$1, // for setting properties on DOM elements
-style$1, // handles styling on elements with support for animations
-eventlisteners$1] // attaches event listeners
+undefined, // makes it easy to toggle classes
+undefined, // for setting properties on DOM elements
+undefined, // handles styling on elements with support for animations
+undefined] // attaches event listeners
 );
 
-var h = h$3; // helper function for creating vnodes
+var h = undefined; // helper function for creating vnodes
 
-// D:\OutPut\VUE\vue\src\core\instance\lifecycle.js
 function mountComponent(vm, el, hydrating) {
     // 产生一个代理对象（VUE开发环境会使用Proxy产生一个代理对象，发布环境就是vue对象自己）
     // 调用生成的render函数绑定的this就是它。（whth(this)）
@@ -1025,6 +970,7 @@ function parseText(text, re) {
 
         lastIndex = index + match[0].length;
     }
+
     if (lastIndex < text.length) {
         tokenValue = text.slice(lastIndex);
         tokens.push(JSON.stringify(tokenValue));
@@ -1035,7 +981,6 @@ function parseText(text, re) {
     };
 }
 
-//D:\OutPut\VUE\vue\src\compiler\parser\index.js
 function html2ast(templte, data) {
     var root = void 0;
     var parent = void 0;
@@ -1069,8 +1014,6 @@ function html2ast(templte, data) {
         }
     });
 
-    log('htmlparser ast', root);
-    log('htmlparser parentStack', parentStack);
     return root;
 }
 
@@ -1134,7 +1077,6 @@ function makeAttrsMap(attrs) {
     return map;
 }
 
-// D:\OutPut\VUE\vue\src\compiler\codegen\index.js
 function ast2render(ast) {
     var renderStr = '';
 
@@ -1152,21 +1094,17 @@ function ast2render(ast) {
         renderStr = createRenderStr(ast);
     }
 
-    log('[ast2render]虚拟dom函数字符串:' + renderStr);
-
     return renderStr;
 }
 
 function createRenderStrElemnet(node) {
-    log('createRenderStrElemnet', node);
-
-    var str = 'h("' + node.tag + '"';
+    var str = 'h(' + JSON.stringify(node.tag);
 
     if (node.attrsMapattr) {
         str += ',{';
 
         for (var attr in node.attrsMapattr) {
-            log('attr', attr);
+            
         }
 
         str += '}';
@@ -1222,16 +1160,10 @@ function renderToFunctions(renderStr) {
 
 // D:\OutPut\VUE\vue\src\platforms\web\util\index.js
 
-/**
- * Query an element selector if it's not an element already.
- */
-
-// D:\OutPut\VUE\vue\src\platforms\web\util\index.js
 function query(el) {
     if (typeof el === 'string') {
         var selected = document.querySelector(el);
         if (!selected) {
-            "development" !== 'production' && warn('Cannot find element: ' + el);
             return document.createElement('div');
         }
         return selected;
@@ -1255,7 +1187,7 @@ function getOuterHTML(el) {
 //     if (typeof el === 'string') {
 //       const selected = document.querySelector(el)
 //       if (!selected) {
-//         "development" !== 'production' && warn(
+//         "production" !== 'production' && warn(
 //           'Cannot find element: ' + el
 //         )
 //         return document.createElement('div')
@@ -1307,7 +1239,7 @@ var Dep = function () {
         this.id = uid$1++;
         this.subs = [];
 
-        log('[Dep] _INIT_ ');
+        
     }
 
     createClass(Dep, [{
@@ -1340,6 +1272,22 @@ var Dep = function () {
     return Dep;
 }();
 
+// the current target watcher being evaluated.
+// this is globally unique because there could be only one
+// watcher being evaluated at any time.
+
+// Dep.target = null
+// const targetStack = []
+
+// export function pushTarget(_target: Watcher) {
+//     if (Dep.target) targetStack.push(Dep.target)
+//     Dep.target = _target
+// }
+
+// export function popTarget() {
+//     Dep.target = targetStack.pop()
+// }
+
 function observe(data, asRootData) {
   return new Observer(data);
 }
@@ -1349,8 +1297,6 @@ function observe(data, asRootData) {
 var Observer = function () {
   function Observer(value) {
     classCallCheck(this, Observer);
-
-    log('[observer] __INIT__ , vlaue:', value);
 
     this.value = value;
     this.dep = new Dep();
@@ -1390,9 +1336,6 @@ function defineReactive(obj, key, val, shallow) {
   }
 
   var dep = new Dep();
-  log('[observer]定义观察者，属性：' + key);
-
-  // cater for pre-defined getter/setters
   var getter = property && property.get;
   var setter = property && property.set;
 
@@ -1403,7 +1346,6 @@ function defineReactive(obj, key, val, shallow) {
     enumerable: true,
     configurable: true,
     get: function reactiveGetter() {
-      log('[observer]get方法被调用，属性：' + key);
       var value = getter ? getter.call(obj) : val;
 
       //if (Dep.target) {
@@ -1417,7 +1359,6 @@ function defineReactive(obj, key, val, shallow) {
     },
 
     set: function reactiveSetter(newVal) {
-      log('[observer]set方法被调用，属性：' + key);
       var value = getter ? getter.call(obj) : val;
 
       /* eslint-disable no-self-compare */
@@ -1437,8 +1378,6 @@ function defineReactive(obj, key, val, shallow) {
     }
   });
 }
-
-//D:\OutPut\VUE\vue\src\core\instance\state.js
 
 function initState(vm) {
     vm._watchers = [];
@@ -1482,7 +1421,6 @@ function getData(data, vm) {
     try {
         return data.call(vm, vm);
     } catch (e) {
-        warn("get data error:", e);
         return {};
     }
 }
@@ -1508,7 +1446,6 @@ function proxy(target, sourceKey, key) {
 
 // D:\OutPut\VUE\vue\src\core\instance\index.js
 
-// 
 var uid = 100;
 
 //fixme
@@ -1520,14 +1457,8 @@ var Xiao = function () {
   function Xiao(options) {
     classCallCheck(this, Xiao);
 
-    if ("development" !== 'production' && !(this instanceof Xiao)) {
-      warn('Xiao is a constructor and should be called with the `new` keyword');
-    }
-
     this.$options = options || {};
     this._uid = uid++;
-
-    log('main start', this);
 
     this._init(this.$options);
   }
@@ -1541,6 +1472,52 @@ var Xiao = function () {
 
 
   createClass(Xiao, [{
+    key: '$mount',
+    value: function $mount(el, hydrating) {
+      var element = query(el);
+
+      // 
+      if (!this.$options.template) {
+        this.$options.template = getOuterHTML(element);
+      }
+
+      if (!this.$options.template && !element) {
+        return;
+      }
+
+      this.$el = element;
+      if (!this.$options.render) {
+        // compiler template to render function
+        var _compileToFunctions = compileToFunctions(this.$options.template, this.$options.data),
+            render = _compileToFunctions.render;
+
+        this.$render = render;
+      } else if (!isFunction(this.$options.render)) {
+        return;
+      }
+
+      return mountComponent(this, element, hydrating);
+    }
+  }, {
+    key: '_init',
+    value: function _init(options) {
+
+      initState(this);
+
+      var el = options.el;
+
+      if (el && inBrowser) {
+        this.$mount(el);
+      }
+    }
+  }]);
+  return Xiao;
+}();
+
+return Xiao;
+
+})));
+, [{
     key: '$mount',
     value: function $mount(el, hydrating) {
       var element = query(el);

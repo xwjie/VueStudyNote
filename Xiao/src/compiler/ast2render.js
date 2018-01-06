@@ -27,7 +27,7 @@ function ast2render(ast: ?ASTElement): string {
 function createRenderStrElemnet(node: any): string {
     log('createRenderStrElemnet', node);
 
-    let str: string = 'h("' + node.tag + '"';
+    let str: string = 'h(' + JSON.stringify(node.tag);
 
     if (node.attrsMapattr) {
         str += ',{'

@@ -25,6 +25,7 @@ export function parseText(
 
         lastIndex = index + match[0].length
     }
+    
     if (lastIndex < text.length) {
         tokenValue = text.slice(lastIndex)
         tokens.push(JSON.stringify(tokenValue))
