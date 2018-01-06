@@ -1,7 +1,7 @@
 /* @flow */
 import { log } from '../util'
 import { HTMLParser, HTMLtoXML, HTMLtoDOM } from './htmlparser'
-import {parseText} from '../util/text-parser'
+import { parseText } from '../util/text-parser'
 
 //D:\OutPut\VUE\vue\src\compiler\parser\index.js
 function html2ast(templte: string, data: Object): ?ASTElement {
@@ -22,7 +22,7 @@ function html2ast(templte: string, data: Object): ?ASTElement {
                 root = e;
             }
 
-            if(false === unary){
+            if (false === unary) {
                 parent = e;
             }
         },
@@ -67,18 +67,14 @@ function createTextlement(
     text: string,
     parent: ASTElement
 ): ASTText {
-
     let res = parseText(text, defaultTagRE);
 
-    if(res ){
-        console.log('res', res);
+    if (res) {
         text = res.expression;
     }
-    else{
+    else {
         text = JSON.stringify(text);
     }
-
-
 
     let e = {
         type: 3,
@@ -92,8 +88,6 @@ function createTextlement(
 }
 
 const defaultTagRE = /\{\{((?:.|\n)+?)\}\}/g
-
-
 
 function createCommentlement(
     text: string,

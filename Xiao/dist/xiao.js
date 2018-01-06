@@ -1006,7 +1006,6 @@ function parseText(text, re) {
         return;
     }
     var tokens = [];
-    var rawTokens = [];
     var lastIndex = re.lastIndex = 0;
     var match = void 0,
         index = void 0,
@@ -1016,25 +1015,23 @@ function parseText(text, re) {
 
         // push text token
         if (index > lastIndex) {
-            rawTokens.push(tokenValue = text.slice(lastIndex, index));
+            tokenValue = text.slice(lastIndex, index);
             tokens.push(JSON.stringify(tokenValue));
         }
 
         // tag token
         var exp = match[1].trim();
         tokens.push(exp);
-        rawTokens.push({ '@binding': exp });
 
         lastIndex = index + match[0].length;
     }
     if (lastIndex < text.length) {
-        rawTokens.push(tokenValue = text.slice(lastIndex));
+        tokenValue = text.slice(lastIndex);
         tokens.push(JSON.stringify(tokenValue));
     }
 
     return {
-        expression: tokens.join('+'),
-        tokens: rawTokens
+        expression: tokens.join('+')
     };
 }
 
@@ -1095,11 +1092,9 @@ function createASTElement(tag, attrs, parent) {
 }
 
 function createTextlement(text, parent) {
-
     var res = parseText(text, defaultTagRE);
 
     if (res) {
-        console.log('res', res);
         text = res.expression;
     } else {
         text = JSON.stringify(text);

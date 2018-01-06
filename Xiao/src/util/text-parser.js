@@ -8,7 +8,6 @@ export function parseText(
         return
     }
     const tokens = []
-    const rawTokens = []
     let lastIndex = re.lastIndex = 0
     let match, index, tokenValue
     while ((match = re.exec(text))) {
@@ -16,24 +15,22 @@ export function parseText(
 
         // push text token
         if (index > lastIndex) {
-            rawTokens.push(tokenValue = text.slice(lastIndex, index))
+            tokenValue = text.slice(lastIndex, index)
             tokens.push(JSON.stringify(tokenValue))
         }
 
         // tag token
         var exp = match[1].trim();
         tokens.push(exp);
-        rawTokens.push({ '@binding': exp });
 
         lastIndex = index + match[0].length
     }
     if (lastIndex < text.length) {
-        rawTokens.push(tokenValue = text.slice(lastIndex))
+        tokenValue = text.slice(lastIndex)
         tokens.push(JSON.stringify(tokenValue))
     }
 
     return {
         expression: tokens.join('+'),
-        tokens: rawTokens
     }
 }
