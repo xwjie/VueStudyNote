@@ -3,17 +3,16 @@
 <head>
 	<title>Xiao框架之helloworld</title>
 	<script src="../dist/xiao.js"></script>
+	<style>
+	</style>
 </head>
 <body>
 
-<div id="demo">
-<!--
-	<h1>括号里面的是变量《{{message}}》</h1>
--->
+<div id="demo1">
 </div>
 
 <div id="demo2">
-
+	<h1>{{message}}</h1>
 </div>
 
 
@@ -26,21 +25,7 @@
 </div>
 
 <script>
-/*
-	new Xiao({
-		el: '#demo',
-		data: {
-			message: '当你看到这句话的时候，表示框架工作正常'
-		} 
-	});
-	
-	new Xiao({
-		el: '#demo2',
-		template: '<h1>{{message}}</h1>',
-		data: {
-			message: '当你看到这句话的时候，表示框架工作正常'
-		} 
-	});*/
+
 	
 	var app = new Xiao({
 		template: '<h1>变量1:{{message}}。<br/>变量2:{{message2}}。</h1>',
@@ -50,20 +35,38 @@
 		} 
 	});
 	
-	app.$mount("#demo3");
+	app.$mount("#demo1");
+
+
 	
 	setTimeout(function(){
 		console.log('隔了2秒后修改数据');
 		app.message = "动态修改了数据";
 	}, 2000);
-	/*
+
+	new Xiao({
+		el: '#demo2',
+		data: {
+			message: '第2种调用方式：当你看到这句话的时候，表示框架工作正常'
+		} 
+	});
+	
+	new Xiao({
+		el: '#demo3',
+		template: '<h1>{{message}}</h1>',
+		data: {
+			message: '第3种调用方式：当你看到这句话的时候，表示框架工作正常'
+		} 
+	});
+
+	
 	new Xiao({
 		el: document.querySelector('#demo4'),
 		template: '<h1>{{message}}</h1>',
 		data: {
-			message: '当你看到这句话的时候，表示框架工作正常'
+			message: '第4种调用方式：当你看到这句话的时候，表示框架工作正常'
 		} 
-	});*/
+	});
 
 </script>
 
