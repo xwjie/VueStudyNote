@@ -1102,7 +1102,7 @@ function createTextlement(text, parent) {
         console.log('res', res);
         text = res.expression;
     } else {
-        //text = JSON.stringify(text);
+        text = JSON.stringify(text);
     }
 
     var e = {

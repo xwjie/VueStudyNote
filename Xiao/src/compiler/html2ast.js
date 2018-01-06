@@ -75,7 +75,7 @@ function createTextlement(
         text = res.expression;
     }
     else{
-        //text = JSON.stringify(text);
+        text = JSON.stringify(text);
     }
 
 
