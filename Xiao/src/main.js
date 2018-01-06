@@ -1,9 +1,11 @@
 // @flow
 // D:\OutPut\VUE\vue\src\core\instance\index.js
 
-import { warn, log } from './util'
+import { warn, error, log, isFunction } from './util'
 import { mountComponent } from './lifecycle'
+import { compileToFunctions } from './compiler'
 import { query, getOuterHTML } from './util/web'
+import { initState } from './states'
 
 // 
 let uid = 100;
@@ -18,6 +20,18 @@ class Xiao {
   $el: ?Element;
 
   $options: Object;
+
+  $render: Function;
+
+  // 渲染虚拟dom需要用到的。（VUE里面应该是$createElement）
+  h: Function;
+
+
+  // 数据
+  _data: Object;
+
+  // 数据修改之后的监听器
+  _watchers: Array<any>;
 
   constructor(options: Object) {
     if (process.env.NODE_ENV !== 'production' &&
@@ -37,6 +51,7 @@ class Xiao {
   $mount(el: Element | string, hydrating?: boolean) {
     let element = query(el);
 
+    // 
     if (!this.$options.template) {
       this.$options.template = getOuterHTML(element);
     }
@@ -49,10 +64,27 @@ class Xiao {
     this.$el = element;
     log('$mount', this);
 
+    // generate render function;
+    if (!this.$options.render) {
+      // compiler template to render function
+      const { render } = compileToFunctions(this.$options.template, this.$options.data);
+
+      log('render', render);
+
+      // save to this.$render
+      this.$render = render;
+    } else if (!isFunction(this.$options.render)) {
+      error('this.$options.render must be function');
+      return;
+    }
+
     return mountComponent(this, element, hydrating)
   }
 
   _init(options: Object) {
+
+    initState(this);
+
     let el: string | Element = options.el;
 
     if (el && inBrowser) {

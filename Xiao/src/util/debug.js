@@ -5,9 +5,10 @@ import { noop } from '../shared/util'
 
 export let warn = noop
 export let log = noop
+export let error = noop
 
 if (process.env.NODE_ENV !== 'production') {
-  warn = (msg) => {
+  error = warn = (msg) => {
     console.error(`[Xiao warn]: ${msg}`)
   }
 

@@ -5,8 +5,11 @@
 	<script src="../dist/xiao.js"></script>
 </head>
 <body>
+
 <div id="demo">
-	<h1>{{message}}</h1>
+<!--
+	<h1>括号里面的是变量《{{message}}》</h1>
+-->
 </div>
 
 <div id="demo2">
@@ -23,6 +26,7 @@
 </div>
 
 <script>
+/*
 	new Xiao({
 		el: '#demo',
 		data: {
@@ -36,24 +40,30 @@
 		data: {
 			message: '当你看到这句话的时候，表示框架工作正常'
 		} 
-	});
+	});*/
 	
 	var app = new Xiao({
-		template: '<h1>{{message}}</h1>',
+		template: '<h1>变量1:{{message}}。<br/>变量2:{{message2}}</h1>',
 		data: {
-			message: '当你看到这句话的时候，表示框架工作正常'
+			message: '当你看到这句话的时候，表示框架工作正常',
+			message2:'终于好了。。'
 		} 
 	});
 	
 	app.$mount("#demo3");
 	
+	setTimeout(function(){
+		console.log('隔了2秒后修改数据');
+		app.message = "动态修改了数据";
+	}, 2000);
+	/*
 	new Xiao({
 		el: document.querySelector('#demo4'),
 		template: '<h1>{{message}}</h1>',
 		data: {
 			message: '当你看到这句话的时候，表示框架工作正常'
 		} 
-	});
+	});*/
 
 </script>
 

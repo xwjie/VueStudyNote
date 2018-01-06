@@ -5,6 +5,7 @@
 .*/src/.*
 
 [libs]
+flow
 
 [lints]
 

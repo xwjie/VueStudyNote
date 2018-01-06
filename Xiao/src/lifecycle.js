@@ -1,8 +1,7 @@
 /* @flow */
 import Xiao from './main'
 import { warn, log } from './util/debug'
-
-import { HTMLParser, HTMLtoXML, HTMLtoDOM } from './compiler/htmlparser'
+import {h,patch} from './compiler/snabbdom'
 
 // D:\OutPut\VUE\vue\src\core\instance\lifecycle.js
 export function mountComponent(
@@ -10,32 +9,14 @@ export function mountComponent(
     el: Element,
     hydrating?: boolean
 ) {
-    let results: string = '';
+    // 产生一个代理对象（VUE开发环境会使用Proxy产生一个代理对象，发布环境就是vue对象自己）
+    // 调用生成的render函数绑定的this就是它。（whth(this)）
+    let proxy = vm
 
-    const htmlString: string = "<p id=test>{{message}}hello <i>world</i></p>";
+    proxy.h = h;
 
-    HTMLParser(htmlString, {
-        start: function (tag, attrs, unary) {
-            results += "<" + tag;
+    let vnode = vm.$render.call(proxy);
 
-            for (var i = 0; i < attrs.length; i++)
-                results += " " + attrs[i].name + '="' + attrs[i].escaped + '"';
-
-            results += (unary ? "/" : "") + ">";
-        },
-        end: function (tag) {
-            results += "</" + tag + ">";
-        },
-        chars: function (text) {
-            results += text;
-        },
-        comment: function (text) {
-            results += "<!--" + text + "-->";
-        }
-    });
-
-    log('htmlparser HTMLtoXML', HTMLtoXML(htmlString));
-    log('htmlparser HTMLtoDOM', HTMLtoDOM(htmlString));
-    log('htmlparser HTMLParser', results == '<p id="test">hello <i>world</i></p>');
-
+    //
+    vm.$render.oldvnode = patch(el, vnode);
 }

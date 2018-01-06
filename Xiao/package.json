@@ -5,7 +5,8 @@
   "main": "src/main.js",
   "typings": "types.d.ts",
   "dependencies": {
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "snabbdom": "^0.7.1"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
@@ -15,12 +16,13 @@
     "babel-preset-flow": "^6.23.0",
     "babel-preset-stage-0": "^6.24.1",
     "rollup-plugin-babel": "^3.0.3",
+    "rollup-plugin-commonjs": "^8.2.6",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-replace": "^2.0.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "rollup  -c rollup.config.dev.js",
+    "dev": "rollup -c rollup.config.dev.js",
     "build": "rollup -c rollup.config.build.js",
     "prebuild": "flow check",
     "predev": "flow check"
