@@ -4,22 +4,22 @@ import Dep from './dep'
 import { log, warn } from '../util'
 
 export function observe(data: any, asRootData: ?boolean) {
-  return new Observer(data);
+  return new Observer(data)
 }
 
 // D:\OutPut\VUE\vue\src\core\observer\index.js
 class Observer {
 
-  value: any;
-  dep: Dep;
+  value: any
+  dep: Dep
 
   constructor(value: any) {
-    log('[observer] __INIT__ , vlaue:', value);
+    log('[observer] __INIT__ , vlaue:', value)
 
-    this.value = value;
-    this.dep = new Dep();
+    this.value = value
+    this.dep = new Dep()
 
-    this.walk(value);
+    this.walk(value)
   }
 
   /**
@@ -50,8 +50,10 @@ export function defineReactive(
     return
   }
 
+  // xwjie 这里应该可以考虑优化，如果和模板没有关系，dep不需要创建
   const dep = new Dep()
-  log('[observer]定义观察者，属性：' + key)
+
+  log(`[observer]定义观察者，属性：${key}`)
 
   // cater for pre-defined getter/setters
   const getter = property && property.get
@@ -64,21 +66,21 @@ export function defineReactive(
     enumerable: true,
     configurable: true,
     get: function reactiveGetter() {
-      log('[observer]get方法被调用，属性：' + key)
+      // log('[observer]get方法被调用，属性：' + key)
       const value = getter ? getter.call(obj) : val
 
-      //if (Dep.target) {
-      //  dep.depend()
-      //if (childOb) {
-      //  childOb.dep.depend()
-      //}
-      //}
+      if (Dep.target) {
+        dep.depend()
+        // if (childOb) {
+        //  childOb.dep.depend()
+        // }
+      }
 
       return value
     },
 
     set: function reactiveSetter(newVal) {
-      log('[observer]set方法被调用，属性：' + key)
+      // log('[observer]set方法被调用，属性：' + key)
       const value = getter ? getter.call(obj) : val
 
       /* eslint-disable no-self-compare */

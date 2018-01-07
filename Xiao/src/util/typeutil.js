@@ -1,6 +1,6 @@
 /* @flow */
 
-export const isFunction = (f: any): boolean => typeof f == 'function';
+export const isFunction = (f: any): boolean => typeof f == 'function'
 
 
 // D:\OutPut\VUE\vue\src\shared\util.js

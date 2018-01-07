@@ -12,7 +12,7 @@
 </div>
 
 <div id="demo2">
-	<h1>{{message}}</h1>
+	<h1 style="color:red">{{message}}</h1>
 </div>
 
 
@@ -36,14 +36,7 @@
 	});
 	
 	app.$mount("#demo1");
-
-
 	
-	setTimeout(function(){
-		console.log('隔了2秒后修改数据');
-		app.message = "动态修改了数据";
-	}, 2000);
-
 	new Xiao({
 		el: '#demo2',
 		data: {

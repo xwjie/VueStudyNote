@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Xiao框架之helloworld</title>
+	<script src="../dist/xiao.js"></script>
+	<style>
+	</style>
+</head>
+<body>
+
+<div id="demo1">
+</div>
+
+<script>
+
+	var app = new Xiao({
+		template: '<h1>变量1:{{message}}。<br/>变量2:{{message2}}。</h1>',
+		data: {
+			message: '当你看到这句话的时候，表示框架工作正常',
+			message2:'终于好了',
+			another: '这个变量没有在模板里面'
+		} 
+	});
+	
+	app.$mount("#demo1");
+
+	var count = 1;
+
+	setInterval(function(){
+		app.message = `第${count}次修改了数据`;
+		count++;
+	}, 2000);
+
+	setTimeout(function(){
+		console.log('隔了3秒后修改了模板无关的变量数据');
+		app.another = "修改了她不应该重新渲染";
+	}, 3000);
+
+</script>
+
+</body>
+</html>

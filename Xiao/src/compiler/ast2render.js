@@ -12,7 +12,7 @@ function ast2render(ast: ?ASTElement): string {
       h('h1', strVar),
       'this is string',
       h('a', { props: { href: '/foo' } }, 'I\'ll take you places!')
-  ]);
+  ])
   */
 
   if (ast) {
@@ -25,26 +25,29 @@ function ast2render(ast: ?ASTElement): string {
 }
 
 function createRenderStrElemnet(node: any): string {
-  log('createRenderStrElemnet', node);
+  log('createRenderStrElemnet', node)
 
   let str: string = 'h(' + JSON.stringify(node.tag)
 
-  if (node.attrsMapattr) {
+  let attrs = node.attrsMap
+
+  if (attrs) {
     str += ',{'
 
-    for (let attr in node.attrsMapattr) {
-      log('attr', attr)
-    }
+    // why not use for..in, see eslint `no-restricted-syntax`
+    Object.keys(attrs).every(attrname => {
+      // str += JSON.stringify(attrname) + '=' + JSON.stringify(attrs[attrname]) + ' '
+    })
 
     str += '}'
   }
 
   if (node.children) {
-    str += ',[';
+    str += ',['
 
     node.children.forEach(child => {
       str += createRenderStr(child) + ','
-    });
+    })
 
     str += ']'
   }
@@ -67,7 +70,7 @@ function createRenderStr(ast: ASTNode): string {
   } else if (ast.type == 3) {
     str = createRenderStrText(ast)
   } else {
-    warn('wrong type:' + ast.type)
+    warn(`wrong type:${ast.type}`)
   }
 
   return str

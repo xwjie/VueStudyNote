@@ -5,41 +5,41 @@ import { parseText } from '../util/text-parser'
 
 //D:\OutPut\VUE\vue\src\compiler\parser\index.js
 function html2ast(templte: string, data: Object): ?ASTElement {
-  let root: ?ASTElement;
-  let parent: ASTElement;
-  let parentStack = [];
+  let root: ?ASTElement
+  let parent: ASTElement
+  let parentStack = []
 
   HTMLParser(templte, {
     start: function (tag, attrs, unary) {
       //
       if (false === unary && parent) {
-        parentStack.push(parent);
+        parentStack.push(parent)
       }
 
-      let e = createASTElement(tag, attrs, parent);
+      let e = createASTElement(tag, attrs, parent)
 
       if (!root) {
-        root = e;
+        root = e
       }
 
       if (false === unary) {
-        parent = e;
+        parent = e
       }
     },
     end: function (tag) {
-      parent = parentStack.pop();
+      parent = parentStack.pop()
     },
     chars: function (text) {
-      createTextlement(text, parent);
+      createTextlement(text, parent)
     },
     comment: function (text) {
-      createCommentlement(text, parent);
+      createCommentlement(text, parent)
     }
-  });
+  })
 
-  log('htmlparser ast', root);
-  log('htmlparser parentStack', parentStack);
-  return root;
+  log('htmlparser ast', root)
+  log('htmlparser parentStack', parentStack)
+  return root
 }
 
 function createASTElement(
@@ -57,23 +57,23 @@ function createASTElement(
   }
 
   if (parent) {
-    parent.children.push(e);
+    parent.children.push(e)
   }
 
-  return e;
+  return e
 }
 
 function createTextlement(
   text: string,
   parent: ASTElement
 ): ASTText {
-  let res = parseText(text, defaultTagRE);
+  let res = parseText(text, defaultTagRE)
 
   if (res) {
-    text = res.expression;
+    text = res.expression
   }
   else {
-    text = JSON.stringify(text);
+    text = JSON.stringify(text)
   }
 
   let e = {
@@ -82,9 +82,9 @@ function createTextlement(
     //parent
   }
 
-  parent.children.push(e);
+  parent.children.push(e)
 
-  return e;
+  return e
 }
 
 const defaultTagRE = /\{\{((?:.|\n)+?)\}\}/g
@@ -100,14 +100,14 @@ function createCommentlement(
     //parent
   }
 
-  parent.children.push(e);
+  parent.children.push(e)
 
-  return e;
+  return e
 }
 
 function makeAttrsMap(attrs: Array<Object>): Object {
   const map = {}
-  for (let i = 0, l = attrs.length; i < l; i++) {
+  for (let i = 0, l = attrs.length ;i < l ;i++) {
     map[attrs[i].name] = attrs[i].value
   }
   return map

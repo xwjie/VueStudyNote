@@ -20,8 +20,8 @@ export function parseText(
     }
 
     // tag token
-    var exp = match[1].trim();
-    tokens.push(exp);
+    var exp = match[1].trim()
+    tokens.push(exp)
 
     lastIndex = index + match[0].length
   }

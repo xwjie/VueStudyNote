@@ -6,15 +6,15 @@ import { mountComponent } from './lifecycle'
 import { compileToFunctions } from './compiler'
 import { query, getOuterHTML } from './util/web'
 import { initState } from './states'
+import Watcher from './observer/watcher'
 
 //
 let uid = 100
 
 // fixme
-let inBrowser = true
+const inBrowser = true
 
 class Xiao {
-  // properties
   _uid: number
 
   $el: ?Element
@@ -31,6 +31,7 @@ class Xiao {
   _data: Object
 
   // 数据修改之后的监听器
+  _watcher: Watcher
   _watchers: Array<any>
 
   constructor(options: Object) {
@@ -40,7 +41,7 @@ class Xiao {
       warn('Xiao is a constructor and should be called with the `new` keyword')
     }
 
-    this.$options = options || {}
+    this.$options = options
     this._uid = uid++
 
     log('main start', this)
@@ -49,9 +50,10 @@ class Xiao {
   }
 
   $mount(el: Element | string, hydrating?: boolean) {
+    // get dom element
     let element = query(el)
 
-    //
+    // get template string
     if (!this.$options.template) {
       this.$options.template = getOuterHTML(element)
     }
@@ -78,7 +80,7 @@ class Xiao {
       return
     }
 
-    mountComponent(this, element, hydrating)
+    mountComponent(this, hydrating)
   }
 
   _init(options: Object) {

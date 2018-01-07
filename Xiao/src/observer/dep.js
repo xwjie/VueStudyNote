@@ -13,15 +13,17 @@ let uid = 0
  * directives subscribing to it.
  */
 export default class Dep {
-  //static target: ?Watcher;
-  id: number;
-  subs: Array<Watcher>;
+  // 在watcher里面调用render函数的时候会有值，其他时候为空
+  static target: ?Watcher
+
+  id: number
+  subs: Array<Watcher>
 
   constructor() {
     this.id = uid++
     this.subs = []
 
-    log('[Dep] _INIT_ ');
+    log('[Dep] _INIT_ ')
   }
 
   addSub(sub: Watcher) {
@@ -32,11 +34,11 @@ export default class Dep {
     remove(this.subs, sub)
   }
 
-  // depend() {
-  //     if (Dep.target) {
-  //         Dep.target.addDep(this)
-  //     }
-  // }
+  depend() {
+    if (Dep.target) {
+      Dep.target.addDep(this)
+    }
+  }
 
   notify() {
     // stabilize the subscriber list first
@@ -51,14 +53,15 @@ export default class Dep {
 // this is globally unique because there could be only one
 // watcher being evaluated at any time.
 
-// Dep.target = null
+Dep.target = null
 // const targetStack = []
 
-// export function pushTarget(_target: Watcher) {
-//     if (Dep.target) targetStack.push(Dep.target)
-//     Dep.target = _target
-// }
+export function pushTarget(_target: Watcher) {
+  // if (Dep.target) targetStack.push(Dep.target)
+  Dep.target = _target
+}
 
-// export function popTarget() {
-//     Dep.target = targetStack.pop()
-// }
+export function popTarget() {
+  // Dep.target = targetStack.pop()
+  Dep.target = null;
+}

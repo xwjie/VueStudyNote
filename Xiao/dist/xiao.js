@@ -800,18 +800,210 @@ eventlisteners$1] // attaches event listeners
 
 var h = h$3; // helper function for creating vnodes
 
+var classCallCheck = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
+
+var createClass = function () {
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  return function (Constructor, protoProps, staticProps) {
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) defineProperties(Constructor, staticProps);
+    return Constructor;
+  };
+}();
+
+var uid$1 = 0;
+
+/**
+ *  Dep （Dependent），表示：被观察对象。
+ *
+ * A dep is an observable that can have multiple
+ * directives subscribing to it.
+ */
+
+var Dep = function () {
+  function Dep() {
+    classCallCheck(this, Dep);
+
+    this.id = uid$1++;
+    this.subs = [];
+
+    log('[Dep] _INIT_ ');
+  }
+  // 在watcher里面调用render函数的时候会有值，其他时候为空
+
+
+  createClass(Dep, [{
+    key: 'addSub',
+    value: function addSub(sub) {
+      this.subs.push(sub);
+    }
+  }, {
+    key: 'removeSub',
+    value: function removeSub(sub) {
+      remove(this.subs, sub);
+    }
+  }, {
+    key: 'depend',
+    value: function depend() {
+      if (Dep.target) {
+        Dep.target.addDep(this);
+      }
+    }
+  }, {
+    key: 'notify',
+    value: function notify() {
+      // stabilize the subscriber list first
+      var subs = this.subs.slice();
+      for (var i = 0, l = subs.length; i < l; i++) {
+        subs[i].update();
+      }
+    }
+  }]);
+  return Dep;
+}();
+
+Dep.target = null;
+// const targetStack = []
+
+function pushTarget(_target) {
+  // if (Dep.target) targetStack.push(Dep.target)
+  Dep.target = _target;
+}
+
+function popTarget() {
+  // Dep.target = targetStack.pop()
+  Dep.target = null;
+}
+
+// D:\OutPut\VUE\vue\src\core\util\env.js
+var _Set = void 0;
+
+/* istanbul ignore if */ // $flow-disable-line
+// if (typeof Set !== 'undefined') {
+//   // use native Set when available.
+//   _Set = Set
+// } else {
+// a non-standard Set polyfill that only works with primitive keys.
+_Set = function () {
+  function Set() {
+    classCallCheck(this, Set);
+
+    this.set = Object.create(null);
+  }
+
+  createClass(Set, [{
+    key: "has",
+    value: function has(key) {
+      return this.set[key] === true;
+    }
+  }, {
+    key: "add",
+    value: function add(key) {
+      this.set[key] = true;
+    }
+  }, {
+    key: "clear",
+    value: function clear() {
+      this.set = Object.create(null);
+    }
+  }]);
+  return Set;
+}();
+
+var Watcher = function () {
+  function Watcher(vm, renderFunction) {
+    classCallCheck(this, Watcher);
+
+    this.vm = vm;
+    this.getter = renderFunction;
+    this.depIds = new _Set();
+
+    vm._watcher = this;
+
+    log('[Watcher] _INIT_');
+
+    this.get();
+  }
+
+  createClass(Watcher, [{
+    key: 'get',
+    value: function get$$1() {
+      try {
+        pushTarget(this);
+        this.getter.call(this.vm, this.vm);
+      } finally {
+        popTarget();
+      }
+    }
+
+    /**
+    * Add a dependency to this directive.
+    */
+
+  }, {
+    key: 'addDep',
+    value: function addDep(dep) {
+      if (!this.depIds.has(dep.id)) {
+        dep.addSub(this);
+        this.depIds.add(dep.id);
+      }
+    }
+  }, {
+    key: 'update',
+    value: function update() {
+      log('[Watcher] update');
+
+      // fixme
+      this.get();
+    }
+  }]);
+  return Watcher;
+}();
+
 // D:\OutPut\VUE\vue\src\core\instance\lifecycle.js
-function mountComponent(vm, el, hydrating) {
+function mountComponent(vm, hydrating) {
   // 产生一个代理对象（VUE开发环境会使用Proxy产生一个代理对象，发布环境就是vue对象自己）
   // 调用生成的render函数绑定的this就是它。（whth(this)）
+  new Watcher(vm, updateComponent);
+}
+
+var renderCount = 1;
+
+function updateComponent(vm) {
   var proxy = vm;
 
   proxy.h = h;
 
+  // 新的虚拟节点
   var vnode = vm.$render.call(proxy);
 
-  //
-  vm.$render.oldvnode = patch(el, vnode);
+  var preNode = vm.$options.oldvnode;
+
+  log('[lifecycle] \u7B2C' + renderCount + '\u6B21\u6E32\u67D3');
+
+  if (preNode) {
+    vnode = patch(preNode, vnode);
+  } else {
+    vnode = patch(vm.$el, vnode);
+  }
+
+  renderCount++;
+
+  // save
+  vm.$options.oldvnode = vnode;
 }
 
 /*
@@ -1146,7 +1338,7 @@ function ast2render(ast) {
       h('h1', strVar),
       'this is string',
       h('a', { props: { href: '/foo' } }, 'I\'ll take you places!')
-  ]);
+  ])
   */
 
   if (ast) {
@@ -1163,12 +1355,15 @@ function createRenderStrElemnet(node) {
 
   var str = 'h(' + JSON.stringify(node.tag);
 
-  if (node.attrsMapattr) {
+  var attrs = node.attrsMap;
+
+  if (attrs) {
     str += ',{';
 
-    for (var attr in node.attrsMapattr) {
-      log('attr', attr);
-    }
+    // why not use for..in, see eslint `no-restricted-syntax`
+    Object.keys(attrs).every(function (attrname) {
+      // str += JSON.stringify(attrname) + '=' + JSON.stringify(attrs[attrname]) + ' '
+    });
 
     str += '}';
   }
@@ -1207,9 +1402,7 @@ function createRenderStr(ast) {
 }
 
 function compileToFunctions(templte, data) {
-
   var ast = html2ast(templte, data);
-
   var renderFunctionStr = renderToFunctions(ast2render(ast));
 
   return {
@@ -1267,80 +1460,6 @@ function getOuterHTML(el) {
 //     }
 //   }
 
-var classCallCheck = function (instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-};
-
-var createClass = function () {
-  function defineProperties(target, props) {
-    for (var i = 0; i < props.length; i++) {
-      var descriptor = props[i];
-      descriptor.enumerable = descriptor.enumerable || false;
-      descriptor.configurable = true;
-      if ("value" in descriptor) descriptor.writable = true;
-      Object.defineProperty(target, descriptor.key, descriptor);
-    }
-  }
-
-  return function (Constructor, protoProps, staticProps) {
-    if (protoProps) defineProperties(Constructor.prototype, protoProps);
-    if (staticProps) defineProperties(Constructor, staticProps);
-    return Constructor;
-  };
-}();
-
-var uid$1 = 0;
-
-/**
- *  Dep （Dependent），表示：被观察对象。
- *
- * A dep is an observable that can have multiple
- * directives subscribing to it.
- */
-
-var Dep = function () {
-  //static target: ?Watcher;
-  function Dep() {
-    classCallCheck(this, Dep);
-
-    this.id = uid$1++;
-    this.subs = [];
-
-    log('[Dep] _INIT_ ');
-  }
-
-  createClass(Dep, [{
-    key: 'addSub',
-    value: function addSub(sub) {
-      this.subs.push(sub);
-    }
-  }, {
-    key: 'removeSub',
-    value: function removeSub(sub) {
-      remove(this.subs, sub);
-    }
-
-    // depend() {
-    //     if (Dep.target) {
-    //         Dep.target.addDep(this)
-    //     }
-    // }
-
-  }, {
-    key: 'notify',
-    value: function notify() {
-      // stabilize the subscriber list first
-      var subs = this.subs.slice();
-      for (var i = 0, l = subs.length; i < l; i++) {
-        subs[i].update();
-      }
-    }
-  }]);
-  return Dep;
-}();
-
 function observe(data, asRootData) {
   return new Observer(data);
 }
@@ -1390,8 +1509,10 @@ function defineReactive(obj, key, val, shallow) {
     return;
   }
 
+  // xwjie 这里应该可以考虑优化，如果和模板没有关系，dep不需要创建
   var dep = new Dep();
-  log('[observer]定义观察者，属性：' + key);
+
+  log('[observer]\u5B9A\u4E49\u89C2\u5BDF\u8005\uFF0C\u5C5E\u6027\uFF1A' + key);
 
   // cater for pre-defined getter/setters
   var getter = property && property.get;
@@ -1404,21 +1525,21 @@ function defineReactive(obj, key, val, shallow) {
     enumerable: true,
     configurable: true,
     get: function reactiveGetter() {
-      log('[observer]get方法被调用，属性：' + key);
+      // log('[observer]get方法被调用，属性：' + key)
       var value = getter ? getter.call(obj) : val;
 
-      //if (Dep.target) {
-      //  dep.depend()
-      //if (childOb) {
-      //  childOb.dep.depend()
-      //}
-      //}
+      if (Dep.target) {
+        dep.depend();
+        // if (childOb) {
+        //  childOb.dep.depend()
+        // }
+      }
 
       return value;
     },
 
     set: function reactiveSetter(newVal) {
-      log('[observer]set方法被调用，属性：' + key);
+      // log('[observer]set方法被调用，属性：' + key)
       var value = getter ? getter.call(obj) : val;
 
       /* eslint-disable no-self-compare */
@@ -1517,7 +1638,10 @@ var inBrowser = true;
 
 var Xiao = function () {
 
-  // 数据
+  // 数据修改之后的监听器
+
+
+  // 渲染虚拟dom需要用到的。（VUE里面应该是$createElement）
   function Xiao(options) {
     classCallCheck(this, Xiao);
 
@@ -1525,7 +1649,7 @@ var Xiao = function () {
       warn('Xiao is a constructor and should be called with the `new` keyword');
     }
 
-    this.$options = options || {};
+    this.$options = options;
     this._uid = uid++;
 
     log('main start', this);
@@ -1533,20 +1657,16 @@ var Xiao = function () {
     this._init(this.$options);
   }
 
-  // 数据修改之后的监听器
-
-
-  // 渲染虚拟dom需要用到的。（VUE里面应该是$createElement）
-
-  // properties
+  // 数据
 
 
   createClass(Xiao, [{
     key: '$mount',
     value: function $mount(el, hydrating) {
+      // get dom element
       var element = query(el);
 
-      //
+      // get template string
       if (!this.$options.template) {
         this.$options.template = getOuterHTML(element);
       }
@@ -1574,7 +1694,7 @@ var Xiao = function () {
         return;
       }
 
-      mountComponent(this, element, hydrating);
+      mountComponent(this, hydrating);
     }
   }, {
     key: '_init',
