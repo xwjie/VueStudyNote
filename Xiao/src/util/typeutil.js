@@ -14,7 +14,7 @@ const _toString = Object.prototype.toString
  * for plain JavaScript objects.
  */
 export function isPlainObject(obj: any): boolean {
-    return _toString.call(obj) === '[object Object]'
+  return _toString.call(obj) === '[object Object]'
 }
 
 /**
@@ -22,7 +22,7 @@ export function isPlainObject(obj: any): boolean {
  */
 const hasOwnProperty = Object.prototype.hasOwnProperty
 export function hasOwn(obj: Object | Array<*>, key: string): boolean {
-    return hasOwnProperty.call(obj, key)
+  return hasOwnProperty.call(obj, key)
 }
 
 
@@ -30,10 +30,10 @@ export function hasOwn(obj: Object | Array<*>, key: string): boolean {
 * Remove an item from an array
 */
 export function remove(arr: Array<any>, item: any): Array<any> | void {
-    if (arr.length) {
-        const index = arr.indexOf(item)
-        if (index > -1) {
-            return arr.splice(index, 1)
-        }
+  if (arr.length) {
+    const index = arr.indexOf(item)
+    if (index > -1) {
+      return arr.splice(index, 1)
     }
+  }
 }

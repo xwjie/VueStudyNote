@@ -16,32 +16,39 @@ function noop(a, b, c) {}
 //copy from D:\OutPut\VUE\vue\src\core\util\debug.js
 
 var warn = noop;
+var log = noop;
+var error = noop;
+
+{
+  error = warn = function warn(msg) {
+    console.error('[Xiao warn]: ' + msg);
+  };
+
+  log = console.log;
+}
 
 var isFunction = function isFunction(f) {
-    return typeof f == 'function';
+  return typeof f == 'function';
 };
 
-// D:\OutPut\VUE\vue\src\shared\util.js
 /**
- * Get the raw type string of a value e.g. [object Object]
+ * Strict object type check. Only returns true
+ * for plain JavaScript objects.
  */
 
 
-/**
- * Check whether the object has the property.
- */
 
 
 /**
 * Remove an item from an array
 */
 function remove(arr, item) {
-    if (arr.length) {
-        var index = arr.indexOf(item);
-        if (index > -1) {
-            return arr.splice(index, 1);
-        }
+  if (arr.length) {
+    var index = arr.indexOf(item);
+    if (index > -1) {
+      return arr.splice(index, 1);
     }
+  }
 }
 
 // copy D:\OutPut\VUE\vue\src\core\util\lang.js
@@ -58,24 +65,16 @@ function isReserved(str) {
  * Define a property.
  */
 
-
-/**
- * Parse simple path.
- */
-
 function vnode(sel, data, children, text, elm) {
     var key = data === undefined ? undefined : data.key;
     return { sel: sel, data: data, children: children,
         text: text, elm: elm, key: key };
 }
 
-//# sourceMappingURL=vnode.js.map
-
 var array = Array.isArray;
 function primitive(s) {
     return typeof s === 'string' || typeof s === 'number';
 }
-//# sourceMappingURL=is.js.map
 
 function createElement(tagName) {
     return document.createElement(tagName);
@@ -139,12 +138,6 @@ var htmlDomApi = {
     isText: isText,
     isComment: isComment,
 };
-
-//# sourceMappingURL=htmldomapi.js.map
-
-//# sourceMappingURL=h.js.map
-
-//# sourceMappingURL=thunk.js.map
 
 function isUndef(s) { return s === undefined; }
 function isDef(s) { return s !== undefined; }
@@ -444,8 +437,16 @@ function init(modules, domApi) {
         return vnode$$1;
     };
 }
-//# sourceMappingURL=snabbdom.js.map
 
+function unwrapExports (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
+
+function createCommonjsModule(fn, module) {
+	return module = { exports: {} }, fn(module, module.exports), module.exports;
+}
+
+var _class = createCommonjsModule(function (module, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 function updateClass(oldVnode, vnode) {
     var cur, name, elm = vnode.elm, oldClass = oldVnode.data.class, klass = vnode.data.class;
@@ -469,8 +470,13 @@ function updateClass(oldVnode, vnode) {
 }
 exports.classModule = { create: updateClass, update: updateClass };
 exports.default = exports.classModule;
-//# sourceMappingURL=class.js.map
 
+});
+
+var _class$1 = unwrapExports(_class);
+var _class_1 = _class.classModule;
+
+var props = createCommonjsModule(function (module, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 function updateProps(oldVnode, vnode) {
     var key, cur, old, elm = vnode.elm, oldProps = oldVnode.data.props, props = vnode.data.props;
@@ -495,8 +501,13 @@ function updateProps(oldVnode, vnode) {
 }
 exports.propsModule = { create: updateProps, update: updateProps };
 exports.default = exports.propsModule;
-//# sourceMappingURL=props.js.map
 
+});
+
+var props$1 = unwrapExports(props);
+var props_1 = props.propsModule;
+
+var style = createCommonjsModule(function (module, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var raf = (typeof window !== 'undefined' && window.requestAnimationFrame) || setTimeout;
 var nextFrame = function (fn) { raf(function () { raf(fn); }); };
@@ -581,8 +592,13 @@ exports.styleModule = {
     remove: applyRemoveStyle
 };
 exports.default = exports.styleModule;
-//# sourceMappingURL=style.js.map
 
+});
+
+var style$1 = unwrapExports(style);
+var style_1 = style.styleModule;
+
+var eventlisteners = createCommonjsModule(function (module, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 function invokeHandler(handler, vnode, event) {
     if (typeof handler === "function") {
@@ -676,23 +692,57 @@ exports.eventListenersModule = {
     destroy: updateEventListeners
 };
 exports.default = exports.eventListenersModule;
-//# sourceMappingURL=eventlisteners.js.map
 
+});
+
+var eventlisteners$1 = unwrapExports(eventlisteners);
+var eventlisteners_1 = eventlisteners.eventListenersModule;
+
+var vnode_1 = createCommonjsModule(function (module, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
-var vnode_1 = require("./vnode");
-var is = require("./is");
-function addNS$1(data, children, sel) {
+function vnode(sel, data, children, text, elm) {
+    var key = data === undefined ? undefined : data.key;
+    return { sel: sel, data: data, children: children,
+        text: text, elm: elm, key: key };
+}
+exports.vnode = vnode;
+exports.default = vnode;
+
+});
+
+unwrapExports(vnode_1);
+var vnode_2 = vnode_1.vnode;
+
+var is = createCommonjsModule(function (module, exports) {
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.array = Array.isArray;
+function primitive(s) {
+    return typeof s === 'string' || typeof s === 'number';
+}
+exports.primitive = primitive;
+
+});
+
+unwrapExports(is);
+var is_1 = is.array;
+var is_2 = is.primitive;
+
+var h_1 = createCommonjsModule(function (module, exports) {
+Object.defineProperty(exports, "__esModule", { value: true });
+
+
+function addNS(data, children, sel) {
     data.ns = 'http://www.w3.org/2000/svg';
     if (sel !== 'foreignObject' && children !== undefined) {
         for (var i = 0; i < children.length; ++i) {
             var childData = children[i].data;
             if (childData !== undefined) {
-                addNS$1(childData, children[i].children, children[i].sel);
+                addNS(childData, children[i].children, children[i].sel);
             }
         }
     }
 }
-function h$3(sel, b, c) {
+function h(sel, b, c) {
     var data = {}, children, text, i;
     if (c !== undefined) {
         data = b;
@@ -728,35 +778,40 @@ function h$3(sel, b, c) {
     }
     if (sel[0] === 's' && sel[1] === 'v' && sel[2] === 'g' &&
         (sel.length === 3 || sel[3] === '.' || sel[3] === '#')) {
-        addNS$1(data, children, sel);
+        addNS(data, children, sel);
     }
     return vnode_1.vnode(sel, data, children, text, undefined);
 }
-exports.h = h$3;
+exports.h = h;
 
-exports.default = h$3;
-//# sourceMappingURL=h.js.map
+exports.default = h;
+
+});
+
+var h$3 = unwrapExports(h_1);
+var h_2 = h_1.h;
 
 var patch = init([// Init patch function with chosen modules
-undefined, // makes it easy to toggle classes
-undefined, // for setting properties on DOM elements
-undefined, // handles styling on elements with support for animations
-undefined] // attaches event listeners
+_class$1, // makes it easy to toggle classes
+props$1, // for setting properties on DOM elements
+style$1, // handles styling on elements with support for animations
+eventlisteners$1] // attaches event listeners
 );
 
-var h = undefined; // helper function for creating vnodes
+var h = h$3; // helper function for creating vnodes
 
+// D:\OutPut\VUE\vue\src\core\instance\lifecycle.js
 function mountComponent(vm, el, hydrating) {
-    // 产生一个代理对象（VUE开发环境会使用Proxy产生一个代理对象，发布环境就是vue对象自己）
-    // 调用生成的render函数绑定的this就是它。（whth(this)）
-    var proxy = vm;
+  // 产生一个代理对象（VUE开发环境会使用Proxy产生一个代理对象，发布环境就是vue对象自己）
+  // 调用生成的render函数绑定的this就是它。（whth(this)）
+  var proxy = vm;
 
-    proxy.h = h;
+  proxy.h = h;
 
-    var vnode = vm.$render.call(proxy);
+  var vnode = vm.$render.call(proxy);
 
-    //
-    vm.$render.oldvnode = patch(el, vnode);
+  //
+  vm.$render.oldvnode = patch(el, vnode);
 }
 
 /*
@@ -809,128 +864,128 @@ var fillAttrs = makeMap("checked,compact,declare,defer,disabled,ismap,multiple,n
 var special = makeMap("script,style");
 
 var HTMLParser = function HTMLParser(html, handler) {
-    var index,
-        chars,
-        match,
-        stack = [],
-        last = html;
-    stack.last = function () {
-        return this[this.length - 1];
-    };
+  var index,
+      chars,
+      match,
+      stack = [],
+      last = html;
+  stack.last = function () {
+    return this[this.length - 1];
+  };
 
-    while (html) {
-        chars = true;
+  while (html) {
+    chars = true;
 
-        // Make sure we're not in a script or style element
-        if (!stack.last() || !special[stack.last()]) {
+    // Make sure we're not in a script or style element
+    if (!stack.last() || !special[stack.last()]) {
 
-            // Comment
-            if (html.indexOf("<!--") == 0) {
-                index = html.indexOf("-->");
+      // Comment
+      if (html.indexOf("<!--") == 0) {
+        index = html.indexOf("-->");
 
-                if (index >= 0) {
-                    if (handler.comment) handler.comment(html.substring(4, index));
-                    html = html.substring(index + 3);
-                    chars = false;
-                }
-
-                // end tag
-            } else if (html.indexOf("</") == 0) {
-                match = html.match(endTag);
-
-                if (match) {
-                    html = html.substring(match[0].length);
-                    match[0].replace(endTag, parseEndTag);
-                    chars = false;
-                }
-
-                // start tag
-            } else if (html.indexOf("<") == 0) {
-                match = html.match(startTag);
-
-                if (match) {
-                    html = html.substring(match[0].length);
-                    match[0].replace(startTag, parseStartTag);
-                    chars = false;
-                }
-            }
-
-            if (chars) {
-                index = html.indexOf("<");
-
-                var text = index < 0 ? html : html.substring(0, index);
-                html = index < 0 ? "" : html.substring(index);
-
-                if (handler.chars) handler.chars(text);
-            }
-        } else {
-            html = html.replace(new RegExp("(.*)<\/" + stack.last() + "[^>]*>"), function (all, text) {
-                text = text.replace(/<!--(.*?)-->/g, "$1").replace(/<!\[CDATA\[(.*?)]]>/g, "$1");
-
-                if (handler.chars) handler.chars(text);
-
-                return "";
-            });
-
-            parseEndTag("", stack.last());
+        if (index >= 0) {
+          if (handler.comment) handler.comment(html.substring(4, index));
+          html = html.substring(index + 3);
+          chars = false;
         }
 
-        if (html == last) throw "Parse Error: " + html;
-        last = html;
+        // end tag
+      } else if (html.indexOf("</") == 0) {
+        match = html.match(endTag);
+
+        if (match) {
+          html = html.substring(match[0].length);
+          match[0].replace(endTag, parseEndTag);
+          chars = false;
+        }
+
+        // start tag
+      } else if (html.indexOf("<") == 0) {
+        match = html.match(startTag);
+
+        if (match) {
+          html = html.substring(match[0].length);
+          match[0].replace(startTag, parseStartTag);
+          chars = false;
+        }
+      }
+
+      if (chars) {
+        index = html.indexOf("<");
+
+        var text = index < 0 ? html : html.substring(0, index);
+        html = index < 0 ? "" : html.substring(index);
+
+        if (handler.chars) handler.chars(text);
+      }
+    } else {
+      html = html.replace(new RegExp("(.*)<\/" + stack.last() + "[^>]*>"), function (all, text) {
+        text = text.replace(/<!--(.*?)-->/g, "$1").replace(/<!\[CDATA\[(.*?)]]>/g, "$1");
+
+        if (handler.chars) handler.chars(text);
+
+        return "";
+      });
+
+      parseEndTag("", stack.last());
     }
 
-    // Clean up any remaining tags
-    parseEndTag();
+    if (html == last) throw "Parse Error: " + html;
+    last = html;
+  }
 
-    function parseStartTag(tag, tagName, rest, unary) {
-        tagName = tagName.toLowerCase();
+  // Clean up any remaining tags
+  parseEndTag();
 
-        if (block[tagName]) {
-            while (stack.last() && inline[stack.last()]) {
-                parseEndTag("", stack.last());
-            }
-        }
+  function parseStartTag(tag, tagName, rest, unary) {
+    tagName = tagName.toLowerCase();
 
-        if (closeSelf[tagName] && stack.last() == tagName) {
-            parseEndTag("", tagName);
-        }
-
-        unary = empty[tagName] || !!unary;
-
-        if (!unary) stack.push(tagName);
-
-        if (handler.start) {
-            var attrs = [];
-
-            rest.replace(attr, function (match, name) {
-                var value = arguments[2] ? arguments[2] : arguments[3] ? arguments[3] : arguments[4] ? arguments[4] : fillAttrs[name] ? name : "";
-
-                attrs.push({
-                    name: name,
-                    value: value,
-                    escaped: value.replace(/(^|[^\\])"/g, '$1\\\"') //"
-                });
-            });
-
-            if (handler.start) handler.start(tagName, attrs, unary);
-        }
+    if (block[tagName]) {
+      while (stack.last() && inline[stack.last()]) {
+        parseEndTag("", stack.last());
+      }
     }
 
-    function parseEndTag(tag, tagName) {
-        // If no tag name is provided, clean shop
-        if (!tagName) var pos = 0;
-
-        // Find the closest opened tag of the same type
-        else for (var pos = stack.length - 1; pos >= 0; pos--) {
-                if (stack[pos] == tagName) break;
-            }if (pos >= 0) {
-            // Close all the open elements, up the stack
-            for (var i = stack.length - 1; i >= pos; i--) {
-                if (handler.end) handler.end(stack[i]);
-            } // Remove the open elements from the stack
-            stack.length = pos;
-        }
+    if (closeSelf[tagName] && stack.last() == tagName) {
+      parseEndTag("", tagName);
     }
+
+    unary = empty[tagName] || !!unary;
+
+    if (!unary) stack.push(tagName);
+
+    if (handler.start) {
+      var attrs = [];
+
+      rest.replace(attr, function (match, name) {
+        var value = arguments[2] ? arguments[2] : arguments[3] ? arguments[3] : arguments[4] ? arguments[4] : fillAttrs[name] ? name : "";
+
+        attrs.push({
+          name: name,
+          value: value,
+          escaped: value.replace(/(^|[^\\])"/g, '$1\\\"') //"
+        });
+      });
+
+      if (handler.start) handler.start(tagName, attrs, unary);
+    }
+  }
+
+  function parseEndTag(tag, tagName) {
+    // If no tag name is provided, clean shop
+    if (!tagName) var pos = 0;
+
+    // Find the closest opened tag of the same type
+    else for (var pos = stack.length - 1; pos >= 0; pos--) {
+        if (stack[pos] == tagName) break;
+      }if (pos >= 0) {
+      // Close all the open elements, up the stack
+      for (var i = stack.length - 1; i >= pos; i--) {
+        if (handler.end) handler.end(stack[i]);
+      } // Remove the open elements from the stack
+      stack.length = pos;
+    }
+  }
 };
 
 
@@ -938,256 +993,270 @@ var HTMLParser = function HTMLParser(html, handler) {
 
 
 function makeMap(str) {
-    var obj = {},
-        items = str.split(",");
-    for (var i = 0; i < items.length; i++) {
-        obj[items[i]] = true;
-    }return obj;
+  var obj = {},
+      items = str.split(",");
+  for (var i = 0; i < items.length; i++) {
+    obj[items[i]] = true;
+  }return obj;
 }
 
 //D:\OutPut\VUE\vue\src\compiler\parser\text-parser.js
 function parseText(text, re) {
-    if (!re.test(text)) {
-        return;
-    }
-    var tokens = [];
-    var lastIndex = re.lastIndex = 0;
-    var match = void 0,
-        index = void 0,
-        tokenValue = void 0;
-    while (match = re.exec(text)) {
-        index = match.index;
+  if (!re.test(text)) {
+    return;
+  }
+  var tokens = [];
+  var lastIndex = re.lastIndex = 0;
+  var match = void 0,
+      index = void 0,
+      tokenValue = void 0;
+  while (match = re.exec(text)) {
+    index = match.index;
 
-        // push text token
-        if (index > lastIndex) {
-            tokenValue = text.slice(lastIndex, index);
-            tokens.push(JSON.stringify(tokenValue));
-        }
-
-        // tag token
-        var exp = match[1].trim();
-        tokens.push(exp);
-
-        lastIndex = index + match[0].length;
+    // push text token
+    if (index > lastIndex) {
+      tokenValue = text.slice(lastIndex, index);
+      tokens.push(JSON.stringify(tokenValue));
     }
 
-    if (lastIndex < text.length) {
-        tokenValue = text.slice(lastIndex);
-        tokens.push(JSON.stringify(tokenValue));
-    }
+    // tag token
+    var exp = match[1].trim();
+    tokens.push(exp);
 
-    return {
-        expression: tokens.join('+')
-    };
+    lastIndex = index + match[0].length;
+  }
+
+  if (lastIndex < text.length) {
+    tokenValue = text.slice(lastIndex);
+    tokens.push(JSON.stringify(tokenValue));
+  }
+
+  return {
+    expression: tokens.join('+')
+  };
 }
 
+//D:\OutPut\VUE\vue\src\compiler\parser\index.js
 function html2ast(templte, data) {
-    var root = void 0;
-    var parent = void 0;
-    var parentStack = [];
+  var root = void 0;
+  var parent = void 0;
+  var parentStack = [];
 
-    HTMLParser(templte, {
-        start: function start(tag, attrs, unary) {
-            //
-            if (false === unary && parent) {
-                parentStack.push(parent);
-            }
+  HTMLParser(templte, {
+    start: function start(tag, attrs, unary) {
+      //
+      if (false === unary && parent) {
+        parentStack.push(parent);
+      }
 
-            var e = createASTElement(tag, attrs, parent);
+      var e = createASTElement(tag, attrs, parent);
 
-            if (!root) {
-                root = e;
-            }
+      if (!root) {
+        root = e;
+      }
 
-            if (false === unary) {
-                parent = e;
-            }
-        },
-        end: function end(tag) {
-            parent = parentStack.pop();
-        },
-        chars: function chars(text) {
-            createTextlement(text, parent);
-        },
-        comment: function comment(text) {
-            createCommentlement(text, parent);
-        }
-    });
+      if (false === unary) {
+        parent = e;
+      }
+    },
+    end: function end(tag) {
+      parent = parentStack.pop();
+    },
+    chars: function chars(text) {
+      createTextlement(text, parent);
+    },
+    comment: function comment(text) {
+      createCommentlement(text, parent);
+    }
+  });
 
-    return root;
+  log('htmlparser ast', root);
+  log('htmlparser parentStack', parentStack);
+  return root;
 }
 
 function createASTElement(tag, attrs, parent) {
-    var e = {
-        type: 1,
-        tag: tag,
-        //attrsList: attrs,
-        attrsMap: makeAttrsMap(attrs),
-        //parent,
-        children: []
-    };
+  var e = {
+    type: 1,
+    tag: tag,
+    //attrsList: attrs,
+    attrsMap: makeAttrsMap(attrs),
+    //parent,
+    children: []
+  };
 
-    if (parent) {
-        parent.children.push(e);
-    }
+  if (parent) {
+    parent.children.push(e);
+  }
 
-    return e;
+  return e;
 }
 
 function createTextlement(text, parent) {
-    var res = parseText(text, defaultTagRE);
+  var res = parseText(text, defaultTagRE);
 
-    if (res) {
-        text = res.expression;
-    } else {
-        text = JSON.stringify(text);
-    }
+  if (res) {
+    text = res.expression;
+  } else {
+    text = JSON.stringify(text);
+  }
 
-    var e = {
-        type: 3,
-        text: text
-        //parent
-    };
+  var e = {
+    type: 3,
+    text: text
+    //parent
+  };
 
-    parent.children.push(e);
+  parent.children.push(e);
 
-    return e;
+  return e;
 }
 
 var defaultTagRE = /\{\{((?:.|\n)+?)\}\}/g;
 
 function createCommentlement(text, parent) {
-    var e = {
-        type: 3,
-        text: text,
-        isComment: true
-        //parent
-    };
+  var e = {
+    type: 3,
+    text: text,
+    isComment: true
+    //parent
+  };
 
-    parent.children.push(e);
+  parent.children.push(e);
 
-    return e;
+  return e;
 }
 
 function makeAttrsMap(attrs) {
-    var map = {};
-    for (var i = 0, l = attrs.length; i < l; i++) {
-        map[attrs[i].name] = attrs[i].value;
-    }
-    return map;
+  var map = {};
+  for (var i = 0, l = attrs.length; i < l; i++) {
+    map[attrs[i].name] = attrs[i].value;
+  }
+  return map;
 }
 
+// D:\OutPut\VUE\vue\src\compiler\codegen\index.js
 function ast2render(ast) {
-    var renderStr = '';
+  var renderStr = '';
 
-    /*
-    产生类似这样的snabbdom函数字符串
-    h('div#container.two.classes', { on: { click: someFn } }, [
-        h('span', { style: { fontWeight: 'bold' } }, 'This is bold'),
-        h('h1', strVar),
-        'this is string',
-        h('a', { props: { href: '/foo' } }, 'I\'ll take you places!')
-    ]);
-    */
+  /*
+  产生类似这样的snabbdom函数字符串
+  h('div#container.two.classes', { on: { click: someFn } }, [
+      h('span', { style: { fontWeight: 'bold' } }, 'This is bold'),
+      h('h1', strVar),
+      'this is string',
+      h('a', { props: { href: '/foo' } }, 'I\'ll take you places!')
+  ]);
+  */
 
-    if (ast) {
-        renderStr = createRenderStr(ast);
-    }
+  if (ast) {
+    renderStr = createRenderStr(ast);
+  }
 
-    return renderStr;
+  log('[ast2render]\u865A\u62DFdom\u51FD\u6570\u5B57\u7B26\u4E32:' + renderStr);
+
+  return renderStr;
 }
 
 function createRenderStrElemnet(node) {
-    var str = 'h(' + JSON.stringify(node.tag);
+  log('createRenderStrElemnet', node);
 
-    if (node.attrsMapattr) {
-        str += ',{';
+  var str = 'h(' + JSON.stringify(node.tag);
 
-        for (var attr in node.attrsMapattr) {
-            
-        }
+  if (node.attrsMapattr) {
+    str += ',{';
 
-        str += '}';
+    for (var attr in node.attrsMapattr) {
+      log('attr', attr);
     }
 
-    if (node.children) {
-        str += ',[';
+    str += '}';
+  }
 
-        node.children.forEach(function (child) {
-            str += createRenderStr(child) + ',';
-        });
+  if (node.children) {
+    str += ',[';
 
-        str += ']';
-    }
+    node.children.forEach(function (child) {
+      str += createRenderStr(child) + ',';
+    });
 
-    str += ')';
+    str += ']';
+  }
 
-    return str;
+  str += ')';
+
+  return str;
 }
 
 function createRenderStrText(node) {
-    return node.text;
+  return node.text;
 }
 
 function createRenderStr(ast) {
-    var str = "";
+  var str = "";
 
-    if (ast.type == 1) {
-        str = createRenderStrElemnet(ast);
-    } else if (ast.type == 3) {
-        str = createRenderStrText(ast);
-    } else {
-        warn('wrong type:' + ast.type);
-    }
+  if (ast.type == 1) {
+    str = createRenderStrElemnet(ast);
+  } else if (ast.type == 3) {
+    str = createRenderStrText(ast);
+  } else {
+    warn('wrong type:' + ast.type);
+  }
 
-    return str;
+  return str;
 }
 
 function compileToFunctions(templte, data) {
 
-    var ast = html2ast(templte, data);
+  var ast = html2ast(templte, data);
 
-    var renderFunctionStr = renderToFunctions(ast2render(ast));
+  var renderFunctionStr = renderToFunctions(ast2render(ast));
 
-    return {
-        render: renderFunctionStr
-    };
+  return {
+    render: renderFunctionStr
+  };
 }
 
 function renderToFunctions(renderStr) {
-    return new Function('with(this){return ' + renderStr + '}');
+  return new Function('with(this){return ' + renderStr + '}');
 }
 
 // D:\OutPut\VUE\vue\src\platforms\web\util\index.js
 
+/**
+ * Query an element selector if it's not an element already.
+ */
+
+// D:\OutPut\VUE\vue\src\platforms\web\util\index.js
 function query(el) {
-    if (typeof el === 'string') {
-        var selected = document.querySelector(el);
-        if (!selected) {
-            return document.createElement('div');
-        }
-        return selected;
-    } else {
-        return el;
+  if (typeof el === 'string') {
+    var selected = document.querySelector(el);
+    if (!selected) {
+      "development" !== 'production' && warn('Cannot find element: ' + el);
+      return document.createElement('div');
     }
+    return selected;
+  } else {
+    return el;
+  }
 }
 
 // D:\OutPut\VUE\vue\src\platforms\web\entry-runtime-with-compiler.js
 function getOuterHTML(el) {
-    if (el.outerHTML) {
-        return el.outerHTML;
-    } else {
-        var container = document.createElement('div');
-        container.appendChild(el.cloneNode(true));
-        return container.innerHTML;
-    }
+  if (el.outerHTML) {
+    return el.outerHTML;
+  } else {
+    var container = document.createElement('div');
+    container.appendChild(el.cloneNode(true));
+    return container.innerHTML;
+  }
 }
 
 // export function query (el: string | Element): Element {
 //     if (typeof el === 'string') {
 //       const selected = document.querySelector(el)
 //       if (!selected) {
-//         "production" !== 'production' && warn(
+//         "development" !== 'production' && warn(
 //           'Cannot find element: ' + el
 //         )
 //         return document.createElement('div')
@@ -1226,67 +1295,51 @@ var uid$1 = 0;
 
 /**
  *  Dep （Dependent），表示：被观察对象。
- * 
+ *
  * A dep is an observable that can have multiple
  * directives subscribing to it.
  */
 
 var Dep = function () {
-    //static target: ?Watcher;
-    function Dep() {
-        classCallCheck(this, Dep);
+  //static target: ?Watcher;
+  function Dep() {
+    classCallCheck(this, Dep);
 
-        this.id = uid$1++;
-        this.subs = [];
+    this.id = uid$1++;
+    this.subs = [];
 
-        
+    log('[Dep] _INIT_ ');
+  }
+
+  createClass(Dep, [{
+    key: 'addSub',
+    value: function addSub(sub) {
+      this.subs.push(sub);
+    }
+  }, {
+    key: 'removeSub',
+    value: function removeSub(sub) {
+      remove(this.subs, sub);
     }
 
-    createClass(Dep, [{
-        key: 'addSub',
-        value: function addSub(sub) {
-            this.subs.push(sub);
-        }
-    }, {
-        key: 'removeSub',
-        value: function removeSub(sub) {
-            remove(this.subs, sub);
-        }
+    // depend() {
+    //     if (Dep.target) {
+    //         Dep.target.addDep(this)
+    //     }
+    // }
 
-        // depend() {
-        //     if (Dep.target) {
-        //         Dep.target.addDep(this)
-        //     }
-        // }
-
-    }, {
-        key: 'notify',
-        value: function notify() {
-            // stabilize the subscriber list first
-            var subs = this.subs.slice();
-            for (var i = 0, l = subs.length; i < l; i++) {
-                subs[i].update();
-            }
-        }
-    }]);
-    return Dep;
+  }, {
+    key: 'notify',
+    value: function notify() {
+      // stabilize the subscriber list first
+      var subs = this.subs.slice();
+      for (var i = 0, l = subs.length; i < l; i++) {
+        subs[i].update();
+      }
+    }
+  }]);
+  return Dep;
 }();
-
-// the current target watcher being evaluated.
-// this is globally unique because there could be only one
-// watcher being evaluated at any time.
-
-// Dep.target = null
-// const targetStack = []
-
-// export function pushTarget(_target: Watcher) {
-//     if (Dep.target) targetStack.push(Dep.target)
-//     Dep.target = _target
-// }
-
-// export function popTarget() {
-//     Dep.target = targetStack.pop()
-// }
 
 function observe(data, asRootData) {
   return new Observer(data);
@@ -1297,6 +1350,8 @@ function observe(data, asRootData) {
 var Observer = function () {
   function Observer(value) {
     classCallCheck(this, Observer);
+
+    log('[observer] __INIT__ , vlaue:', value);
 
     this.value = value;
     this.dep = new Dep();
@@ -1336,6 +1391,9 @@ function defineReactive(obj, key, val, shallow) {
   }
 
   var dep = new Dep();
+  log('[observer]定义观察者，属性：' + key);
+
+  // cater for pre-defined getter/setters
   var getter = property && property.get;
   var setter = property && property.set;
 
@@ -1346,6 +1404,7 @@ function defineReactive(obj, key, val, shallow) {
     enumerable: true,
     configurable: true,
     get: function reactiveGetter() {
+      log('[observer]get方法被调用，属性：' + key);
       var value = getter ? getter.call(obj) : val;
 
       //if (Dep.target) {
@@ -1359,6 +1418,7 @@ function defineReactive(obj, key, val, shallow) {
     },
 
     set: function reactiveSetter(newVal) {
+      log('[observer]set方法被调用，属性：' + key);
       var value = getter ? getter.call(obj) : val;
 
       /* eslint-disable no-self-compare */
@@ -1379,76 +1439,80 @@ function defineReactive(obj, key, val, shallow) {
   });
 }
 
+//D:\OutPut\VUE\vue\src\core\instance\state.js
+
 function initState(vm) {
-    vm._watchers = [];
-    var opts = vm.$options;
+  vm._watchers = [];
+  var opts = vm.$options;
 
-    //if (opts.props) initProps(vm, opts.props)
-    //if (opts.methods) initMethods(vm, opts.methods)
+  //if (opts.props) initProps(vm, opts.props)
+  //if (opts.methods) initMethods(vm, opts.methods)
 
-    if (opts.data) {
-        initData(vm);
-    } else {
-        //observe(vm._data = {}, true /* asRootData */)
-    }
+  if (opts.data) {
+    initData(vm);
+  } else {
+    //observe(vm._data = {}, true /* asRootData */)
+  }
 }
 
 function initData(vm) {
-    var data = vm.$options.data;
+  var data = vm.$options.data;
 
-    data = vm._data = typeof data === 'function' ? getData(data, vm) : data || {};
+  data = vm._data = typeof data === 'function' ? getData(data, vm) : data || {};
 
-    // proxy data on instance
-    var keys = Object.keys(data);
-    var props = vm.$options.props;
-    var methods = vm.$options.methods;
+  // proxy data on instance
+  var keys = Object.keys(data);
+  var props = vm.$options.props;
+  var methods = vm.$options.methods;
 
-    var i = keys.length;
+  var i = keys.length;
 
-    while (i--) {
-        var key = keys[i];
+  while (i--) {
+    var key = keys[i];
 
-        if (!isReserved(key)) {
-            proxy(vm, '_data', key);
-        }
+    if (!isReserved(key)) {
+      proxy(vm, '_data', key);
     }
+  }
 
-    // observe data
-    observe(data, true /* asRootData */);
+  // observe data
+  observe(data, true /* asRootData */);
 }
 
 function getData(data, vm) {
-    try {
-        return data.call(vm, vm);
-    } catch (e) {
-        return {};
-    }
+  try {
+    return data.call(vm, vm);
+  } catch (e) {
+    warn("get data error:", e);
+    return {};
+  }
 }
 
 var sharedPropertyDefinition = {
-    enumerable: true,
-    configurable: true,
-    get: noop,
-    set: noop
+  enumerable: true,
+  configurable: true,
+  get: noop,
+  set: noop
 };
 
 function proxy(target, sourceKey, key) {
-    sharedPropertyDefinition.get = function proxyGetter() {
-        return this[sourceKey][key];
-    };
+  sharedPropertyDefinition.get = function proxyGetter() {
+    return this[sourceKey][key];
+  };
 
-    sharedPropertyDefinition.set = function proxySetter(val) {
-        this[sourceKey][key] = val;
-    };
+  sharedPropertyDefinition.set = function proxySetter(val) {
+    this[sourceKey][key] = val;
+  };
 
-    Object.defineProperty(target, key, sharedPropertyDefinition);
+  Object.defineProperty(target, key, sharedPropertyDefinition);
 }
 
 // D:\OutPut\VUE\vue\src\core\instance\index.js
 
+//
 var uid = 100;
 
-//fixme
+// fixme
 var inBrowser = true;
 
 var Xiao = function () {
@@ -1457,8 +1521,14 @@ var Xiao = function () {
   function Xiao(options) {
     classCallCheck(this, Xiao);
 
+    if ("development" !== 'production' && !(this instanceof Xiao)) {
+      warn('Xiao is a constructor and should be called with the `new` keyword');
+    }
+
     this.$options = options || {};
     this._uid = uid++;
+
+    log('main start', this);
 
     this._init(this.$options);
   }
@@ -1468,7 +1538,7 @@ var Xiao = function () {
 
   // 渲染虚拟dom需要用到的。（VUE里面应该是$createElement）
 
-  //properties
+  // properties
 
 
   createClass(Xiao, [{
@@ -1476,66 +1546,20 @@ var Xiao = function () {
     value: function $mount(el, hydrating) {
       var element = query(el);
 
-      // 
+      //
       if (!this.$options.template) {
         this.$options.template = getOuterHTML(element);
       }
 
       if (!this.$options.template && !element) {
-        return;
-      }
-
-      this.$el = element;
-      if (!this.$options.render) {
-        // compiler template to render function
-        var _compileToFunctions = compileToFunctions(this.$options.template, this.$options.data),
-            render = _compileToFunctions.render;
-
-        this.$render = render;
-      } else if (!isFunction(this.$options.render)) {
-        return;
-      }
-
-      return mountComponent(this, element, hydrating);
-    }
-  }, {
-    key: '_init',
-    value: function _init(options) {
-
-      initState(this);
-
-      var el = options.el;
-
-      if (el && inBrowser) {
-        this.$mount(el);
-      }
-    }
-  }]);
-  return Xiao;
-}();
-
-return Xiao;
-
-})));
-, [{
-    key: '$mount',
-    value: function $mount(el, hydrating) {
-      var element = query(el);
-
-      // 
-      if (!this.$options.template) {
-        this.$options.template = getOuterHTML(element);
-      }
-
-      if (!this.$options.template && !element) {
-        warn("options.el && options.template all null");
+        warn('options.el && options.template all null');
         return;
       }
 
       this.$el = element;
       log('$mount', this);
 
-      // generate render function;
+      // generate render function
       if (!this.$options.render) {
         // compiler template to render function
         var _compileToFunctions = compileToFunctions(this.$options.template, this.$options.data),
@@ -1550,12 +1574,11 @@ return Xiao;
         return;
       }
 
-      return mountComponent(this, element, hydrating);
+      mountComponent(this, element, hydrating);
     }
   }, {
     key: '_init',
     value: function _init(options) {
-
       initState(this);
 
       var el = options.el;

@@ -8,43 +8,43 @@ let uid = 0
 
 /**
  *  Dep （Dependent），表示：被观察对象。
- * 
+ *
  * A dep is an observable that can have multiple
  * directives subscribing to it.
  */
 export default class Dep {
-    //static target: ?Watcher;
-    id: number;
-    subs: Array<Watcher>;
+  //static target: ?Watcher;
+  id: number;
+  subs: Array<Watcher>;
 
-    constructor() {
-        this.id = uid++
-        this.subs = []
+  constructor() {
+    this.id = uid++
+    this.subs = []
 
-        log('[Dep] _INIT_ ');
+    log('[Dep] _INIT_ ');
+  }
+
+  addSub(sub: Watcher) {
+    this.subs.push(sub)
+  }
+
+  removeSub(sub: Watcher) {
+    remove(this.subs, sub)
+  }
+
+  // depend() {
+  //     if (Dep.target) {
+  //         Dep.target.addDep(this)
+  //     }
+  // }
+
+  notify() {
+    // stabilize the subscriber list first
+    const subs = this.subs.slice()
+    for (let i = 0, l = subs.length; i < l; i++) {
+      subs[i].update()
     }
-
-    addSub(sub: Watcher) {
-        this.subs.push(sub)
-    }
-
-    removeSub(sub: Watcher) {
-        remove(this.subs, sub)
-    }
-
-    // depend() {
-    //     if (Dep.target) {
-    //         Dep.target.addDep(this)
-    //     }
-    // }
-
-    notify() {
-        // stabilize the subscriber list first
-        const subs = this.subs.slice()
-        for (let i = 0, l = subs.length; i < l; i++) {
-            subs[i].update()
-        }
-    }
+  }
 }
 
 // the current target watcher being evaluated.

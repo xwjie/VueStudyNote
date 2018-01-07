@@ -7,31 +7,31 @@ import { compileToFunctions } from './compiler'
 import { query, getOuterHTML } from './util/web'
 import { initState } from './states'
 
-// 
-let uid = 100;
+//
+let uid = 100
 
-//fixme
-let inBrowser = true;
+// fixme
+let inBrowser = true
 
 class Xiao {
-  //properties
-  _uid: number;
+  // properties
+  _uid: number
 
-  $el: ?Element;
+  $el: ?Element
 
-  $options: Object;
+  $options: Object
 
-  $render: Function;
+  $render: Function
 
   // 渲染虚拟dom需要用到的。（VUE里面应该是$createElement）
-  h: Function;
+  h: Function
 
 
   // 数据
-  _data: Object;
+  _data: Object
 
   // 数据修改之后的监听器
-  _watchers: Array<any>;
+  _watchers: Array<any>
 
   constructor(options: Object) {
     if (process.env.NODE_ENV !== 'production' &&
@@ -40,57 +40,55 @@ class Xiao {
       warn('Xiao is a constructor and should be called with the `new` keyword')
     }
 
-    this.$options = options || {};
-    this._uid = uid++;
+    this.$options = options || {}
+    this._uid = uid++
 
-    log('main start', this);
+    log('main start', this)
 
-    this._init(this.$options);
+    this._init(this.$options)
   }
 
   $mount(el: Element | string, hydrating?: boolean) {
-    let element = query(el);
+    let element = query(el)
 
-    // 
+    //
     if (!this.$options.template) {
-      this.$options.template = getOuterHTML(element);
+      this.$options.template = getOuterHTML(element)
     }
 
     if (!this.$options.template && !element) {
-      warn("options.el && options.template all null");
-      return;
+      warn('options.el && options.template all null')
+      return
     }
 
-    this.$el = element;
-    log('$mount', this);
+    this.$el = element
+    log('$mount', this)
 
-    // generate render function;
+    // generate render function
     if (!this.$options.render) {
       // compiler template to render function
-      const { render } = compileToFunctions(this.$options.template, this.$options.data);
+      const { render } = compileToFunctions(this.$options.template, this.$options.data)
 
-      log('render', render);
+      log('render', render)
 
       // save to this.$render
-      this.$render = render;
+      this.$render = render
     } else if (!isFunction(this.$options.render)) {
-      error('this.$options.render must be function');
-      return;
+      error('this.$options.render must be function')
+      return
     }
 
-    return mountComponent(this, element, hydrating)
+    mountComponent(this, element, hydrating)
   }
 
   _init(options: Object) {
+    initState(this)
 
-    initState(this);
-
-    let el: string | Element = options.el;
+    let el: string | Element = options.el
 
     if (el && inBrowser) {
-      this.$mount(el);
+      this.$mount(el)
     }
-
   }
 }
 

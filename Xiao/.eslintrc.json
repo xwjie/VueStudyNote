@@ -1,0 +1,26 @@
+{
+  "extends": [
+    "plugin:flowtype/recommended",
+    "airbnb-base"
+  ],
+  "plugins": [
+    "flowtype"
+  ],
+  "rules": {
+    "linebreak-style": 0,
+    "semi": [
+      2,
+      "never"
+    ],
+    "no-use-before-define": 0,
+    "no-plusplus": [
+      1,
+      {
+        "allowForLoopAfterthoughts": true
+      }
+    ],
+    "no-underscore-dangle": 1,
+    "prefer-const": 1,
+    "prefer-destructuring": 0
+  }
+}

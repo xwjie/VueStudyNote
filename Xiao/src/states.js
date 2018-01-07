@@ -7,71 +7,71 @@ import { observe } from './observer'
 //D:\OutPut\VUE\vue\src\core\instance\state.js
 
 export function initState(vm: Xiao) {
-    vm._watchers = []
-    const opts = vm.$options
+  vm._watchers = []
+  const opts = vm.$options
 
-    //if (opts.props) initProps(vm, opts.props)
-    //if (opts.methods) initMethods(vm, opts.methods)
+  //if (opts.props) initProps(vm, opts.props)
+  //if (opts.methods) initMethods(vm, opts.methods)
 
-    if (opts.data) {
-        initData(vm)
-    } else {
-        //observe(vm._data = {}, true /* asRootData */)
-    }
+  if (opts.data) {
+    initData(vm)
+  } else {
+    //observe(vm._data = {}, true /* asRootData */)
+  }
 }
 
 function initData(vm: Xiao) {
-    let data = vm.$options.data
+  let data = vm.$options.data
 
-    data = vm._data = typeof data === 'function'
-        ? getData(data, vm)
-        : data || {}
+  data = vm._data = typeof data === 'function'
+    ? getData(data, vm)
+    : data || {}
 
-    // proxy data on instance
-    const keys = Object.keys(data)
-    const props = vm.$options.props
-    const methods = vm.$options.methods
+  // proxy data on instance
+  const keys = Object.keys(data)
+  const props = vm.$options.props
+  const methods = vm.$options.methods
 
-    let i = keys.length
+  let i = keys.length
 
-    while (i--) {
-        const key = keys[i]
+  while (i--) {
+    const key = keys[i]
 
-        if (!isReserved(key)) {
-            proxy(vm, `_data`, key)
-        }
+    if (!isReserved(key)) {
+      proxy(vm, `_data`, key)
     }
+  }
 
-    // observe data
-    observe(data, true /* asRootData */)
+  // observe data
+  observe(data, true /* asRootData */)
 }
 
 export function getData(data: Function, vm: Xiao): any {
-    try {
-        return data.call(vm, vm)
-    } catch (e) {
-        warn("get data error:", e);
-        return {}
-    }
+  try {
+    return data.call(vm, vm)
+  } catch (e) {
+    warn("get data error:", e);
+    return {}
+  }
 }
 
 
 
 const sharedPropertyDefinition = {
-    enumerable: true,
-    configurable: true,
-    get: noop,
-    set: noop
+  enumerable: true,
+  configurable: true,
+  get: noop,
+  set: noop
 }
 
 export function proxy(target: Object, sourceKey: string, key: string) {
-    sharedPropertyDefinition.get = function proxyGetter() {
-        return this[sourceKey][key]
-    }
+  sharedPropertyDefinition.get = function proxyGetter() {
+    return this[sourceKey][key]
+  }
 
-    sharedPropertyDefinition.set = function proxySetter(val) {
-        this[sourceKey][key] = val
-    }
+  sharedPropertyDefinition.set = function proxySetter(val) {
+    this[sourceKey][key] = val
+  }
 
-    Object.defineProperty(target, key, sharedPropertyDefinition)
+  Object.defineProperty(target, key, sharedPropertyDefinition)
 }

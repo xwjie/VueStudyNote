@@ -5,19 +5,19 @@ import type Dep from './dep'
 export default class Watcher {
 
 
-    constructor() {
-        log('[Watcher] _INIT_');
-    }
+  constructor() {
+    log('[Watcher] _INIT_');
+  }
 
-    /**
-    * Add a dependency to this directive.
-    */
-    addDep(dep: Dep) {
+  /**
+  * Add a dependency to this directive.
+  */
+  addDep(dep: Dep) {
 
-    }
+  }
 
-    update() {
-        log('[Watcher] update');
+  update() {
+    log('[Watcher] update');
 
-    }
+  }
 }
