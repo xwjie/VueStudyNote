@@ -4,7 +4,7 @@ import { HTMLParser, HTMLtoXML, HTMLtoDOM } from './htmlparser'
 import { parseText } from '../util/text-parser'
 
 //D:\OutPut\VUE\vue\src\compiler\parser\index.js
-function html2ast(templte: string, data: Object): ?ASTElement {
+function html2ast(templte: string): ?ASTElement {
   let root: ?ASTElement
   let parent: ASTElement
   let parentStack = []

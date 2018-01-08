@@ -18,8 +18,6 @@ export default class Watcher {
     this.getter = renderFunction
     this.depIds = new Set()
 
-    vm._watcher = this
-
     log('[Watcher] _INIT_')
 
     this.get()

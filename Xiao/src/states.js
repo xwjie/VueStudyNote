@@ -13,15 +13,16 @@ export function initState(vm: Xiao) {
   //if (opts.props) initProps(vm, opts.props)
   //if (opts.methods) initMethods(vm, opts.methods)
 
-  if (opts.data) {
-    initData(vm)
-  } else {
-    //observe(vm._data = {}, true /* asRootData */)
-  }
+  initData(vm)
+  initWatch(vm)
 }
 
 function initData(vm: Xiao) {
   let data = vm.$options.data
+
+  if (!data) {
+    //observe(vm._data = {}, true /* asRootData */)
+  }
 
   data = vm._data = typeof data === 'function'
     ? getData(data, vm)
@@ -53,6 +54,18 @@ export function getData(data: Function, vm: Xiao): any {
     warn("get data error:", e);
     return {}
   }
+}
+
+function initWatch(vm: Xiao) {
+  let watch = vm.$options.watch
+
+  if (!watch) {
+    return
+  }
+
+  watch.forEach(w =>{
+
+  })
 }
 
 

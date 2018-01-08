@@ -24,6 +24,22 @@ function ast2render(ast: ?ASTElement): string {
   return renderStr
 }
 
+function createRenderStr(ast: ASTNode): string {
+  let str: string = ""
+
+  if (ast.type == 1) {
+    str = createRenderStrElemnet(ast)
+  } else if (ast.type == 3) {
+    str = createRenderStrText(ast)
+  } else {
+    warn(`wrong type:${ast.type}`)
+  }
+
+  return str
+
+}
+
+
 function createRenderStrElemnet(node: any): string {
   log('createRenderStrElemnet', node)
 
@@ -62,19 +78,6 @@ function createRenderStrText(node: any): string {
 }
 
 
-function createRenderStr(ast: ASTNode): string {
-  let str: string = ""
 
-  if (ast.type == 1) {
-    str = createRenderStrElemnet(ast)
-  } else if (ast.type == 3) {
-    str = createRenderStrText(ast)
-  } else {
-    warn(`wrong type:${ast.type}`)
-  }
-
-  return str
-
-}
 
 export { ast2render }

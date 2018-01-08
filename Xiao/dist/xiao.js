@@ -931,8 +931,6 @@ var Watcher = function () {
     this.getter = renderFunction;
     this.depIds = new _Set();
 
-    vm._watcher = this;
-
     log('[Watcher] _INIT_');
 
     this.get();
@@ -977,7 +975,7 @@ var Watcher = function () {
 function mountComponent(vm, hydrating) {
   // 产生一个代理对象（VUE开发环境会使用Proxy产生一个代理对象，发布环境就是vue对象自己）
   // 调用生成的render函数绑定的this就是它。（whth(this)）
-  new Watcher(vm, updateComponent);
+  vm._renderWatcher = new Watcher(vm, updateComponent);
 }
 
 var renderCount = 1;
@@ -985,11 +983,13 @@ var renderCount = 1;
 function updateComponent(vm) {
   var proxy = vm;
 
+  // 虚拟dom里面的创建函数
   proxy.h = h;
 
   // 新的虚拟节点
   var vnode = vm.$render.call(proxy);
 
+  // 上一次渲染的虚拟dom
   var preNode = vm.$options.oldvnode;
 
   log('[lifecycle] \u7B2C' + renderCount + '\u6B21\u6E32\u67D3');
@@ -1229,7 +1229,7 @@ function parseText(text, re) {
 }
 
 //D:\OutPut\VUE\vue\src\compiler\parser\index.js
-function html2ast(templte, data) {
+function html2ast(templte) {
   var root = void 0;
   var parent = void 0;
   var parentStack = [];
@@ -1350,6 +1350,20 @@ function ast2render(ast) {
   return renderStr;
 }
 
+function createRenderStr(ast) {
+  var str = "";
+
+  if (ast.type == 1) {
+    str = createRenderStrElemnet(ast);
+  } else if (ast.type == 3) {
+    str = createRenderStrText(ast);
+  } else {
+    warn('wrong type:' + ast.type);
+  }
+
+  return str;
+}
+
 function createRenderStrElemnet(node) {
   log('createRenderStrElemnet', node);
 
@@ -1387,30 +1401,16 @@ function createRenderStrText(node) {
   return node.text;
 }
 
-function createRenderStr(ast) {
-  var str = "";
-
-  if (ast.type == 1) {
-    str = createRenderStrElemnet(ast);
-  } else if (ast.type == 3) {
-    str = createRenderStrText(ast);
-  } else {
-    warn('wrong type:' + ast.type);
-  }
-
-  return str;
-}
-
-function compileToFunctions(templte, data) {
-  var ast = html2ast(templte, data);
-  var renderFunctionStr = renderToFunctions(ast2render(ast));
+function compileToFunction(templte) {
+  var ast = html2ast(templte);
+  var renderFunctionStr = renderToFunction(ast2render(ast));
 
   return {
     render: renderFunctionStr
   };
 }
 
-function renderToFunctions(renderStr) {
+function renderToFunction(renderStr) {
   return new Function('with(this){return ' + renderStr + '}');
 }
 
@@ -1569,11 +1569,8 @@ function initState(vm) {
   //if (opts.props) initProps(vm, opts.props)
   //if (opts.methods) initMethods(vm, opts.methods)
 
-  if (opts.data) {
-    initData(vm);
-  } else {
-    //observe(vm._data = {}, true /* asRootData */)
-  }
+  initData(vm);
+  initWatch(vm);
 }
 
 function initData(vm) {
@@ -1607,6 +1604,16 @@ function getData(data, vm) {
     warn("get data error:", e);
     return {};
   }
+}
+
+function initWatch(vm) {
+  var watch = vm.$options.watch;
+
+  if (!watch) {
+    return;
+  }
+
+  watch.forEach(function (w) {});
 }
 
 var sharedPropertyDefinition = {
@@ -1682,8 +1689,8 @@ var Xiao = function () {
       // generate render function
       if (!this.$options.render) {
         // compiler template to render function
-        var _compileToFunctions = compileToFunctions(this.$options.template, this.$options.data),
-            render = _compileToFunctions.render;
+        var _compileToFunction = compileToFunction(this.$options.template),
+            render = _compileToFunction.render;
 
         log('render', render);
 

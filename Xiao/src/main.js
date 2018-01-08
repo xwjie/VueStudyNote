@@ -3,7 +3,7 @@
 
 import { warn, error, log, isFunction } from './util'
 import { mountComponent } from './lifecycle'
-import { compileToFunctions } from './compiler'
+import { compileToFunction } from './compiler'
 import { query, getOuterHTML } from './util/web'
 import { initState } from './states'
 import Watcher from './observer/watcher'
@@ -26,12 +26,11 @@ class Xiao {
   // 渲染虚拟dom需要用到的。（VUE里面应该是$createElement）
   h: Function
 
-
   // 数据
   _data: Object
 
   // 数据修改之后的监听器
-  _watcher: Watcher
+  _renderWatcher: Watcher
   _watchers: Array<any>
 
   constructor(options: Object) {
@@ -69,7 +68,7 @@ class Xiao {
     // generate render function
     if (!this.$options.render) {
       // compiler template to render function
-      const { render } = compileToFunctions(this.$options.template, this.$options.data)
+      const { render } = compileToFunction(this.$options.template)
 
       log('render', render)
 
