@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Xiao框架之helloworld</title>
+	<script src="../dist/xiao.js"></script>
+	<style>
+	</style>
+</head>
+<body>
+
+<div id="demo1">
+</div>
+
+<script>
+var app = new Xiao({
+	template: '<h1>我的名字是:{{name}}。</h1>',
+	data: {
+		ming: '凤青',
+		xing: '肖'
+	},
+	computed: {
+    	// 计算属性的 getter
+    	name: function () {
+      		// `this` 指向 vm 实例
+      		return this.xing + ' ' + this.ming;
+    	}
+  }
+});
+
+app.$mount("#demo1");
+
+setTimeout(function(){
+	app.ming = "文杰";
+}, 2000);
+
+</script>
+
+</body>
+</html>
