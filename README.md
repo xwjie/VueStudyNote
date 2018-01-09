@@ -22,6 +22,8 @@
 * [生成语法树](https://github.com/xwjie/VueStudyNote/issues/3)
 * [生成render函数](https://github.com/xwjie/VueStudyNote/issues/5)
 * [生成虚拟dom并渲染dom](https://github.com/xwjie/VueStudyNote/issues/6)
+* [监听子属性和新加的属性](https://github.com/xwjie/VueStudyNote/issues/7)
+* 支持if，show指令
 * 数据绑定
 * 双向数据绑定
 * 实现支持组件
@@ -29,4 +31,4 @@
 * 实现支持自定义指令
 * 实现支持filter
 * 支持wath属性
-* 支持computed属性
+* [支持computed属性](https://github.com/xwjie/VueStudyNote/issues/8)
