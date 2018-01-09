@@ -2,7 +2,9 @@
 import Xiao from './main'
 import { isPlainObject, log, warn, hasOwn, isReserved } from './util'
 import { noop } from './shared/util'
-import { observe } from './observer'
+import { observe, defineReactive } from './observer'
+import Watcher from './observer/watcher'
+import Dep from './observer/dep'
 
 //D:\OutPut\VUE\vue\src\core\instance\state.js
 
@@ -14,9 +16,14 @@ export function initState(vm: Xiao) {
   //if (opts.methods) initMethods(vm, opts.methods)
 
   initData(vm)
-  initWatch(vm)
+  initComputed(vm)
+
 }
 
+/**
+ * 监听data
+ * @param {*} vm
+ */
 function initData(vm: Xiao) {
   let data = vm.$options.data
 
@@ -56,16 +63,39 @@ export function getData(data: Function, vm: Xiao): any {
   }
 }
 
-function initWatch(vm: Xiao) {
-  let watch = vm.$options.watch
+/**
+ * 监听计算属性
+ *
+ * @param {*} vm
+ */
+function initComputed(vm: Xiao) {
+  let computed = vm.$options.computed
 
-  if (!watch) {
+  let watchers = vm._watcherCompued = Object.create(null)
+
+  if (!computed) {
     return
   }
 
-  watch.forEach(w =>{
+  for (const key in computed) {
+    const getter = computed[key]
 
-  })
+    const dep = new Dep()
+
+    Object.defineProperty(vm, key, {
+      enumerable: true,
+      configurable: true,
+      get: function reactiveGetter() {
+        const value = getter.call(vm)
+
+        if (Dep.target) {
+          dep.depend()
+        }
+
+        return value
+      }
+    })
+  }
 }
 
 

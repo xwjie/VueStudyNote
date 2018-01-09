@@ -30,8 +30,9 @@ var app = new Xiao({
 app.$mount("#demo1");
 
 setTimeout(function(){
+	console.log('隔了3秒后修改了名字');
 	app.ming = "文杰";
-}, 2000);
+}, 3000);
 
 </script>
 

@@ -33,6 +33,10 @@ class Xiao {
   _renderWatcher: Watcher
   _watchers: Array<any>
 
+  // 计算属性相关的watcher
+  // FIXME 还不知道有啥用【应该了为了保证计算属性缓存起来用的】
+  // _watcherCompued: Object
+
   constructor(options: Object) {
     if (process.env.NODE_ENV !== 'production' &&
       !(this instanceof Xiao)

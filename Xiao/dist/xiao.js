@@ -1635,9 +1635,13 @@ function initState(vm) {
   //if (opts.methods) initMethods(vm, opts.methods)
 
   initData(vm);
-  initWatch(vm);
+  initComputed(vm);
 }
 
+/**
+ * 监听data
+ * @param {*} vm
+ */
 function initData(vm) {
   var data = vm.$options.data;
 
@@ -1671,14 +1675,43 @@ function getData(data, vm) {
   }
 }
 
-function initWatch(vm) {
-  var watch = vm.$options.watch;
+/**
+ * 监听计算属性
+ *
+ * @param {*} vm
+ */
+function initComputed(vm) {
+  var computed = vm.$options.computed;
 
-  if (!watch) {
+  var watchers = vm._watcherCompued = Object.create(null);
+
+  if (!computed) {
     return;
   }
 
-  watch.forEach(function (w) {});
+  var _loop = function _loop(key) {
+    var getter = computed[key];
+
+    var dep = new Dep();
+
+    Object.defineProperty(vm, key, {
+      enumerable: true,
+      configurable: true,
+      get: function reactiveGetter() {
+        var value = getter.call(vm);
+
+        if (Dep.target) {
+          dep.depend();
+        }
+
+        return value;
+      }
+    });
+  };
+
+  for (var key in computed) {
+    _loop(key);
+  }
 }
 
 var sharedPropertyDefinition = {
@@ -1710,10 +1743,7 @@ var inBrowser = true;
 
 var Xiao = function () {
 
-  // 数据修改之后的监听器
-
-
-  // 渲染虚拟dom需要用到的。（VUE里面应该是$createElement）
+  // 数据
   function Xiao(options) {
     classCallCheck(this, Xiao);
 
@@ -1729,7 +1759,14 @@ var Xiao = function () {
     this._init(this.$options);
   }
 
-  // 数据
+  // 计算属性相关的watcher
+  // FIXME 还不知道有啥用
+
+
+  // 数据修改之后的监听器
+
+
+  // 渲染虚拟dom需要用到的。（VUE里面应该是$createElement）
 
 
   createClass(Xiao, [{
