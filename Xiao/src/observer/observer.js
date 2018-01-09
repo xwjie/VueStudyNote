@@ -1,11 +1,7 @@
 /* @flow */
 
 import Dep from './dep'
-import { log, warn } from '../util'
-
-export function observe(data: any, asRootData: ?boolean) {
-  return new Observer(data)
-}
+import { log, warn, isObject, hasOwn, isPlainObject } from '../util'
 
 // D:\OutPut\VUE\vue\src\core\observer\index.js
 class Observer {
@@ -36,6 +32,34 @@ class Observer {
 }
 
 /**
+ * Attempt to create an observer instance for a value,
+ * returns the new observer if successfully observed,
+ * or the existing observer if the value already has one.
+ */
+export function observe(value: any, asRootData: ?boolean): Observer | void {
+  if (!isObject(value)) { // fixme  || value instanceof VNode
+    return
+  }
+  let ob: Observer | void
+  if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
+    ob = value.__ob__
+  } else if (
+    // observerState.shouldConvert &&
+    (Array.isArray(value) || isPlainObject(value)) &&
+    Object.isExtensible(value)
+  ) {
+    ob = new Observer(value)
+  }
+
+  // fixme
+  // if (asRootData && ob) {
+  // ob.vmCount++
+  // }
+
+  return ob
+}
+
+/**
  * Define a reactive property on an Object.
  */
 export function defineReactive(
@@ -59,8 +83,8 @@ export function defineReactive(
   const getter = property && property.get
   const setter = property && property.set
 
-  //fixme ??
-  //let childOb = !shallow && observe(val)
+  // 监听子属性
+  let childOb = observe(val)
 
   Object.defineProperty(obj, key, {
     enumerable: true,
@@ -71,9 +95,11 @@ export function defineReactive(
 
       if (Dep.target) {
         dep.depend()
-        // if (childOb) {
-        //  childOb.dep.depend()
-        // }
+
+        // 子属性的依赖关系也要登记起来
+        if (childOb) {
+          childOb.dep.depend()
+        }
       }
 
       return value
@@ -94,7 +120,8 @@ export function defineReactive(
         val = newVal
       }
 
-      //childOb = !shallow && observe(newVal)
+      // 监听新设置进来的数据
+      childOb = observe(newVal) //!shallow &&
 
       dep.notify()
     }

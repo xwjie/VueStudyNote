@@ -27,17 +27,71 @@ var error = noop;
   log = console.log;
 }
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+  return typeof obj;
+} : function (obj) {
+  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+};
+
+
+
+
+
+
+
+
+
+
+
+var classCallCheck = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
+
+var createClass = function () {
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  return function (Constructor, protoProps, staticProps) {
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) defineProperties(Constructor, staticProps);
+    return Constructor;
+  };
+}();
+
 var isFunction = function isFunction(f) {
   return typeof f == 'function';
 };
+
+// D:\OutPut\VUE\vue\src\shared\util.js
+/**
+ * Get the raw type string of a value e.g. [object Object]
+ */
+var _toString = Object.prototype.toString;
 
 /**
  * Strict object type check. Only returns true
  * for plain JavaScript objects.
  */
+function isPlainObject(obj) {
+  return _toString.call(obj) === '[object Object]';
+}
 
-
-
+/**
+ * Check whether the object has the property.
+ */
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+function hasOwn(obj, key) {
+  return hasOwnProperty.call(obj, key);
+}
 
 /**
 * Remove an item from an array
@@ -49,6 +103,15 @@ function remove(arr, item) {
       return arr.splice(index, 1);
     }
   }
+}
+
+/**
+ * Quick object check - this is primarily used to tell
+ * Objects from primitive values when we know the value
+ * is a JSON-compliant type.
+ */
+function isObject(obj) {
+  return obj !== null && (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object';
 }
 
 // copy D:\OutPut\VUE\vue\src\core\util\lang.js
@@ -800,30 +863,6 @@ eventlisteners$1] // attaches event listeners
 
 var h = h$3; // helper function for creating vnodes
 
-var classCallCheck = function (instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-};
-
-var createClass = function () {
-  function defineProperties(target, props) {
-    for (var i = 0; i < props.length; i++) {
-      var descriptor = props[i];
-      descriptor.enumerable = descriptor.enumerable || false;
-      descriptor.configurable = true;
-      if ("value" in descriptor) descriptor.writable = true;
-      Object.defineProperty(target, descriptor.key, descriptor);
-    }
-  }
-
-  return function (Constructor, protoProps, staticProps) {
-    if (protoProps) defineProperties(Constructor.prototype, protoProps);
-    if (staticProps) defineProperties(Constructor, staticProps);
-    return Constructor;
-  };
-}();
-
 var uid$1 = 0;
 
 /**
@@ -1460,10 +1499,6 @@ function getOuterHTML(el) {
 //     }
 //   }
 
-function observe(data, asRootData) {
-  return new Observer(data);
-}
-
 // D:\OutPut\VUE\vue\src\core\observer\index.js
 
 var Observer = function () {
@@ -1498,10 +1533,37 @@ var Observer = function () {
 }();
 
 /**
- * Define a reactive property on an Object.
+ * Attempt to create an observer instance for a value,
+ * returns the new observer if successfully observed,
+ * or the existing observer if the value already has one.
  */
 
 
+function observe(value, asRootData) {
+  if (!isObject(value)) {
+    // fixme  || value instanceof VNode
+    return;
+  }
+  var ob = void 0;
+  if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
+    ob = value.__ob__;
+  } else if (
+  // observerState.shouldConvert &&
+  (Array.isArray(value) || isPlainObject(value)) && Object.isExtensible(value)) {
+    ob = new Observer(value);
+  }
+
+  // fixme
+  // if (asRootData && ob) {
+  // ob.vmCount++
+  // }
+
+  return ob;
+}
+
+/**
+ * Define a reactive property on an Object.
+ */
 function defineReactive(obj, key, val, shallow) {
   var property = Object.getOwnPropertyDescriptor(obj, key);
 
@@ -1518,8 +1580,8 @@ function defineReactive(obj, key, val, shallow) {
   var getter = property && property.get;
   var setter = property && property.set;
 
-  //fixme ??
-  //let childOb = !shallow && observe(val)
+  // 监听子属性
+  var childOb = observe(val);
 
   Object.defineProperty(obj, key, {
     enumerable: true,
@@ -1530,9 +1592,11 @@ function defineReactive(obj, key, val, shallow) {
 
       if (Dep.target) {
         dep.depend();
-        // if (childOb) {
-        //  childOb.dep.depend()
-        // }
+
+        // 子属性的依赖关系也要登记起来
+        if (childOb) {
+          childOb.dep.depend();
+        }
       }
 
       return value;
@@ -1553,7 +1617,8 @@ function defineReactive(obj, key, val, shallow) {
         val = newVal;
       }
 
-      //childOb = !shallow && observe(newVal)
+      // 监听新设置进来的数据
+      childOb = observe(newVal); //!shallow &&
 
       dep.notify();
     }
