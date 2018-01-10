@@ -114,10 +114,17 @@ function getDirectiveStr(node: any) {
     str += '],'
 
 
-    str += `"hook":{ "update":function(oldVnode, vnode){
+    str += `"hook":{
+      "prepatch":function(oldVnode, vnode){
         console.log(this, oldVnode, vnode);
+        //vnode.children = [];
         vnode.data.style = {"color": "red"};
-    }}`
+      },
+      "init": function(vnode){
+        console.log(this, vnode);
+        vnode.data.style = {"color": "red"};
+      }
+    }`
   }
 
   return str;
