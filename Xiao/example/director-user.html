@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>vue之helloworld</title>
+	<script src="../dist/xiao.js"></script>
+</head>
+<body>
+<div id="hook-arguments-example" x-demo:foo.a.b="message">
+<h1 class="c1" aaa="11">默认数据{{message}}</a></div>
+<script>
+/*
+Xiao.directive('demo', {
+  bind: function (el, binding, vnode) {
+    var s = JSON.stringify
+    el.innerHTML =
+      'name: '       + s(binding.name) + '<br>' +
+      'value: '      + s(binding.value) + '<br>' +
+      'expression: ' + s(binding.expression) + '<br>' +
+      'argument: '   + s(binding.arg) + '<br>' +
+      'modifiers: '  + s(binding.modifiers) + '<br>' +
+      'vnode keys: ' + Object.keys(vnode).join(', ')
+  }
+})
+*/
+
+var app = new Xiao({
+  el: '#hook-arguments-example',
+  data: {
+    message: 'hello!'
+  }
+})
+
+setTimeout(function(){
+	app.message = `修改了数据`;
+}, 2000);
+</script>
+
+
+
+</body>
+</html>

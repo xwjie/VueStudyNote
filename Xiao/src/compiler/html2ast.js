@@ -2,12 +2,15 @@
 import { log } from '../util'
 import { HTMLParser, HTMLtoXML, HTMLtoDOM } from './htmlparser'
 import { parseText } from '../util/text-parser'
+import { processAttrs } from './parseAttr'
 
 //D:\OutPut\VUE\vue\src\compiler\parser\index.js
 function html2ast(templte: string): ?ASTElement {
   let root: ?ASTElement
   let parent: ASTElement
   let parentStack = []
+
+  log('temlate', templte);
 
   HTMLParser(templte, {
     start: function (tag, attrs, unary) {
@@ -30,7 +33,9 @@ function html2ast(templte: string): ?ASTElement {
       parent = parentStack.pop()
     },
     chars: function (text) {
-      createTextlement(text, parent)
+      if(text = text.trim()){
+        createTextlement(text, parent)
+      }
     },
     comment: function (text) {
       createCommentlement(text, parent)
@@ -55,6 +60,9 @@ function createASTElement(
     //parent,
     children: []
   }
+
+  // 解析属性（指令等）
+  processAttrs (e, attrs)
 
   if (parent) {
     parent.children.push(e)
@@ -112,5 +120,6 @@ function makeAttrsMap(attrs: Array<Object>): Object {
   }
   return map
 }
+
 
 export { html2ast }

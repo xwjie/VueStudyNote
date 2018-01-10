@@ -16,6 +16,7 @@ function ast2render(ast: ?ASTElement): string {
   */
 
   if (ast) {
+    log('ast', ast)
     renderStr = createRenderStr(ast)
   }
 
@@ -43,20 +44,15 @@ function createRenderStr(ast: ASTNode): string {
 function createRenderStrElemnet(node: any): string {
   log('createRenderStrElemnet', node)
 
-  let str: string = 'h(' + JSON.stringify(node.tag)
+  let str: string = 'h(' + JSON.stringify(node.tag) + ",{"
 
-  let attrs = node.attrsMap
+  // 解析属性
+  str += genAttrStr(node)
 
-  if (attrs) {
-    str += ',{'
+  // 解析指令
+  str += getDirectiveStr(node)
 
-    // why not use for..in, see eslint `no-restricted-syntax`
-    Object.keys(attrs).every(attrname => {
-      // str += JSON.stringify(attrname) + '=' + JSON.stringify(attrs[attrname]) + ' '
-    })
-
-    str += '}'
-  }
+  str += "}"
 
   if (node.children) {
     str += ',['
@@ -66,11 +62,65 @@ function createRenderStrElemnet(node: any): string {
     })
 
     str += ']'
+
   }
 
   str += ')'
 
   return str
+}
+
+/**
+ * 解析属性
+ * @param {*} node
+ */
+function genAttrStr(node: any) {
+  let attrs = node.attrsMap
+
+  let str = '';
+
+  if (attrs) {
+    str += 'attrs:{'
+
+    // why not use for..in, see eslint `no-restricted-syntax`
+    Object.keys(attrs).every(attrname => {
+      // str += JSON.stringify(attrname) + '=' + JSON.stringify(attrs[attrname]) + ' '
+    })
+
+    str += '},'
+  }
+
+  return str;
+}
+
+
+/**
+ * 解析指令
+ * @param {*} node
+ */
+function getDirectiveStr(node: any) {
+  let dirs = node.directives
+
+  let str = '';
+
+  if (dirs) {
+    str += 'directives:['
+
+    // why not use for..in, see eslint `no-restricted-syntax`
+    dirs.forEach(dir => {
+      str += JSON.stringify(dir) + ','
+    })
+
+    str += '],'
+
+
+    str += `"hook":{ "update":function(oldVnode, vnode){
+        console.log(this, oldVnode, vnode);
+        vnode.data.style = {"color": "red"};
+    }}`
+  }
+
+  return str;
 }
 
 function createRenderStrText(node: any): string {

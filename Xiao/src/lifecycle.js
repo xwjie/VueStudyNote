@@ -38,6 +38,8 @@ function updateComponent(vm: Xiao) {
     vnode = patch(vm.$el, vnode)
   }
 
+  log('vnode', vnode)
+
   renderCount++;
 
   // save

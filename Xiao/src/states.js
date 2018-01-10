@@ -71,7 +71,7 @@ export function getData(data: Function, vm: Xiao): any {
 function initComputed(vm: Xiao) {
   let computed = vm.$options.computed
 
-  let watchers = vm._watcherCompued = Object.create(null)
+  //let watchers = vm._watcherCompued = Object.create(null)
 
   if (!computed) {
     return

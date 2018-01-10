@@ -26,4 +26,15 @@ declare type ASTElement = {
     attrsMap: { [key: string]: any };
     parent?: ASTElement;
     children: Array<ASTNode>;
+    directives?: Array<ASTDirective>;
 }
+
+declare type ASTDirective = {
+  name: string;
+  rawName: string;
+  value: string;
+  arg: ?string;
+  modifiers: ?ASTModifiers;
+};
+
+declare type ASTModifiers = { [key: string]: boolean };

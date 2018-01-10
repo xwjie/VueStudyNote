@@ -1039,6 +1039,8 @@ function updateComponent(vm) {
     vnode = patch(vm.$el, vnode);
   }
 
+  log('vnode', vnode);
+
   renderCount++;
 
   // save
@@ -1071,9 +1073,11 @@ function updateComponent(vm) {
  */
 
 // Regular Expressions for parsing tags and attributes
-var startTag = /^<([-A-Za-z0-9_]+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/;
+// xiaowenjie modify 增加制定
+//var startTag = /^<([-A-Za-z0-9_]+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/,
+var startTag = /^<([-A-Za-z0-9_]+)((?:\s+[-A-Za-z0-9_@:.]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/;
 var endTag = /^<\/([-A-Za-z0-9_]+)[^>]*>/;
-var attr = /([-A-Za-z0-9_]+)(?:\s*=\s*(?:(?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^>\s]+)))?/g;
+var attr = /([-A-Za-z0-9_:@.]+)(?:\s*=\s*(?:(?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^>\s]+)))?/g;
 
 // Empty Elements - HTML 4.01
 var empty = makeMap("area,base,basefont,br,col,frame,hr,img,input,isindex,link,meta,param,embed");
@@ -1267,11 +1271,77 @@ function parseText(text, re) {
   };
 }
 
+var argRE = /:(.*)$/;
+var modifierRE = /\.[^.]+/g;
+
+function processAttrs(el, attrs) {
+
+  var i = void 0,
+      l = void 0,
+      name = void 0,
+      rawName = void 0,
+      value = void 0,
+      modifiers = void 0;
+  for (i = 0, l = attrs.length; i < l; i++) {
+    name = rawName = attrs[i].name;
+    value = attrs[i].value;
+
+    // modifiers
+    modifiers = parseModifiers(name);
+    if (modifiers) {
+      name = name.replace(modifierRE, '');
+    }
+
+    // parse arg
+    var argMatch = name.match(argRE);
+    var arg = argMatch && argMatch[1];
+    if (arg) {
+      name = name.slice(0, -(arg.length + 1));
+    }
+
+    // 是指令
+    if (isDirective(name)) {
+      addDirective(el, name, rawName, value, arg, modifiers);
+    }
+  }
+}
+
+function isDirective(name) {
+  return name.startsWith('x-');
+}
+
+function parseModifiers(name) {
+  var match = name.match(modifierRE);
+  if (match) {
+    var ret = {};
+    match.forEach(function (m) {
+      ret[m.slice(1)] = true;
+    });
+    return ret;
+  }
+}
+
+/**
+ *
+ * @param {*} el
+ * @param {*} name
+ * @param {*} rawName
+ * @param {*} value
+ * @param {*} arg
+ * @param {*} modifiers
+ */
+function addDirective(el, name, rawName, value, arg, modifiers) {
+  (el.directives || (el.directives = [])).push({ name: name, rawName: rawName, value: value, arg: arg, modifiers: modifiers });
+  el.plain = false;
+}
+
 //D:\OutPut\VUE\vue\src\compiler\parser\index.js
 function html2ast(templte) {
   var root = void 0;
   var parent = void 0;
   var parentStack = [];
+
+  log('temlate', templte);
 
   HTMLParser(templte, {
     start: function start(tag, attrs, unary) {
@@ -1294,7 +1364,9 @@ function html2ast(templte) {
       parent = parentStack.pop();
     },
     chars: function chars(text) {
-      createTextlement(text, parent);
+      if (text = text.trim()) {
+        createTextlement(text, parent);
+      }
     },
     comment: function comment(text) {
       createCommentlement(text, parent);
@@ -1314,7 +1386,9 @@ function createASTElement(tag, attrs, parent) {
     attrsMap: makeAttrsMap(attrs),
     //parent,
     children: []
-  };
+
+    // 解析属性（指令等）
+  };processAttrs(e, attrs);
 
   if (parent) {
     parent.children.push(e);
@@ -1381,6 +1455,7 @@ function ast2render(ast) {
   */
 
   if (ast) {
+    log('ast', ast);
     renderStr = createRenderStr(ast);
   }
 
@@ -1406,20 +1481,15 @@ function createRenderStr(ast) {
 function createRenderStrElemnet(node) {
   log('createRenderStrElemnet', node);
 
-  var str = 'h(' + JSON.stringify(node.tag);
+  var str = 'h(' + JSON.stringify(node.tag) + ",{";
 
-  var attrs = node.attrsMap;
+  // 解析属性
+  str += genAttrStr(node);
 
-  if (attrs) {
-    str += ',{';
+  // 解析指令
+  str += getDirectiveStr(node);
 
-    // why not use for..in, see eslint `no-restricted-syntax`
-    Object.keys(attrs).every(function (attrname) {
-      // str += JSON.stringify(attrname) + '=' + JSON.stringify(attrs[attrname]) + ' '
-    });
-
-    str += '}';
-  }
+  str += "}";
 
   if (node.children) {
     str += ',[';
@@ -1432,6 +1502,54 @@ function createRenderStrElemnet(node) {
   }
 
   str += ')';
+
+  return str;
+}
+
+/**
+ * 解析属性
+ * @param {*} node
+ */
+function genAttrStr(node) {
+  var attrs = node.attrsMap;
+
+  var str = '';
+
+  if (attrs) {
+    str += 'attrs:{';
+
+    // why not use for..in, see eslint `no-restricted-syntax`
+    Object.keys(attrs).every(function (attrname) {
+      // str += JSON.stringify(attrname) + '=' + JSON.stringify(attrs[attrname]) + ' '
+    });
+
+    str += '},';
+  }
+
+  return str;
+}
+
+/**
+ * 解析指令
+ * @param {*} node
+ */
+function getDirectiveStr(node) {
+  var dirs = node.directives;
+
+  var str = '';
+
+  if (dirs) {
+    str += 'directives:[';
+
+    // why not use for..in, see eslint `no-restricted-syntax`
+    dirs.forEach(function (dir) {
+      str += JSON.stringify(dir) + ',';
+    });
+
+    str += '],';
+
+    str += '"hook":{ "update":function(oldVnode, vnode){\n        console.log(this, oldVnode, vnode);\n        vnode.data.style = {"color": "red"};\n    }}';
+  }
 
   return str;
 }
@@ -1683,7 +1801,7 @@ function getData(data, vm) {
 function initComputed(vm) {
   var computed = vm.$options.computed;
 
-  var watchers = vm._watcherCompued = Object.create(null);
+  //let watchers = vm._watcherCompued = Object.create(null)
 
   if (!computed) {
     return;
@@ -1743,7 +1861,14 @@ var inBrowser = true;
 
 var Xiao = function () {
 
-  // 数据
+  // 计算属性相关的watcher
+  // FIXME 还不知道有啥用【应该了为了保证计算属性缓存起来用的】
+  // _watcherCompued: Object
+
+  // 数据修改之后的监听器
+
+
+  // 渲染虚拟dom需要用到的。（VUE里面应该是$createElement）
   function Xiao(options) {
     classCallCheck(this, Xiao);
 
@@ -1759,14 +1884,7 @@ var Xiao = function () {
     this._init(this.$options);
   }
 
-  // 计算属性相关的watcher
-  // FIXME 还不知道有啥用
-
-
-  // 数据修改之后的监听器
-
-
-  // 渲染虚拟dom需要用到的。（VUE里面应该是$createElement）
+  // 数据
 
 
   createClass(Xiao, [{
