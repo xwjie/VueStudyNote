@@ -24,7 +24,11 @@ function updateComponent(vm: Xiao) {
   proxy.h = h
 
   // 新的虚拟节点
+  // 指令的信息已经自动附带再vnode里面
   let vnode = vm.$render.call(proxy)
+
+  // 把实例绑定到vnode中，处理指令需要用到
+  vnode.context = vm
 
   // 上一次渲染的虚拟dom
   let preNode = vm.$options.oldvnode;

@@ -3,9 +3,16 @@ import { log } from '../util'
 const argRE = /:(.*)$/;
 const modifierRE = /\.[^.]+/g;
 
+/**
+ * 处理html parser 生成的属性信息
+ *
+ * @param {*} el
+ * @param {*} attrs
+ */
 export function processAttrs(el, attrs) {
 
   let i, l, name, rawName, value, modifiers, isProp
+
   for (i = 0, l = attrs.length; i < l; i++) {
     name = rawName = attrs[i].name
     value = attrs[i].value
@@ -33,10 +40,20 @@ export function processAttrs(el, attrs) {
   }
 }
 
+/**
+ * 如果是'x-'开头的就是指令
+ *
+ * @param {*} name
+ */
 function isDirective(name: String): boolean {
   return name.startsWith('x-')
 }
 
+/**
+ * 返回一个map
+ *
+ * @param {*} name
+ */
 function parseModifiers(name) {
   var match = name.match(modifierRE);
   if (match) {
@@ -47,6 +64,7 @@ function parseModifiers(name) {
 }
 
 /**
+ * 增加指令信息
  *
  * @param {*} el
  * @param {*} name

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>vue之helloworld</title>
+	<script src="../dist/xiao.js"></script>
+</head>
+<body>
+<h1>简单自定义指令</h1>
+<div id="demo1" x-demo>使用<b>app.$directive</b>注册</div>
+<div id="demo3" x-red>使用<b>默认的red指令</b></div>
+
+<div id="demo2" x-show="count>1">使用<b>默认的show指令</b>, {{count}}</div>
+
+
+<script>
+	// 自定义指令测试
+	var app = new Xiao({
+		data: {
+			see: true,
+			count: 2
+		} 
+	});
+	
+	// 自定义一个把背景变成黄色的指令
+	app.$directive('demo', function (el, binding) {
+    	el.style.backgroundColor = 'yellow'// binding.value
+  	})
+	
+	app.$mount("#demo1");
+	
+	var app2 = new Xiao({
+		data: {
+			count: 2
+		} 
+	});
+
+	app2.$mount("#demo2");
+
+	setTimeout(function(){
+		app2.count = 0;
+	}, 2000);
+	
+	// 测试默认的red指令
+	new Xiao({
+		el:"#demo3"
+	});
+</script>
+
+</body>
+</html>

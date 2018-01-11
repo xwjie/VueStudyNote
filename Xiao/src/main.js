@@ -14,6 +14,8 @@ let uid = 100
 // fixme
 const inBrowser = true
 
+const globaleDedirectives: Object = Object.create(null)
+
 class Xiao {
   _uid: number
 
@@ -22,6 +24,8 @@ class Xiao {
   $options: Object
 
   $render: Function
+
+  directives: Object
 
   // 渲染虚拟dom需要用到的。（VUE里面应该是$createElement）
   h: Function
@@ -89,12 +93,53 @@ class Xiao {
   _init(options: Object) {
     initState(this)
 
+    initInstanceDedirectives(this)
+
     let el: string | Element = options.el
 
     if (el && inBrowser) {
       this.$mount(el)
     }
+
+
+  }
+
+  static directive(name: string, cb: any) {
+    globaleDedirectives[`x-${name}`] = cb
+  }
+
+  $directive(name: string, cb: any) {
+    this.directives[`x-${name}`] = cb
   }
 }
+
+
+function initInstanceDedirectives(vm: Xiao) {
+  vm.directives = Object.create(null)
+
+  for (let dirname in globaleDedirectives) {
+    vm.directives[dirname] = globaleDedirectives[dirname]
+  }
+}
+
+
+/**
+ * 初始化全局指令
+ */
+function initGlobaleDedirectives() {
+  Xiao.directive('red', function (el, binding) {
+    el.style.backgroundColor = 'red'// binding.value
+  })
+
+  Xiao.directive('show', function (el, binding) {
+    if (this[binding.value]) {
+      el.style.display = 'none'// binding.value
+    } else {
+      el.style.display = null
+    }
+  })
+}
+
+initGlobaleDedirectives()
 
 export default Xiao

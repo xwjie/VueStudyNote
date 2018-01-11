@@ -661,6 +661,32 @@ exports.default = exports.styleModule;
 var style$1 = unwrapExports(style);
 var style_1 = style.styleModule;
 
+function updateDirective(oldVnode, vnode) {
+  var elm = vnode.elm,
+      nodeDirs = vnode.data.directives;
+
+  if (!nodeDirs) return;
+
+  nodeDirs = nodeDirs || {};
+
+  console.log('自定义指令处理：', vnode.context);
+  console.log('自定义指令处理：', vnode);
+  console.log('自定义指令处理：', nodeDirs);
+
+  var vm = vnode.context;
+  var dirs = vm.directives;
+
+  nodeDirs.forEach(function (dir) {
+    // 调用指令的处理函数。
+    dirs[dir.name](elm, dir);
+  }, vm);
+}
+
+var directive = {
+  create: updateDirective,
+  update: updateDirective
+};
+
 var eventlisteners = createCommonjsModule(function (module, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 function invokeHandler(handler, vnode, event) {
@@ -858,7 +884,8 @@ var patch = init([// Init patch function with chosen modules
 _class$1, // makes it easy to toggle classes
 props$1, // for setting properties on DOM elements
 style$1, // handles styling on elements with support for animations
-eventlisteners$1] // attaches event listeners
+eventlisteners$1, // attaches event listeners
+directive] // xiaowenjie add 处理指令
 );
 
 var h = h$3; // helper function for creating vnodes
@@ -1026,7 +1053,11 @@ function updateComponent(vm) {
   proxy.h = h;
 
   // 新的虚拟节点
+  // 指令的信息已经自动附带再vnode里面
   var vnode = vm.$render.call(proxy);
+
+  // 把实例绑定到vnode中，处理指令需要用到
+  vnode.context = vm;
 
   // 上一次渲染的虚拟dom
   var preNode = vm.$options.oldvnode;
@@ -1274,6 +1305,12 @@ function parseText(text, re) {
 var argRE = /:(.*)$/;
 var modifierRE = /\.[^.]+/g;
 
+/**
+ * 处理html parser 生成的属性信息
+ *
+ * @param {*} el
+ * @param {*} attrs
+ */
 function processAttrs(el, attrs) {
 
   var i = void 0,
@@ -1282,6 +1319,7 @@ function processAttrs(el, attrs) {
       rawName = void 0,
       value = void 0,
       modifiers = void 0;
+
   for (i = 0, l = attrs.length; i < l; i++) {
     name = rawName = attrs[i].name;
     value = attrs[i].value;
@@ -1306,10 +1344,20 @@ function processAttrs(el, attrs) {
   }
 }
 
+/**
+ * 如果是'x-'开头的就是指令
+ *
+ * @param {*} name
+ */
 function isDirective(name) {
   return name.startsWith('x-');
 }
 
+/**
+ * 返回一个map
+ *
+ * @param {*} name
+ */
 function parseModifiers(name) {
   var match = name.match(modifierRE);
   if (match) {
@@ -1322,6 +1370,7 @@ function parseModifiers(name) {
 }
 
 /**
+ * 增加指令信息
  *
  * @param {*} el
  * @param {*} name
@@ -1547,8 +1596,6 @@ function getDirectiveStr(node) {
     });
 
     str += '],';
-
-    str += '"hook":{\n      "prepatch":function(oldVnode, vnode){\n        console.log(this, oldVnode, vnode);\n        //vnode.children = [];\n        vnode.data.style = {"color": "red"};\n      },\n      "init": function(vnode){\n        console.log(this, vnode);\n        vnode.data.style = {"color": "red"};\n      }\n    }';
   }
 
   return str;
@@ -1859,6 +1906,8 @@ var uid = 100;
 // fixme
 var inBrowser = true;
 
+var globaleDedirectives = Object.create(null);
+
 var Xiao = function () {
 
   // 计算属性相关的watcher
@@ -1928,15 +1977,54 @@ var Xiao = function () {
     value: function _init(options) {
       initState(this);
 
+      initInstanceDedirectives(this);
+
       var el = options.el;
 
       if (el && inBrowser) {
         this.$mount(el);
       }
     }
+  }, {
+    key: '$directive',
+    value: function $directive(name, cb) {
+      this.directives['x-' + name] = cb;
+    }
+  }], [{
+    key: 'directive',
+    value: function directive(name, cb) {
+      globaleDedirectives['x-' + name] = cb;
+    }
   }]);
   return Xiao;
 }();
+
+function initInstanceDedirectives(vm) {
+  vm.directives = Object.create(null);
+
+  for (var dirname in globaleDedirectives) {
+    vm.directives[dirname] = globaleDedirectives[dirname];
+  }
+}
+
+/**
+ * 初始化全局指令
+ */
+function initGlobaleDedirectives() {
+  Xiao.directive('red', function (el, binding) {
+    el.style.backgroundColor = 'red'; // binding.value
+  });
+
+  Xiao.directive('show', function (el, binding) {
+    if (this[binding.value]) {
+      el.style.display = 'none'; // binding.value
+    } else {
+      el.style.display = null;
+    }
+  });
+}
+
+initGlobaleDedirectives();
 
 return Xiao;
 
