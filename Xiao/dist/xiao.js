@@ -1673,7 +1673,13 @@ function getDirectiveStr(node) {
 }
 
 function createRenderStrText(node) {
-  return node.text;
+
+  if (node.isComment) {
+    //return JSON.stringify(node.text)
+    return '';
+  } else {
+    return node.text;
+  }
 }
 
 function compileToFunction(templte) {
@@ -1960,10 +1966,31 @@ function proxy(target, sourceKey, key) {
   Object.defineProperty(target, key, sharedPropertyDefinition);
 }
 
+/**
+ * 简单的i18n国际化插件
+ * @param {*} Xiao
+ */
 function i18n (Xiao$$1) {
 
+  // 扩展一个实例方法
   Xiao$$1.prototype.$t = function (key) {
-    return '[' + key + ']';
+    var instance = this.$options.i18n;
+
+    console.log('i18n', instance);
+
+    if (instance) {
+      var keys = key.split('.');
+
+      var msg = instance.messages[instance.locale];
+
+      for (var i = 0; i < keys.length; i++) {
+        msg = msg[keys[i]];
+      }
+
+      return msg;
+    } else {
+      return key;
+    }
   };
 
   console.log('i18n组件注册完毕');
@@ -1971,7 +1998,6 @@ function i18n (Xiao$$1) {
 
 // D:\OutPut\VUE\vue\src\core\instance\index.js
 
-//
 var uid = 100;
 
 // fixme
@@ -2062,6 +2088,16 @@ var Xiao = function () {
     }
 
     /**
+     * 强制刷新
+     */
+
+  }, {
+    key: '$forceUpdate',
+    value: function $forceUpdate() {
+      this._renderWatcher.update();
+    }
+
+    /**
      * 注册全局指令
      * @param {*} name
      * @param {*} cb
@@ -2106,7 +2142,7 @@ var Xiao = function () {
     }
   }]);
   return Xiao;
-}();
+}(); //Xiao
 
 function initInstanceDedirectives(vm) {
   vm.directives = Object.create(null);

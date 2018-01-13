@@ -138,7 +138,14 @@ function getDirectiveStr(node: any) {
 }
 
 function createRenderStrText(node: any): string {
-  return node.text
+
+  if (node.isComment) {
+    //return JSON.stringify(node.text)
+    return ''
+  }
+  else {
+    return node.text
+  }
 }
 
 

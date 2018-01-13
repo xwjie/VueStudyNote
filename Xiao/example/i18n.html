@@ -3,40 +3,45 @@
 <head>
 	<title>Xiao框架之helloworld</title>
 	<script src="../dist/xiao.js"></script>
-	<style>
-	</style>
 </head>
 <body>
-<h1>国际化测试</h1>
+<h1>简单的国际化插件i18n测试</h1>
 <div id="demo1">
-</div>
 
-<div id="demo2">
-</div>
-
-
-<div id="demo3">
+<h1>1层的信息：{{ $t("msg1") }}</h1>
+<h1>2层的信息：{{ $t("message.hello") }}</h1>
 
 </div>
-
-<div id="demo4">
-
-</div>
+<a href="#" onclick="i18n.locale='en';app.$forceUpdate()">英语</a>
+<a href="#" onclick="i18n.locale='cn';app.$forceUpdate()">中文</a>
 
 <script>
 
-	
-	var app = new Xiao({
-		template: '<h1>变量1:{{$t(message)}}。<br/>变量2:{{$t(message2)}}。</h1>',
-		data: {
-			message: '当你看到这句话的时候，表示框架工作正常',
-			message2:'终于好了'
-		},
-	});
-	
-	app.$mount("#demo1");
+var messages = {
+  en: {
+    msg1: 'message 1',
+    message: {
+      hello: 'hello world'
+    }
+  },
+  cn: {
+    msg1:'信息1',
+    message: {
+      hello: '你好世界'
+    }
+  }
+}
 
+var i18n = {
+  locale: 'cn', // set locale
+  messages, // set locale messages
+}
 
+var app = new Xiao(	{
+	i18n: i18n
+});
+
+app.$mount("#demo1");
 </script>
 
 </body>

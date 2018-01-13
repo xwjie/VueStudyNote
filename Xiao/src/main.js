@@ -111,6 +111,13 @@ class Xiao {
   }
 
   /**
+   * 强制刷新
+   */
+  $forceUpdate(){
+    this._renderWatcher.update()
+  }
+
+  /**
    * 注册全局指令
    * @param {*} name
    * @param {*} cb
@@ -146,7 +153,7 @@ class Xiao {
 
     globalPlugins.push(plugin)
   }
-}
+}//Xiao
 
 function initInstanceDedirectives(vm: Xiao) {
   vm.directives = Object.create(null)
