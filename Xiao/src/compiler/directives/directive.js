@@ -16,7 +16,8 @@ function updateDirective(oldVnode, vnode) {
   nodeDirs.forEach(function (dir) {
     // 调用指令的处理函数。
     // fixme 应该判断一下，旧的指令的value和新的指令的value是否相同，不相同才调用
-    dirs[dir.name](vnode.elm, dir, vnode, oldVnode)
+    dirs[dir.name].call(window, vnode.elm, dir, vnode, oldVnode)
+    //dirs[dir.name].call(vm, vnode.elm, dir, vnode, oldVnode)
   }, vm);
 }
 

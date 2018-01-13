@@ -23,7 +23,9 @@
 * [生成render函数](https://github.com/xwjie/VueStudyNote/issues/5)
 * [生成虚拟dom并渲染dom](https://github.com/xwjie/VueStudyNote/issues/6)
 * [监听子属性和新加的属性](https://github.com/xwjie/VueStudyNote/issues/7)
-* 支持if，show指令
+* [支持指令，支持自定义指令](https://github.com/xwjie/VueStudyNote/issues/9)
+* [支持show指令支持指令表达式](https://github.com/xwjie/VueStudyNote/issues/10)
+* 支持if指令
 * 数据绑定
 * 双向数据绑定
 * 实现支持组件

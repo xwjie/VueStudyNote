@@ -6,10 +6,12 @@
 </head>
 <body>
 <div id="hook-arguments-example" x-demo:foo.a.b="message"></div>
+<h1>回调函数的this是window，如果需要绑定到实例上需要修改 Xiao\src\compiler\directives\directive.js</h1>
 <script>
 
 Xiao.directive('demo', function (el, binding, vnode, oldVnode) {
 	console.log(binding, vnode, vnode);
+	console.log('this', this);
 
     var s = JSON.stringify
     el.innerHTML =

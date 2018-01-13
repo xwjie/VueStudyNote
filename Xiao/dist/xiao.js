@@ -128,16 +128,24 @@ function isReserved(str) {
  * Define a property.
  */
 
+
+/**
+ * Parse simple path.
+ */
+
 function vnode(sel, data, children, text, elm) {
     var key = data === undefined ? undefined : data.key;
     return { sel: sel, data: data, children: children,
         text: text, elm: elm, key: key };
 }
 
+//# sourceMappingURL=vnode.js.map
+
 var array = Array.isArray;
 function primitive(s) {
     return typeof s === 'string' || typeof s === 'number';
 }
+//# sourceMappingURL=is.js.map
 
 function createElement(tagName) {
     return document.createElement(tagName);
@@ -201,6 +209,12 @@ var htmlDomApi = {
     isText: isText,
     isComment: isComment,
 };
+
+//# sourceMappingURL=htmldomapi.js.map
+
+//# sourceMappingURL=h.js.map
+
+//# sourceMappingURL=thunk.js.map
 
 function isUndef(s) { return s === undefined; }
 function isDef(s) { return s !== undefined; }
@@ -500,6 +514,7 @@ function init(modules, domApi) {
         return vnode$$1;
     };
 }
+//# sourceMappingURL=snabbdom.js.map
 
 function unwrapExports (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
@@ -533,7 +548,7 @@ function updateClass(oldVnode, vnode) {
 }
 exports.classModule = { create: updateClass, update: updateClass };
 exports.default = exports.classModule;
-
+//# sourceMappingURL=class.js.map
 });
 
 var _class$1 = unwrapExports(_class);
@@ -564,7 +579,7 @@ function updateProps(oldVnode, vnode) {
 }
 exports.propsModule = { create: updateProps, update: updateProps };
 exports.default = exports.propsModule;
-
+//# sourceMappingURL=props.js.map
 });
 
 var props$1 = unwrapExports(props);
@@ -655,7 +670,7 @@ exports.styleModule = {
     remove: applyRemoveStyle
 };
 exports.default = exports.styleModule;
-
+//# sourceMappingURL=style.js.map
 });
 
 var style$1 = unwrapExports(style);
@@ -677,7 +692,8 @@ function updateDirective(oldVnode, vnode) {
   nodeDirs.forEach(function (dir) {
     // 调用指令的处理函数。
     // fixme 应该判断一下，旧的指令的value和新的指令的value是否相同，不相同才调用
-    dirs[dir.name](vnode.elm, dir, vnode, oldVnode);
+    dirs[dir.name].call(window, vnode.elm, dir, vnode, oldVnode);
+    //dirs[dir.name].call(vm, vnode.elm, dir, vnode, oldVnode)
   }, vm);
 }
 
@@ -780,7 +796,7 @@ exports.eventListenersModule = {
     destroy: updateEventListeners
 };
 exports.default = exports.eventListenersModule;
-
+//# sourceMappingURL=eventlisteners.js.map
 });
 
 var eventlisteners$1 = unwrapExports(eventlisteners);
@@ -795,7 +811,7 @@ function vnode(sel, data, children, text, elm) {
 }
 exports.vnode = vnode;
 exports.default = vnode;
-
+//# sourceMappingURL=vnode.js.map
 });
 
 unwrapExports(vnode_1);
@@ -808,7 +824,7 @@ function primitive(s) {
     return typeof s === 'string' || typeof s === 'number';
 }
 exports.primitive = primitive;
-
+//# sourceMappingURL=is.js.map
 });
 
 unwrapExports(is);
@@ -873,7 +889,7 @@ function h(sel, b, c) {
 exports.h = h;
 
 exports.default = h;
-
+//# sourceMappingURL=h.js.map
 });
 
 var h$3 = unwrapExports(h_1);
@@ -940,6 +956,10 @@ var Dep = function () {
   return Dep;
 }();
 
+// the current target watcher being evaluated.
+// this is globally unique because there could be only one
+// watcher being evaluated at any time.
+
 Dep.target = null;
 // const targetStack = []
 
@@ -987,6 +1007,7 @@ _Set = function () {
   }]);
   return Set;
 }();
+// }
 
 var Watcher = function () {
   function Watcher(vm, renderFunction) {
@@ -1036,7 +1057,6 @@ var Watcher = function () {
   return Watcher;
 }();
 
-// D:\OutPut\VUE\vue\src\core\instance\lifecycle.js
 function mountComponent(vm, hydrating) {
   // 产生一个代理对象（VUE开发环境会使用Proxy产生一个代理对象，发布环境就是vue对象自己）
   // 调用生成的render函数绑定的this就是它。（whth(this)）
@@ -1404,7 +1424,6 @@ function addDirective(el, name, rawName, value, arg, modifiers) {
   el.plain = false;
 }
 
-//D:\OutPut\VUE\vue\src\compiler\parser\index.js
 function html2ast(templte) {
   var root = void 0;
   var parent = void 0;
@@ -1509,7 +1528,6 @@ function makeAttrsMap(attrs) {
   return map;
 }
 
-// D:\OutPut\VUE\vue\src\compiler\codegen\index.js
 function ast2render(ast) {
   var renderStr = '';
 
@@ -1660,11 +1678,6 @@ function renderToFunction(renderStr) {
 
 // D:\OutPut\VUE\vue\src\platforms\web\util\index.js
 
-/**
- * Query an element selector if it's not an element already.
- */
-
-// D:\OutPut\VUE\vue\src\platforms\web\util\index.js
 function query(el) {
   if (typeof el === 'string') {
     var selected = document.querySelector(el);
@@ -1703,8 +1716,6 @@ function getOuterHTML(el) {
 //       return el
 //     }
 //   }
-
-// D:\OutPut\VUE\vue\src\core\observer\index.js
 
 var Observer = function () {
   function Observer(value) {
@@ -1830,8 +1841,6 @@ function defineReactive(obj, key, val, shallow) {
   });
 }
 
-//D:\OutPut\VUE\vue\src\core\instance\state.js
-
 function initState(vm) {
   vm._watchers = [];
   var opts = vm.$options;
@@ -1940,7 +1949,6 @@ function proxy(target, sourceKey, key) {
 
 // D:\OutPut\VUE\vue\src\core\instance\index.js
 
-//
 var uid = 100;
 
 // fixme
