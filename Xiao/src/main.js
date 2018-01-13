@@ -1,12 +1,13 @@
 // @flow
 // D:\OutPut\VUE\vue\src\core\instance\index.js
 
-import { warn, error, log, isFunction } from './util'
+import { warn, error, log, isFunction, toArray } from './util'
 import { mountComponent } from './lifecycle'
 import { compileToFunction } from './compiler'
 import { query, getOuterHTML } from './util/web'
 import { initState } from './states'
 import Watcher from './observer/watcher'
+import i18n from './plugins/i18n'
 
 //
 let uid = 100
@@ -14,7 +15,12 @@ let uid = 100
 // fixme
 const inBrowser = true
 
+// 全局指令
 const globaleDedirectives: Object = Object.create(null)
+
+// 全局插件
+const globalPlugins: Array<Function | Object> = []
+
 
 class Xiao {
   _uid: number
@@ -104,6 +110,11 @@ class Xiao {
 
   }
 
+  /**
+   * 注册全局指令
+   * @param {*} name
+   * @param {*} cb
+   */
   static directive(name: string, cb: any) {
     globaleDedirectives[`x-${name}`] = cb
   }
@@ -111,8 +122,31 @@ class Xiao {
   $directive(name: string, cb: any) {
     this.directives[`x-${name}`] = cb
   }
-}
 
+  /**
+   * 插件安装指令
+   */
+  // D:\OutPut\VUE\vue\src\core\global-api\use.js
+  static use(plugin: Function | Object) {
+    if (globalPlugins.indexOf(plugin) > -1) {
+      return
+    }
+
+    //fixme additional parameters
+    const args = toArray(arguments, 1)
+    args.unshift(Xiao) //放到第一个位置
+
+    //apply 见 https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/apply
+
+    if (typeof plugin.install === 'function') {
+      plugin.install.apply(Xiao, args)
+    } else if (typeof plugin === 'function') {
+      plugin.apply(Xiao, args)
+    }
+
+    globalPlugins.push(plugin)
+  }
+}
 
 function initInstanceDedirectives(vm: Xiao) {
   vm.directives = Object.create(null)
@@ -141,6 +175,11 @@ function initGlobaleDedirectives() {
   })
 }
 
+
+// 注册默认指令
 initGlobaleDedirectives()
+
+// 注册默认插件
+Xiao.use(i18n)
 
 export default Xiao

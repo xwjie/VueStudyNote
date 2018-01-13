@@ -114,6 +114,19 @@ function isObject(obj) {
   return obj !== null && (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object';
 }
 
+/**
+ * Convert an Array-like object to a real Array.
+ */
+function toArray(list, start) {
+  start = start || 0;
+  var i = list.length - start;
+  var ret = new Array(i);
+  while (i--) {
+    ret[i] = list[i + start];
+  }
+  return ret;
+}
+
 // copy D:\OutPut\VUE\vue\src\core\util\lang.js
 
 /**
@@ -1947,14 +1960,28 @@ function proxy(target, sourceKey, key) {
   Object.defineProperty(target, key, sharedPropertyDefinition);
 }
 
+function i18n (Xiao$$1) {
+
+  Xiao$$1.prototype.$t = function (key) {
+    return '[' + key + ']';
+  };
+
+  console.log('i18n组件注册完毕');
+}
+
 // D:\OutPut\VUE\vue\src\core\instance\index.js
 
+//
 var uid = 100;
 
 // fixme
 var inBrowser = true;
 
+// 全局指令
 var globaleDedirectives = Object.create(null);
+
+// 全局插件
+var globalPlugins = [];
 
 var Xiao = function () {
 
@@ -2033,15 +2060,49 @@ var Xiao = function () {
         this.$mount(el);
       }
     }
+
+    /**
+     * 注册全局指令
+     * @param {*} name
+     * @param {*} cb
+     */
+
   }, {
     key: '$directive',
     value: function $directive(name, cb) {
       this.directives['x-' + name] = cb;
     }
+
+    /**
+     * 插件安装指令
+     */
+    // D:\OutPut\VUE\vue\src\core\global-api\use.js
+
   }], [{
     key: 'directive',
     value: function directive(name, cb) {
       globaleDedirectives['x-' + name] = cb;
+    }
+  }, {
+    key: 'use',
+    value: function use(plugin) {
+      if (globalPlugins.indexOf(plugin) > -1) {
+        return;
+      }
+
+      //fixme additional parameters
+      var args = toArray(arguments, 1);
+      args.unshift(Xiao); //放到第一个位置
+
+      //apply 见 https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/apply
+
+      if (typeof plugin.install === 'function') {
+        plugin.install.apply(Xiao, args);
+      } else if (typeof plugin === 'function') {
+        plugin.apply(Xiao, args);
+      }
+
+      globalPlugins.push(plugin);
     }
   }]);
   return Xiao;
@@ -2072,7 +2133,11 @@ function initGlobaleDedirectives() {
   });
 }
 
+// 注册默认指令
 initGlobaleDedirectives();
+
+// 注册默认插件
+Xiao.use(i18n);
 
 return Xiao;
 

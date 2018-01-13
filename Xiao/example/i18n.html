@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Xiao框架之helloworld</title>
+	<script src="../dist/xiao.js"></script>
+	<style>
+	</style>
+</head>
+<body>
+<h1>国际化测试</h1>
+<div id="demo1">
+</div>
+
+<div id="demo2">
+</div>
+
+
+<div id="demo3">
+
+</div>
+
+<div id="demo4">
+
+</div>
+
+<script>
+
+	
+	var app = new Xiao({
+		template: '<h1>变量1:{{$t(message)}}。<br/>变量2:{{$t(message2)}}。</h1>',
+		data: {
+			message: '当你看到这句话的时候，表示框架工作正常',
+			message2:'终于好了'
+		},
+	});
+	
+	app.$mount("#demo1");
+
+
+</script>
+
+</body>
+</html>
