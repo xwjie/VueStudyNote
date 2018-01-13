@@ -5,12 +5,12 @@
 	<script src="../dist/xiao.js"></script>
 </head>
 <body>
-<div id="hook-arguments-example" x-demo:foo.a.b="message">
-<h1 class="c1" aaa="11">默认数据{{message}}</a></div>
+<div id="hook-arguments-example" x-demo:foo.a.b="message"></div>
 <script>
-/*
-Xiao.directive('demo', {
-  bind: function (el, binding, vnode) {
+
+Xiao.directive('demo', function (el, binding, vnode, oldVnode) {
+	console.log(binding, vnode, vnode);
+
     var s = JSON.stringify
     el.innerHTML =
       'name: '       + s(binding.name) + '<br>' +
@@ -20,8 +20,7 @@ Xiao.directive('demo', {
       'modifiers: '  + s(binding.modifiers) + '<br>' +
       'vnode keys: ' + Object.keys(vnode).join(', ')
   }
-})
-*/
+)
 
 var app = new Xiao({
   el: '#hook-arguments-example',
@@ -30,9 +29,6 @@ var app = new Xiao({
   }
 })
 
-setTimeout(function(){
-	app.message = `修改了数据`;
-}, 2000);
 </script>
 
 

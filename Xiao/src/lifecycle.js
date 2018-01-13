@@ -28,7 +28,7 @@ function updateComponent(vm: Xiao) {
   let vnode = vm.$render.call(proxy)
 
   // 把实例绑定到vnode中，处理指令需要用到
-  vnode.context = vm
+  setContext(vnode, vm)
 
   // 上一次渲染的虚拟dom
   let preNode = vm.$options.oldvnode;
@@ -48,4 +48,25 @@ function updateComponent(vm: Xiao) {
 
   // save
   vm.$options.oldvnode = vnode;
+}
+
+/**
+ * [递归设置] 如果当前节点有指令，增设置context到当前节点
+ * 注意: vue不是这样实现的，vue只有根节点有context
+ * @param {*} vnode
+ * @param {*} vm
+ */
+function setContext(vnode: any, vm: Xiao) {
+  // 如果当前节点有指令，设置context
+  if (!vnode.context) {
+    if (vnode.data && vnode.data.directives) {
+      vnode.context = vm
+    }
+  }
+
+  if (vnode.children) {
+    vnode.children.forEach(function (e) {
+      setContext(e, vm)
+    }, this)
+  }
 }

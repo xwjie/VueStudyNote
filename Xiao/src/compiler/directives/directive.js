@@ -1,15 +1,13 @@
 "use strict";
 
 function updateDirective(oldVnode, vnode) {
-  var elm = vnode.elm, nodeDirs = vnode.data.directives;
+  let nodeDirs = vnode.data.directives;
 
-  if (!nodeDirs)
+  // 没有指令
+  if (!nodeDirs || nodeDirs.length == 0) {
     return;
+  }
 
-  nodeDirs = nodeDirs || {};
-
-  console.log('自定义指令处理：', vnode.context);
-  console.log('自定义指令处理：', vnode);
   console.log('自定义指令处理：', nodeDirs);
 
   const vm = vnode.context
@@ -17,7 +15,8 @@ function updateDirective(oldVnode, vnode) {
 
   nodeDirs.forEach(function (dir) {
     // 调用指令的处理函数。
-    dirs[dir.name](elm, dir)
+    // fixme 应该判断一下，旧的指令的value和新的指令的value是否相同，不相同才调用
+    dirs[dir.name](vnode.elm, dir, vnode, oldVnode)
   }, vm);
 }
 

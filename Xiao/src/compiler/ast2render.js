@@ -103,12 +103,32 @@ function getDirectiveStr(node: any) {
 
   let str = '';
 
-  if (dirs) {
+  if (dirs && dirs.length > 0) {
     str += 'directives:['
 
     // why not use for..in, see eslint `no-restricted-syntax`
     dirs.forEach(dir => {
-      str += JSON.stringify(dir) + ','
+      str += '{'
+      for (let key in dir) {
+        str += JSON.stringify(key) + ':'
+
+        const val = dir[key]
+
+        // 把value的值修改为表达式，render的时候就可以计算
+        if (key == 'value') {
+          // 如果有value（表达式）
+          if (val) {
+            str += `(${val}),`
+          }
+          // 没有表达式，直接赋值一个true即可。
+          else {
+            str += 'true,'
+          }
+        } else {
+          str += JSON.stringify(val) + ','
+        }
+      }
+      str += '},'
     })
 
     str += '],'

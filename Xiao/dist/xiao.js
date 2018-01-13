@@ -662,15 +662,13 @@ var style$1 = unwrapExports(style);
 var style_1 = style.styleModule;
 
 function updateDirective(oldVnode, vnode) {
-  var elm = vnode.elm,
-      nodeDirs = vnode.data.directives;
+  var nodeDirs = vnode.data.directives;
 
-  if (!nodeDirs) return;
+  // 没有指令
+  if (!nodeDirs || nodeDirs.length == 0) {
+    return;
+  }
 
-  nodeDirs = nodeDirs || {};
-
-  console.log('自定义指令处理：', vnode.context);
-  console.log('自定义指令处理：', vnode);
   console.log('自定义指令处理：', nodeDirs);
 
   var vm = vnode.context;
@@ -678,7 +676,8 @@ function updateDirective(oldVnode, vnode) {
 
   nodeDirs.forEach(function (dir) {
     // 调用指令的处理函数。
-    dirs[dir.name](elm, dir);
+    // fixme 应该判断一下，旧的指令的value和新的指令的value是否相同，不相同才调用
+    dirs[dir.name](vnode.elm, dir, vnode, oldVnode);
   }, vm);
 }
 
@@ -1057,7 +1056,7 @@ function updateComponent(vm) {
   var vnode = vm.$render.call(proxy);
 
   // 把实例绑定到vnode中，处理指令需要用到
-  vnode.context = vm;
+  setContext(vnode, vm);
 
   // 上一次渲染的虚拟dom
   var preNode = vm.$options.oldvnode;
@@ -1076,6 +1075,27 @@ function updateComponent(vm) {
 
   // save
   vm.$options.oldvnode = vnode;
+}
+
+/**
+ * [递归设置] 如果当前节点有指令，增设置context到当前节点
+ * 注意: vue不是这样实现的，vue只有根节点有context
+ * @param {*} vnode
+ * @param {*} vm
+ */
+function setContext(vnode, vm) {
+  // 如果当前节点有指令，设置context
+  if (!vnode.context) {
+    if (vnode.data && vnode.data.directives) {
+      vnode.context = vm;
+    }
+  }
+
+  if (vnode.children) {
+    vnode.children.forEach(function (e) {
+      setContext(e, vm);
+    }, this);
+  }
 }
 
 /*
@@ -1587,12 +1607,32 @@ function getDirectiveStr(node) {
 
   var str = '';
 
-  if (dirs) {
+  if (dirs && dirs.length > 0) {
     str += 'directives:[';
 
     // why not use for..in, see eslint `no-restricted-syntax`
     dirs.forEach(function (dir) {
-      str += JSON.stringify(dir) + ',';
+      str += '{';
+      for (var key in dir) {
+        str += JSON.stringify(key) + ':';
+
+        var val = dir[key];
+
+        // 把value的值修改为表达式，render的时候就可以计算
+        if (key == 'value') {
+          // 如果有value（表达式）
+          if (val) {
+            str += '(' + val + '),';
+          }
+          // 没有表达式，直接赋值一个true即可。
+          else {
+              str += 'true,';
+            }
+        } else {
+          str += JSON.stringify(val) + ',';
+        }
+      }
+      str += '},';
     });
 
     str += '],';
@@ -2011,16 +2051,16 @@ function initInstanceDedirectives(vm) {
  * 初始化全局指令
  */
 function initGlobaleDedirectives() {
+  // 演示一个简单的把背景色变成红色的指令
   Xiao.directive('red', function (el, binding) {
     el.style.backgroundColor = 'red'; // binding.value
   });
 
+  // 演示和隐藏指令
   Xiao.directive('show', function (el, binding) {
-    if (this[binding.value]) {
-      el.style.display = 'none'; // binding.value
-    } else {
-      el.style.display = null;
-    }
+    var originalDisplay = el.__vOriginalDisplay = el.style.display === 'none' ? '' : el.style.display;
+
+    el.style.display = binding.value ? originalDisplay : 'none';
   });
 }
 

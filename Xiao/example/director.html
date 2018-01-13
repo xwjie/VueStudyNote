@@ -9,7 +9,7 @@
 <h1>show指令</h1>
 <div x-show='see'>当see不为false的时候，这个元素会显示</div>
 
-<h1>show指令 count>1</h1>
+<h1>show指令 count大于1</h1>
 <div x-show='count>1'>当see不为false的时候，这个元素会显示</div>
 </div>
 
@@ -28,6 +28,11 @@
 		app.see = false;
 		app.count = 0;
 	}, 2000);
+	
+	setTimeout(function(){
+		app.see = true;
+		app.count = 2;
+	}, 4000);
 </script>
 
 </body>

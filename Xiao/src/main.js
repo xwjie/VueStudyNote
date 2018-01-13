@@ -127,16 +127,17 @@ function initInstanceDedirectives(vm: Xiao) {
  * 初始化全局指令
  */
 function initGlobaleDedirectives() {
+  // 演示一个简单的把背景色变成红色的指令
   Xiao.directive('red', function (el, binding) {
     el.style.backgroundColor = 'red'// binding.value
   })
 
+  // 演示和隐藏指令
   Xiao.directive('show', function (el, binding) {
-    if (this[binding.value]) {
-      el.style.display = 'none'// binding.value
-    } else {
-      el.style.display = null
-    }
+    const originalDisplay = el.__vOriginalDisplay =
+      el.style.display === 'none' ? '' : el.style.display
+
+    el.style.display = binding.value ? originalDisplay : 'none'
   })
 }
 
