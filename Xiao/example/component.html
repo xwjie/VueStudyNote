@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Xiao框架之helloworld</title>
+	<script src="../dist/xiao.js"></script>
+</head>
+<body>
+<h1>简单组件测试</h1>
+<div id="demo1">
+	<ol>
+	  <!-- 创建一个 todo-item 组件的实例 -->
+	  <todo-item></todo-item>
+	</ol>
+</div>
+
+<script>
+
+// 定义名为 todo-item 的新组件
+Xiao.component('todo-item', {
+  template: '<li>这是个待办项</li>'
+})
+
+var app = new Xiao();
+app.$mount("#demo1");
+
+</script>
+
+</body>
+</html>

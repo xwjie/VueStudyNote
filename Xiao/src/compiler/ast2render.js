@@ -52,6 +52,10 @@ function createRenderStrElemnet(node: any): string {
   // 解析指令
   str += getDirectiveStr(node)
 
+  if(node.tag == 'todo-item'){
+    //str += getComponentStr(node)
+  }
+
   str += "}"
 
   if (node.children) {
@@ -132,6 +136,36 @@ function getDirectiveStr(node: any) {
     })
 
     str += '],'
+  }
+
+  return str;
+}
+
+/**
+ * 解析指令
+ * @param {*} node
+ */
+function getComponentStr(node: any) {
+  let dirs = node.hook
+
+  let str = '';
+
+  if (dirs) {
+    str += 'hook:'
+    str += `
+    {
+      insert: (vnode) => {
+        var Comp = Xiao.component('todo-item')
+
+        console.log('todo-item', Comp)
+        console.log('todo-item vnode', vnode)
+        new Comp({
+          template: '<li>这是个待办项</li>'
+        }).$mount(vnode.elm)
+      }
+    }
+    `
+    str += ','
   }
 
   return str;

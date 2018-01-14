@@ -67,6 +67,48 @@ var createClass = function () {
   };
 }();
 
+
+
+
+
+
+
+
+
+var inherits = function (subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+  }
+
+  subClass.prototype = Object.create(superClass && superClass.prototype, {
+    constructor: {
+      value: subClass,
+      enumerable: false,
+      writable: true,
+      configurable: true
+    }
+  });
+  if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+};
+
+
+
+
+
+
+
+
+
+
+
+var possibleConstructorReturn = function (self, call) {
+  if (!self) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+
+  return call && (typeof call === "object" || typeof call === "function") ? call : self;
+};
+
 var isFunction = function isFunction(f) {
   return typeof f == 'function';
 };
@@ -141,24 +183,16 @@ function isReserved(str) {
  * Define a property.
  */
 
-
-/**
- * Parse simple path.
- */
-
 function vnode(sel, data, children, text, elm) {
     var key = data === undefined ? undefined : data.key;
     return { sel: sel, data: data, children: children,
         text: text, elm: elm, key: key };
 }
 
-//# sourceMappingURL=vnode.js.map
-
 var array = Array.isArray;
 function primitive(s) {
     return typeof s === 'string' || typeof s === 'number';
 }
-//# sourceMappingURL=is.js.map
 
 function createElement(tagName) {
     return document.createElement(tagName);
@@ -222,12 +256,6 @@ var htmlDomApi = {
     isText: isText,
     isComment: isComment,
 };
-
-//# sourceMappingURL=htmldomapi.js.map
-
-//# sourceMappingURL=h.js.map
-
-//# sourceMappingURL=thunk.js.map
 
 function isUndef(s) { return s === undefined; }
 function isDef(s) { return s !== undefined; }
@@ -527,7 +555,6 @@ function init(modules, domApi) {
         return vnode$$1;
     };
 }
-//# sourceMappingURL=snabbdom.js.map
 
 function unwrapExports (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
@@ -561,7 +588,7 @@ function updateClass(oldVnode, vnode) {
 }
 exports.classModule = { create: updateClass, update: updateClass };
 exports.default = exports.classModule;
-//# sourceMappingURL=class.js.map
+
 });
 
 var _class$1 = unwrapExports(_class);
@@ -592,7 +619,7 @@ function updateProps(oldVnode, vnode) {
 }
 exports.propsModule = { create: updateProps, update: updateProps };
 exports.default = exports.propsModule;
-//# sourceMappingURL=props.js.map
+
 });
 
 var props$1 = unwrapExports(props);
@@ -683,7 +710,7 @@ exports.styleModule = {
     remove: applyRemoveStyle
 };
 exports.default = exports.styleModule;
-//# sourceMappingURL=style.js.map
+
 });
 
 var style$1 = unwrapExports(style);
@@ -713,6 +740,29 @@ function updateDirective(oldVnode, vnode) {
 var directive = {
   create: updateDirective,
   update: updateDirective
+};
+
+function updateDirective$1(vnode) {
+  var sel = vnode.data.sel;
+
+  log('create-component', sel);
+
+  if ('todo-item' == sel) {
+    log('是组件');
+  }
+
+  var Comp = Xiao.component(sel);
+
+  log('组件', Comp);
+
+  var comp = vnode.componentInstance = new Comp();
+
+  comp.$mount(vnode.elm);
+}
+
+var createComponent = {
+  init: updateDirective$1
+  //update: updateDirective
 };
 
 var eventlisteners = createCommonjsModule(function (module, exports) {
@@ -809,7 +859,7 @@ exports.eventListenersModule = {
     destroy: updateEventListeners
 };
 exports.default = exports.eventListenersModule;
-//# sourceMappingURL=eventlisteners.js.map
+
 });
 
 var eventlisteners$1 = unwrapExports(eventlisteners);
@@ -824,7 +874,7 @@ function vnode(sel, data, children, text, elm) {
 }
 exports.vnode = vnode;
 exports.default = vnode;
-//# sourceMappingURL=vnode.js.map
+
 });
 
 unwrapExports(vnode_1);
@@ -837,7 +887,7 @@ function primitive(s) {
     return typeof s === 'string' || typeof s === 'number';
 }
 exports.primitive = primitive;
-//# sourceMappingURL=is.js.map
+
 });
 
 unwrapExports(is);
@@ -902,7 +952,7 @@ function h(sel, b, c) {
 exports.h = h;
 
 exports.default = h;
-//# sourceMappingURL=h.js.map
+
 });
 
 var h$3 = unwrapExports(h_1);
@@ -913,7 +963,8 @@ _class$1, // makes it easy to toggle classes
 props$1, // for setting properties on DOM elements
 style$1, // handles styling on elements with support for animations
 eventlisteners$1, // attaches event listeners
-directive] // xiaowenjie add 处理指令
+directive, // xiaowenjie add 处理指令
+createComponent] // xiaowenjie 创建插件
 );
 
 var h = h$3; // helper function for creating vnodes
@@ -969,10 +1020,6 @@ var Dep = function () {
   return Dep;
 }();
 
-// the current target watcher being evaluated.
-// this is globally unique because there could be only one
-// watcher being evaluated at any time.
-
 Dep.target = null;
 // const targetStack = []
 
@@ -1020,7 +1067,6 @@ _Set = function () {
   }]);
   return Set;
 }();
-// }
 
 var Watcher = function () {
   function Watcher(vm, renderFunction) {
@@ -1070,6 +1116,7 @@ var Watcher = function () {
   return Watcher;
 }();
 
+// D:\OutPut\VUE\vue\src\core\instance\lifecycle.js
 function mountComponent(vm, hydrating) {
   // 产生一个代理对象（VUE开发环境会使用Proxy产生一个代理对象，发布环境就是vue对象自己）
   // 调用生成的render函数绑定的this就是它。（whth(this)）
@@ -1090,6 +1137,9 @@ function updateComponent(vm) {
 
   // 把实例绑定到vnode中，处理指令需要用到
   setContext(vnode, vm);
+
+  //
+  setComponentHook(vnode, vm);
 
   // 上一次渲染的虚拟dom
   var preNode = vm.$options.oldvnode;
@@ -1127,6 +1177,34 @@ function setContext(vnode, vm) {
   if (vnode.children) {
     vnode.children.forEach(function (e) {
       setContext(e, vm);
+    }, this);
+  }
+}
+
+function setComponentHook(vnode, vm) {
+  if (!vnode.sel) {
+    return;
+  }
+
+  // 查看是否组成了组件？
+  var Comp = Xiao.component(vnode.sel);
+
+  if (Comp) {
+    log('组件', Comp);
+
+    vnode.data.hook = {
+      insert: function insert(vnode) {
+        log('component vnode', vnode);
+        new Comp({
+          template: '<li>这是个待办项</li>'
+        }).$mount(vnode.elm);
+      }
+    };
+  }
+
+  if (vnode.children) {
+    vnode.children.forEach(function (e) {
+      setComponentHook(e, vm);
     }, this);
   }
 }
@@ -1437,6 +1515,7 @@ function addDirective(el, name, rawName, value, arg, modifiers) {
   el.plain = false;
 }
 
+//D:\OutPut\VUE\vue\src\compiler\parser\index.js
 function html2ast(templte) {
   var root = void 0;
   var parent = void 0;
@@ -1541,6 +1620,7 @@ function makeAttrsMap(attrs) {
   return map;
 }
 
+// D:\OutPut\VUE\vue\src\compiler\codegen\index.js
 function ast2render(ast) {
   var renderStr = '';
 
@@ -1588,6 +1668,10 @@ function createRenderStrElemnet(node) {
 
   // 解析指令
   str += getDirectiveStr(node);
+
+  if (node.tag == 'todo-item') {
+    //str += getComponentStr(node)
+  }
 
   str += "}";
 
@@ -1697,6 +1781,11 @@ function renderToFunction(renderStr) {
 
 // D:\OutPut\VUE\vue\src\platforms\web\util\index.js
 
+/**
+ * Query an element selector if it's not an element already.
+ */
+
+// D:\OutPut\VUE\vue\src\platforms\web\util\index.js
 function query(el) {
   if (typeof el === 'string') {
     var selected = document.querySelector(el);
@@ -1735,6 +1824,8 @@ function getOuterHTML(el) {
 //       return el
 //     }
 //   }
+
+// D:\OutPut\VUE\vue\src\core\observer\index.js
 
 var Observer = function () {
   function Observer(value) {
@@ -1859,6 +1950,8 @@ function defineReactive(obj, key, val, shallow) {
     }
   });
 }
+
+//D:\OutPut\VUE\vue\src\core\instance\state.js
 
 function initState(vm) {
   vm._watchers = [];
@@ -1998,6 +2091,7 @@ function i18n (Xiao$$1) {
 
 // D:\OutPut\VUE\vue\src\core\instance\index.js
 
+//
 var uid = 100;
 
 // fixme
@@ -2008,6 +2102,9 @@ var globaleDedirectives = Object.create(null);
 
 // 全局插件
 var globalPlugins = [];
+
+// 全局组件
+var globalComponent = Object.create(null);
 
 var Xiao = function () {
 
@@ -2026,7 +2123,7 @@ var Xiao = function () {
       warn('Xiao is a constructor and should be called with the `new` keyword');
     }
 
-    this.$options = options;
+    this.$options = options || Object.create(null);
     this._uid = uid++;
 
     log('main start', this);
@@ -2139,6 +2236,42 @@ var Xiao = function () {
       }
 
       globalPlugins.push(plugin);
+    }
+
+    /**
+     * 全局注册组件
+     */
+
+  }, {
+    key: 'component',
+    value: function component(id, definition) {
+      if (globalComponent[id]) {
+        return globalComponent[id];
+      }
+
+      if (!definition) {
+        return null;
+      }
+
+      var newClass = function (_Xiao) {
+        inherits(newClass, _Xiao);
+
+        function newClass() {
+          classCallCheck(this, newClass);
+          return possibleConstructorReturn(this, (newClass.__proto__ || Object.getPrototypeOf(newClass)).apply(this, arguments));
+        }
+
+        return newClass;
+      }(Xiao);
+
+      for (var key in definition) {
+        newClass[key] = definition[key];
+      }
+
+      globalComponent[id] = newClass;
+      log('globalComponent', globalComponent);
+
+      return newClass;
     }
   }]);
   return Xiao;

@@ -30,6 +30,9 @@ function updateComponent(vm: Xiao) {
   // 把实例绑定到vnode中，处理指令需要用到
   setContext(vnode, vm)
 
+  //
+  setComponentHook(vnode, vm)
+
   // 上一次渲染的虚拟dom
   let preNode = vm.$options.oldvnode;
 
@@ -69,4 +72,35 @@ function setContext(vnode: any, vm: Xiao) {
       setContext(e, vm)
     }, this)
   }
+}
+
+function setComponentHook(vnode: any, vm: Xiao) {
+  if (!vnode.sel) {
+    return
+  }
+
+  // 查看是否组成了组件？
+  const Comp = Xiao.component(vnode.sel)
+
+  if (Comp) {
+    log('组件', Comp)
+
+    vnode.data.hook = {
+      insert: (vnode) => {
+        log('component vnode', vnode)
+        new Comp({
+          template: '<li>这是个待办项</li>'
+        }).$mount(vnode.elm)
+      }
+    }
+  }
+
+  if (vnode.children) {
+    vnode.children.forEach(function (e) {
+      setComponentHook(e, vm)
+    }, this)
+  }
+
+
+
 }

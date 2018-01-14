@@ -22,6 +22,9 @@ const globaleDedirectives: Object = Object.create(null)
 const globalPlugins: Array<Function | Object> = []
 
 
+// 全局组件
+const globalComponent: Object = Object.create(null)
+
 class Xiao {
   _uid: number
 
@@ -54,7 +57,7 @@ class Xiao {
       warn('Xiao is a constructor and should be called with the `new` keyword')
     }
 
-    this.$options = options
+    this.$options = options || Object.create(null)
     this._uid = uid++
 
     log('main start', this)
@@ -113,9 +116,11 @@ class Xiao {
   /**
    * 强制刷新
    */
-  $forceUpdate(){
+  $forceUpdate() {
     this._renderWatcher.update()
   }
+
+
 
   /**
    * 注册全局指令
@@ -153,6 +158,32 @@ class Xiao {
 
     globalPlugins.push(plugin)
   }
+
+  /**
+   * 全局注册组件
+   */
+  static component(id: string, definition?: Object) {
+    if (globalComponent[id]) {
+      return globalComponent[id]
+    }
+
+    if (!definition) {
+      return null
+    }
+
+    const newClass = class extends Xiao {
+    }
+
+    for (let key in definition) {
+      newClass[key] = definition[key]
+    }
+
+    globalComponent[id] = newClass
+    log('globalComponent', globalComponent)
+
+    return newClass
+  }
+
 }//Xiao
 
 function initInstanceDedirectives(vm: Xiao) {
