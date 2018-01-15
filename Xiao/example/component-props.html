@@ -9,9 +9,9 @@
 <div id="demo1">
 	<ol>
 	  <!-- 创建一个 todo-item 组件的实例 -->
-	  <todo-item :text="msg1"></todo-item>
-	  <todo-item :text="msg2"></todo-item>
-	  <todo-item :text="msg3"></todo-item>
+	  <todo-item :text="msg1" :count='count1'></todo-item>
+	  <todo-item :text="msg2" :count='count2'></todo-item>
+	  <todo-item :text="msg3" :count='count3'></todo-item>
 	</ol>
 </div>
 
@@ -19,24 +19,28 @@
 
 // 定义名为 todo-item 的新组件
 Xiao.component('todo-item', {
-  props:['text'],
-  template: '<li>这是个待办项:{{text}}</li>'
+  props:['text','count'],
+  template: '<li x-red="count>1">这是个待办项:{{text}}</li>'
 })
 
 var app = new Xiao({
 	data:{
 		msg1: "父组件消息1",
 		msg2: "父组件消息2",
-		msg3: "父组件消息3"	
+		msg3: "父组件消息3",
+		count1: 1,
+		count2: 2,
+		count3: 3,
 	}
 });
 app.$mount("#demo1");
 
 var count = 1;
-setInterval(function(){
-	app.msg1 = "消息1" + count;
-	app.msg2 = "消息2" + count*2;
-	app.msg3 = "消息3" + count*3;
+setTimeout(function(){
+	app.msg1 = "消息1:" + count;
+	app.msg2 = "消息2:" + count*2;
+	app.msg3 = "消息3:" + count*3;
+	app.count2 = 0;
 	count++;
 }, 3000);
 

@@ -1350,7 +1350,8 @@ function initProps(vm) {
     return;
   }
 
-  log('initProps', propsOptions);
+  log('initProps propsOptions', propsOptions);
+  log('initProps vm.$options.propsData', vm.$options.propsData);
 
   var propsData = vm.$options.propsData || {};
   var props = vm._props = {};
@@ -1372,6 +1373,8 @@ function initProps(vm) {
     //const value = validateProp(key, propsOptions, propsData, vm)
 
     var value = propsData[key];
+
+    log('\u6CE8\u518Cprops\u5C5E\u6027\uFF1A' + key + ', \u503C\uFF1A' + value);
 
     defineReactive(props, key, value);
 
@@ -2356,7 +2359,11 @@ function initInstanceDedirectives(vm) {
 function initGlobaleDedirectives() {
   // 演示一个简单的把背景色变成红色的指令
   Xiao.directive('red', function (el, binding) {
-    el.style.backgroundColor = 'red'; // binding.value
+    var originalDisplay = el.__vOriginalBGColor = el.style.backgroundColor === 'red' ? '' : el.style.backgroundColor;
+
+    if (binding.value) {
+      el.style.backgroundColor = 'red'; // binding.value
+    }
   });
 
   // 演示和隐藏指令

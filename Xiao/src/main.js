@@ -211,7 +211,12 @@ function initInstanceDedirectives(vm: Xiao) {
 function initGlobaleDedirectives() {
   // 演示一个简单的把背景色变成红色的指令
   Xiao.directive('red', function (el, binding) {
-    el.style.backgroundColor = 'red'// binding.value
+    const originalDisplay = el.__vOriginalBGColor =
+      el.style.backgroundColor === 'red' ? '' : el.style.backgroundColor
+
+    if (binding.value) {
+      el.style.backgroundColor = 'red'// binding.value
+    }
   })
 
   // 演示和隐藏指令

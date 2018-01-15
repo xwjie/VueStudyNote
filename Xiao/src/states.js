@@ -108,7 +108,8 @@ export function initProps(vm: Xiao) {
     return
   }
 
-  log('initProps', propsOptions)
+  log('initProps propsOptions', propsOptions)
+  log('initProps vm.$options.propsData', vm.$options.propsData)
 
   const propsData = vm.$options.propsData || {}
   const props = vm._props = {}
@@ -121,7 +122,7 @@ export function initProps(vm: Xiao) {
   // root instance props should be converted
   // fixme observerState.shouldConvert = isRoot
 
-  for (let i=0; i < propsOptions.length; i++) {
+  for (let i = 0; i < propsOptions.length; i++) {
     const key = propsOptions[i]
 
     keys.push(key)
@@ -130,6 +131,8 @@ export function initProps(vm: Xiao) {
     //const value = validateProp(key, propsOptions, propsData, vm)
 
     const value = propsData[key]
+
+    log(`注册props属性：${key}, 值：${value}`)
 
     defineReactive(props, key, value)
 
