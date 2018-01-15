@@ -193,24 +193,16 @@ function isReserved(str) {
  * Define a property.
  */
 
-
-/**
- * Parse simple path.
- */
-
 function vnode(sel, data, children, text, elm) {
     var key = data === undefined ? undefined : data.key;
     return { sel: sel, data: data, children: children,
         text: text, elm: elm, key: key };
 }
 
-//# sourceMappingURL=vnode.js.map
-
 var array = Array.isArray;
 function primitive(s) {
     return typeof s === 'string' || typeof s === 'number';
 }
-//# sourceMappingURL=is.js.map
 
 function createElement(tagName) {
     return document.createElement(tagName);
@@ -274,12 +266,6 @@ var htmlDomApi = {
     isText: isText,
     isComment: isComment,
 };
-
-//# sourceMappingURL=htmldomapi.js.map
-
-//# sourceMappingURL=h.js.map
-
-//# sourceMappingURL=thunk.js.map
 
 function isUndef(s) { return s === undefined; }
 function isDef(s) { return s !== undefined; }
@@ -579,7 +565,6 @@ function init(modules, domApi) {
         return vnode$$1;
     };
 }
-//# sourceMappingURL=snabbdom.js.map
 
 function unwrapExports (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
@@ -613,7 +598,7 @@ function updateClass(oldVnode, vnode) {
 }
 exports.classModule = { create: updateClass, update: updateClass };
 exports.default = exports.classModule;
-//# sourceMappingURL=class.js.map
+
 });
 
 var _class$1 = unwrapExports(_class);
@@ -644,7 +629,7 @@ function updateProps(oldVnode, vnode) {
 }
 exports.propsModule = { create: updateProps, update: updateProps };
 exports.default = exports.propsModule;
-//# sourceMappingURL=props.js.map
+
 });
 
 var props$1 = unwrapExports(props);
@@ -735,7 +720,7 @@ exports.styleModule = {
     remove: applyRemoveStyle
 };
 exports.default = exports.styleModule;
-//# sourceMappingURL=style.js.map
+
 });
 
 var style$1 = unwrapExports(style);
@@ -884,7 +869,7 @@ exports.eventListenersModule = {
     destroy: updateEventListeners
 };
 exports.default = exports.eventListenersModule;
-//# sourceMappingURL=eventlisteners.js.map
+
 });
 
 var eventlisteners$1 = unwrapExports(eventlisteners);
@@ -899,7 +884,7 @@ function vnode(sel, data, children, text, elm) {
 }
 exports.vnode = vnode;
 exports.default = vnode;
-//# sourceMappingURL=vnode.js.map
+
 });
 
 unwrapExports(vnode_1);
@@ -912,7 +897,7 @@ function primitive(s) {
     return typeof s === 'string' || typeof s === 'number';
 }
 exports.primitive = primitive;
-//# sourceMappingURL=is.js.map
+
 });
 
 unwrapExports(is);
@@ -977,7 +962,7 @@ function h(sel, b, c) {
 exports.h = h;
 
 exports.default = h;
-//# sourceMappingURL=h.js.map
+
 });
 
 var h$3 = unwrapExports(h_1);
@@ -1045,21 +1030,142 @@ var Dep = function () {
   return Dep;
 }();
 
-// the current target watcher being evaluated.
-// this is globally unique because there could be only one
-// watcher being evaluated at any time.
-
 Dep.target = null;
-// const targetStack = []
+var targetStack = [];
 
 function pushTarget(_target) {
-  // if (Dep.target) targetStack.push(Dep.target)
+  if (Dep.target) targetStack.push(Dep.target);
   Dep.target = _target;
 }
 
 function popTarget() {
-  // Dep.target = targetStack.pop()
-  Dep.target = null;
+  Dep.target = targetStack.pop();
+}
+
+// D:\OutPut\VUE\vue\src\core\observer\index.js
+
+var Observer = function () {
+  function Observer(value) {
+    classCallCheck(this, Observer);
+
+    log('[observer] __INIT__ , vlaue:', value);
+
+    this.value = value;
+    this.dep = new Dep();
+
+    this.walk(value);
+  }
+
+  /**
+   * Walk through each property and convert them into
+   * getter/setters. This method should only be called when
+   * value type is Object.
+   */
+
+
+  createClass(Observer, [{
+    key: 'walk',
+    value: function walk(obj) {
+      var keys = Object.keys(obj);
+      for (var i = 0; i < keys.length; i++) {
+        defineReactive(obj, keys[i], obj[keys[i]]);
+      }
+    }
+  }]);
+  return Observer;
+}();
+
+/**
+ * Attempt to create an observer instance for a value,
+ * returns the new observer if successfully observed,
+ * or the existing observer if the value already has one.
+ */
+
+
+function observe(value, asRootData) {
+  if (!isObject(value)) {
+    // fixme  || value instanceof VNode
+    return;
+  }
+  var ob = void 0;
+  if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
+    ob = value.__ob__;
+  } else if (
+  // observerState.shouldConvert &&
+  (Array.isArray(value) || isPlainObject(value)) && Object.isExtensible(value)) {
+    ob = new Observer(value);
+  }
+
+  // fixme
+  // if (asRootData && ob) {
+  // ob.vmCount++
+  // }
+
+  return ob;
+}
+
+/**
+ * Define a reactive property on an Object.
+ */
+function defineReactive(obj, key, val, shallow) {
+  var property = Object.getOwnPropertyDescriptor(obj, key);
+
+  if (property && property.configurable === false) {
+    return;
+  }
+
+  // xwjie 这里应该可以考虑优化，如果和模板没有关系，dep不需要创建
+  var dep = new Dep();
+
+  log('[observer]\u5B9A\u4E49\u89C2\u5BDF\u8005\uFF0C\u5C5E\u6027\uFF1A' + key);
+
+  // cater for pre-defined getter/setters
+  var getter = property && property.get;
+  var setter = property && property.set;
+
+  // 监听子属性
+  var childOb = observe(val);
+
+  Object.defineProperty(obj, key, {
+    enumerable: true,
+    configurable: true,
+    get: function reactiveGetter() {
+      // log('[observer]get方法被调用，属性：' + key)
+      var value = getter ? getter.call(obj) : val;
+
+      if (Dep.target) {
+        dep.depend();
+
+        // 子属性的依赖关系也要登记起来
+        if (childOb) {
+          childOb.dep.depend();
+        }
+      }
+
+      return value;
+    },
+
+    set: function reactiveSetter(newVal) {
+      // log('[observer]set方法被调用，属性：' + key)
+      var value = getter ? getter.call(obj) : val;
+
+      /* eslint-disable no-self-compare */
+      if (newVal === value || newVal !== newVal && value !== value) {
+        return;
+      }
+
+      if (setter) {
+        setter.call(obj, newVal);
+      } else {
+        val = newVal;
+      }
+
+      // 监听新设置进来的数据
+      childOb = observe(newVal); //!shallow &&
+
+      dep.notify();
+    }
+  });
 }
 
 // D:\OutPut\VUE\vue\src\core\util\env.js
@@ -1096,7 +1202,6 @@ _Set = function () {
   }]);
   return Set;
 }();
-// }
 
 var Watcher = function () {
   function Watcher(vm, renderFunction) {
@@ -1146,6 +1251,159 @@ var Watcher = function () {
   return Watcher;
 }();
 
+//D:\OutPut\VUE\vue\src\core\instance\state.js
+
+function initState(vm) {
+  vm._watchers = [];
+  var opts = vm.$options;
+
+  //if (opts.props) initProps(vm, opts.props)
+  //if (opts.methods) initMethods(vm, opts.methods)
+
+  initData(vm);
+  initComputed(vm);
+
+  //initProps(vm)
+}
+
+/**
+ * 监听data
+ * @param {*} vm
+ */
+function initData(vm) {
+  var data = vm.$options.data;
+
+  data = vm._data = typeof data === 'function' ? getData(data, vm) : data || {};
+
+  // proxy data on instance
+  var keys = Object.keys(data);
+  var props = vm.$options.props;
+  var methods = vm.$options.methods;
+
+  var i = keys.length;
+
+  while (i--) {
+    var key = keys[i];
+
+    if (!isReserved(key)) {
+      // 这里才是真正的代理数据
+      proxy(vm, '_data', key);
+    }
+  }
+
+  // observe data
+  observe(data, true /* asRootData */);
+}
+
+function getData(data, vm) {
+  try {
+    return data.call(vm, vm);
+  } catch (e) {
+    warn("get data error:", e);
+    return {};
+  }
+}
+
+/**
+ * 监听计算属性
+ *
+ * @param {*} vm
+ */
+function initComputed(vm) {
+  var computed = vm.$options.computed;
+
+  //let watchers = vm._watcherCompued = Object.create(null)
+
+  if (!computed) {
+    return;
+  }
+
+  var _loop = function _loop(key) {
+    var getter = computed[key];
+
+    var dep = new Dep();
+
+    Object.defineProperty(vm, key, {
+      enumerable: true,
+      configurable: true,
+      get: function reactiveGetter() {
+        var value = getter.call(vm);
+
+        if (Dep.target) {
+          dep.depend();
+        }
+
+        return value;
+      }
+    });
+  };
+
+  for (var key in computed) {
+    _loop(key);
+  }
+}
+
+function initProps(vm) {
+  var propsOptions = vm.$options.props;
+
+  if (!propsOptions) {
+    return;
+  }
+
+  log('initProps', propsOptions);
+
+  var propsData = vm.$options.propsData || {};
+  var props = vm._props = {};
+
+  // cache prop keys so that future props updates can iterate using Array
+  // instead of dynamic object key enumeration.
+  var keys = vm.$options._propKeys = [];
+  var isRoot = !vm.$parent;
+
+  // root instance props should be converted
+  // fixme observerState.shouldConvert = isRoot
+
+  for (var i = 0; i < propsOptions.length; i++) {
+    var key = propsOptions[i];
+
+    keys.push(key);
+
+    // fixme
+    //const value = validateProp(key, propsOptions, propsData, vm)
+
+    var value = propsData[key];
+
+    defineReactive(props, key, value);
+
+    // static props are already proxied on the component's prototype
+    // during Vue.extend(). We only need to proxy props defined at
+    // instantiation here.
+    if (!(key in vm)) {
+      proxy(vm, '_props', key);
+    }
+  }
+}
+
+var sharedPropertyDefinition = {
+  enumerable: true,
+  configurable: true,
+  get: noop,
+  set: noop
+};
+
+function proxy(target, sourceKey, key) {
+  sharedPropertyDefinition.get = function proxyGetter() {
+    return this[sourceKey][key];
+  };
+
+  sharedPropertyDefinition.set = function proxySetter(val) {
+    this[sourceKey][key] = val;
+  };
+
+  Object.defineProperty(target, key, sharedPropertyDefinition);
+}
+
+// D:\OutPut\VUE\vue\src\core\instance\lifecycle.js
 function mountComponent(vm, hydrating) {
   // 产生一个代理对象（VUE开发环境会使用Proxy产生一个代理对象，发布环境就是vue对象自己）
   // 调用生成的render函数绑定的this就是它。（whth(this)）
@@ -1155,19 +1413,19 @@ function mountComponent(vm, hydrating) {
 var renderCount = 1;
 
 function updateComponent(vm) {
-  var proxy = vm;
+  var proxy$$1 = vm;
 
   // 虚拟dom里面的创建函数
-  proxy.h = h;
+  proxy$$1.h = h;
 
   // 新的虚拟节点
   // 指令的信息已经自动附带再vnode里面
-  var vnode = vm.$render.call(proxy);
+  var vnode = vm.$render.call(proxy$$1);
 
   // 把实例绑定到vnode中，处理指令需要用到
   setContext(vnode, vm);
 
-  //
+  // 处理子组件
   setComponentHook(vnode, vm);
 
   // 上一次渲染的虚拟dom
@@ -1226,7 +1484,12 @@ function setComponentHook(vnode, vm) {
         log('component vnode', vnode);
 
         var app = new Comp();
-        app._parent = vm;
+        app.$parent = vm;
+
+        // 把虚拟节点的数据代理到当前vue里面
+        app.$options.propsData = vnode.data.attrs;
+
+        initProps(app);
 
         app.$mount(vnode.elm);
       }
@@ -1546,6 +1809,7 @@ function addDirective(el, name, rawName, value, arg, modifiers) {
   el.plain = false;
 }
 
+//D:\OutPut\VUE\vue\src\compiler\parser\index.js
 function html2ast(templte) {
   var root = void 0;
   var parent = void 0;
@@ -1650,6 +1914,7 @@ function makeAttrsMap(attrs) {
   return map;
 }
 
+// D:\OutPut\VUE\vue\src\compiler\codegen\index.js
 function ast2render(ast) {
   var renderStr = '';
 
@@ -1729,7 +1994,11 @@ function genAttrStr(node) {
 
     // why not use for..in, see eslint `no-restricted-syntax`
     Object.keys(attrs).every(function (attrname) {
-      // str += JSON.stringify(attrname) + '=' + JSON.stringify(attrs[attrname]) + ' '
+      if (attrname.charAt(0) == ':') {
+        str += JSON.stringify(attrname.substr(1)) + ':' + attrs[attrname] + ',';
+      } else {
+        str += JSON.stringify(attrname) + ':' + JSON.stringify(attrs[attrname]) + ',';
+      }
     });
 
     str += '},';
@@ -1806,6 +2075,11 @@ function renderToFunction(renderStr) {
 
 // D:\OutPut\VUE\vue\src\platforms\web\util\index.js
 
+/**
+ * Query an element selector if it's not an element already.
+ */
+
+// D:\OutPut\VUE\vue\src\platforms\web\util\index.js
 function query(el) {
   if (typeof el === 'string') {
     var selected = document.querySelector(el);
@@ -1845,236 +2119,10 @@ function getOuterHTML(el) {
 //     }
 //   }
 
-var Observer = function () {
-  function Observer(value) {
-    classCallCheck(this, Observer);
-
-    log('[observer] __INIT__ , vlaue:', value);
-
-    this.value = value;
-    this.dep = new Dep();
-
-    this.walk(value);
-  }
-
-  /**
-   * Walk through each property and convert them into
-   * getter/setters. This method should only be called when
-   * value type is Object.
-   */
-
-
-  createClass(Observer, [{
-    key: 'walk',
-    value: function walk(obj) {
-      var keys = Object.keys(obj);
-      for (var i = 0; i < keys.length; i++) {
-        defineReactive(obj, keys[i], obj[keys[i]]);
-      }
-    }
-  }]);
-  return Observer;
-}();
-
 /**
- * Attempt to create an observer instance for a value,
- * returns the new observer if successfully observed,
- * or the existing observer if the value already has one.
+ * 简单的i18n国际化插件
+ * @param {*} Xiao
  */
-
-
-function observe(value, asRootData) {
-  if (!isObject(value)) {
-    // fixme  || value instanceof VNode
-    return;
-  }
-  var ob = void 0;
-  if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
-    ob = value.__ob__;
-  } else if (
-  // observerState.shouldConvert &&
-  (Array.isArray(value) || isPlainObject(value)) && Object.isExtensible(value)) {
-    ob = new Observer(value);
-  }
-
-  // fixme
-  // if (asRootData && ob) {
-  // ob.vmCount++
-  // }
-
-  return ob;
-}
-
-/**
- * Define a reactive property on an Object.
- */
-function defineReactive(obj, key, val, shallow) {
-  var property = Object.getOwnPropertyDescriptor(obj, key);
-
-  if (property && property.configurable === false) {
-    return;
-  }
-
-  // xwjie 这里应该可以考虑优化，如果和模板没有关系，dep不需要创建
-  var dep = new Dep();
-
-  log('[observer]\u5B9A\u4E49\u89C2\u5BDF\u8005\uFF0C\u5C5E\u6027\uFF1A' + key);
-
-  // cater for pre-defined getter/setters
-  var getter = property && property.get;
-  var setter = property && property.set;
-
-  // 监听子属性
-  var childOb = observe(val);
-
-  Object.defineProperty(obj, key, {
-    enumerable: true,
-    configurable: true,
-    get: function reactiveGetter() {
-      // log('[observer]get方法被调用，属性：' + key)
-      var value = getter ? getter.call(obj) : val;
-
-      if (Dep.target) {
-        dep.depend();
-
-        // 子属性的依赖关系也要登记起来
-        if (childOb) {
-          childOb.dep.depend();
-        }
-      }
-
-      return value;
-    },
-
-    set: function reactiveSetter(newVal) {
-      // log('[observer]set方法被调用，属性：' + key)
-      var value = getter ? getter.call(obj) : val;
-
-      /* eslint-disable no-self-compare */
-      if (newVal === value || newVal !== newVal && value !== value) {
-        return;
-      }
-
-      if (setter) {
-        setter.call(obj, newVal);
-      } else {
-        val = newVal;
-      }
-
-      // 监听新设置进来的数据
-      childOb = observe(newVal); //!shallow &&
-
-      dep.notify();
-    }
-  });
-}
-
-function initState(vm) {
-  vm._watchers = [];
-  var opts = vm.$options;
-
-  //if (opts.props) initProps(vm, opts.props)
-  //if (opts.methods) initMethods(vm, opts.methods)
-
-  initData(vm);
-  initComputed(vm);
-}
-
-/**
- * 监听data
- * @param {*} vm
- */
-function initData(vm) {
-  var data = vm.$options.data;
-
-  data = vm._data = typeof data === 'function' ? getData(data, vm) : data || {};
-
-  // proxy data on instance
-  var keys = Object.keys(data);
-  var props = vm.$options.props;
-  var methods = vm.$options.methods;
-
-  var i = keys.length;
-
-  while (i--) {
-    var key = keys[i];
-
-    if (!isReserved(key)) {
-      proxy(vm, '_data', key);
-    }
-  }
-
-  // observe data
-  observe(data, true /* asRootData */);
-}
-
-function getData(data, vm) {
-  try {
-    return data.call(vm, vm);
-  } catch (e) {
-    warn("get data error:", e);
-    return {};
-  }
-}
-
-/**
- * 监听计算属性
- *
- * @param {*} vm
- */
-function initComputed(vm) {
-  var computed = vm.$options.computed;
-
-  //let watchers = vm._watcherCompued = Object.create(null)
-
-  if (!computed) {
-    return;
-  }
-
-  var _loop = function _loop(key) {
-    var getter = computed[key];
-
-    var dep = new Dep();
-
-    Object.defineProperty(vm, key, {
-      enumerable: true,
-      configurable: true,
-      get: function reactiveGetter() {
-        var value = getter.call(vm);
-
-        if (Dep.target) {
-          dep.depend();
-        }
-
-        return value;
-      }
-    });
-  };
-
-  for (var key in computed) {
-    _loop(key);
-  }
-}
-
-var sharedPropertyDefinition = {
-  enumerable: true,
-  configurable: true,
-  get: noop,
-  set: noop
-};
-
-function proxy(target, sourceKey, key) {
-  sharedPropertyDefinition.get = function proxyGetter() {
-    return this[sourceKey][key];
-  };
-
-  sharedPropertyDefinition.set = function proxySetter(val) {
-    this[sourceKey][key] = val;
-  };
-
-  Object.defineProperty(target, key, sharedPropertyDefinition);
-}
-
 function i18n (Xiao$$1) {
 
   // 扩展一个实例方法
@@ -2124,7 +2172,7 @@ var Xiao = function () {
   // FIXME 还不知道有啥用【应该了为了保证计算属性缓存起来用的】
   // _watcherCompued: Object
 
-  // 数据
+  // 渲染虚拟dom需要用到的。（VUE里面应该是$createElement）
   function Xiao(options) {
     classCallCheck(this, Xiao);
 
@@ -2148,7 +2196,7 @@ var Xiao = function () {
   // 数据修改之后的监听器
 
 
-  // 渲染虚拟dom需要用到的。（VUE里面应该是$createElement）
+  // 数据
 
 
   createClass(Xiao, [{

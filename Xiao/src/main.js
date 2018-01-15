@@ -42,13 +42,14 @@ class Xiao {
 
   // 数据
   _data: Object
+  _props: Object
 
   // 数据修改之后的监听器
   _renderWatcher: Watcher
   _watchers: Array<any>
 
   // 子组件的时候，设置当前的父组件
-  _parent: ?Xiao
+  $parent: ?Xiao
 
   // 计算属性相关的watcher
   // FIXME 还不知道有啥用【应该了为了保证计算属性缓存起来用的】

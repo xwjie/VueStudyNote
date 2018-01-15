@@ -52,16 +52,14 @@ export default class Dep {
 // the current target watcher being evaluated.
 // this is globally unique because there could be only one
 // watcher being evaluated at any time.
-
 Dep.target = null
-// const targetStack = []
+const targetStack = []
 
-export function pushTarget(_target: Watcher) {
-  // if (Dep.target) targetStack.push(Dep.target)
+export function pushTarget (_target: Watcher) {
+  if (Dep.target) targetStack.push(Dep.target)
   Dep.target = _target
 }
 
-export function popTarget() {
-  // Dep.target = targetStack.pop()
-  Dep.target = null;
+export function popTarget () {
+  Dep.target = targetStack.pop()
 }

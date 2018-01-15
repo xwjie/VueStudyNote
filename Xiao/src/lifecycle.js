@@ -2,6 +2,8 @@
 import Xiao from './main'
 import { warn, log } from './util/debug'
 import { h, patch } from './compiler/snabbdom'
+import { observe, defineReactive } from './observer'
+import { initProps } from './states'
 
 import Watcher from './observer/watcher'
 
@@ -30,7 +32,7 @@ function updateComponent(vm: Xiao) {
   // 把实例绑定到vnode中，处理指令需要用到
   setContext(vnode, vm)
 
-  //
+  // 处理子组件
   setComponentHook(vnode, vm)
 
   // 上一次渲染的虚拟dom
@@ -89,8 +91,13 @@ function setComponentHook(vnode: any, vm: Xiao) {
       insert: (vnode) => {
         log('component vnode', vnode)
 
-        let app =new Comp()
-        app._parent = vm
+        let app = new Comp()
+        app.$parent = vm
+
+        // 把虚拟节点的数据代理到当前vue里面
+        app.$options.propsData = vnode.data.attrs
+
+        initProps(app)
 
         app.$mount(vnode.elm)
       }
@@ -102,7 +109,5 @@ function setComponentHook(vnode: any, vm: Xiao) {
       setComponentHook(e, vm)
     }, this)
   }
-
-
 
 }

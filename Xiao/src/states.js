@@ -18,6 +18,7 @@ export function initState(vm: Xiao) {
   initData(vm)
   initComputed(vm)
 
+  //initProps(vm)
 }
 
 /**
@@ -46,6 +47,7 @@ function initData(vm: Xiao) {
     const key = keys[i]
 
     if (!isReserved(key)) {
+      // 这里才是真正的代理数据
       proxy(vm, `_data`, key)
     }
   }
@@ -98,6 +100,47 @@ function initComputed(vm: Xiao) {
   }
 }
 
+
+export function initProps(vm: Xiao) {
+  const propsOptions = vm.$options.props
+
+  if (!propsOptions) {
+    return
+  }
+
+  log('initProps', propsOptions)
+
+  const propsData = vm.$options.propsData || {}
+  const props = vm._props = {}
+
+  // cache prop keys so that future props updates can iterate using Array
+  // instead of dynamic object key enumeration.
+  const keys = vm.$options._propKeys = []
+  const isRoot = !vm.$parent
+
+  // root instance props should be converted
+  // fixme observerState.shouldConvert = isRoot
+
+  for (let i=0; i < propsOptions.length; i++) {
+    const key = propsOptions[i]
+
+    keys.push(key)
+
+    // fixme
+    //const value = validateProp(key, propsOptions, propsData, vm)
+
+    const value = propsData[key]
+
+    defineReactive(props, key, value)
+
+    // static props are already proxied on the component's prototype
+    // during Vue.extend(). We only need to proxy props defined at
+    // instantiation here.
+    if (!(key in vm)) {
+      proxy(vm, `_props`, key)
+    }
+  }
+}
 
 
 const sharedPropertyDefinition = {
