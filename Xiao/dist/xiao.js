@@ -13,6 +13,16 @@
  */
 function noop(a, b, c) {}
 
+/**
+ * Mix properties into target object.
+ */
+function extend(to, _from) {
+  for (var key in _from) {
+    to[key] = _from[key];
+  }
+  return to;
+}
+
 //copy from D:\OutPut\VUE\vue\src\core\util\debug.js
 
 var warn = noop;
@@ -183,16 +193,24 @@ function isReserved(str) {
  * Define a property.
  */
 
+
+/**
+ * Parse simple path.
+ */
+
 function vnode(sel, data, children, text, elm) {
     var key = data === undefined ? undefined : data.key;
     return { sel: sel, data: data, children: children,
         text: text, elm: elm, key: key };
 }
 
+//# sourceMappingURL=vnode.js.map
+
 var array = Array.isArray;
 function primitive(s) {
     return typeof s === 'string' || typeof s === 'number';
 }
+//# sourceMappingURL=is.js.map
 
 function createElement(tagName) {
     return document.createElement(tagName);
@@ -256,6 +274,12 @@ var htmlDomApi = {
     isText: isText,
     isComment: isComment,
 };
+
+//# sourceMappingURL=htmldomapi.js.map
+
+//# sourceMappingURL=h.js.map
+
+//# sourceMappingURL=thunk.js.map
 
 function isUndef(s) { return s === undefined; }
 function isDef(s) { return s !== undefined; }
@@ -555,6 +579,7 @@ function init(modules, domApi) {
         return vnode$$1;
     };
 }
+//# sourceMappingURL=snabbdom.js.map
 
 function unwrapExports (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
@@ -588,7 +613,7 @@ function updateClass(oldVnode, vnode) {
 }
 exports.classModule = { create: updateClass, update: updateClass };
 exports.default = exports.classModule;
-
+//# sourceMappingURL=class.js.map
 });
 
 var _class$1 = unwrapExports(_class);
@@ -619,7 +644,7 @@ function updateProps(oldVnode, vnode) {
 }
 exports.propsModule = { create: updateProps, update: updateProps };
 exports.default = exports.propsModule;
-
+//# sourceMappingURL=props.js.map
 });
 
 var props$1 = unwrapExports(props);
@@ -710,7 +735,7 @@ exports.styleModule = {
     remove: applyRemoveStyle
 };
 exports.default = exports.styleModule;
-
+//# sourceMappingURL=style.js.map
 });
 
 var style$1 = unwrapExports(style);
@@ -859,7 +884,7 @@ exports.eventListenersModule = {
     destroy: updateEventListeners
 };
 exports.default = exports.eventListenersModule;
-
+//# sourceMappingURL=eventlisteners.js.map
 });
 
 var eventlisteners$1 = unwrapExports(eventlisteners);
@@ -874,7 +899,7 @@ function vnode(sel, data, children, text, elm) {
 }
 exports.vnode = vnode;
 exports.default = vnode;
-
+//# sourceMappingURL=vnode.js.map
 });
 
 unwrapExports(vnode_1);
@@ -887,7 +912,7 @@ function primitive(s) {
     return typeof s === 'string' || typeof s === 'number';
 }
 exports.primitive = primitive;
-
+//# sourceMappingURL=is.js.map
 });
 
 unwrapExports(is);
@@ -952,7 +977,7 @@ function h(sel, b, c) {
 exports.h = h;
 
 exports.default = h;
-
+//# sourceMappingURL=h.js.map
 });
 
 var h$3 = unwrapExports(h_1);
@@ -1020,6 +1045,10 @@ var Dep = function () {
   return Dep;
 }();
 
+// the current target watcher being evaluated.
+// this is globally unique because there could be only one
+// watcher being evaluated at any time.
+
 Dep.target = null;
 // const targetStack = []
 
@@ -1067,6 +1096,7 @@ _Set = function () {
   }]);
   return Set;
 }();
+// }
 
 var Watcher = function () {
   function Watcher(vm, renderFunction) {
@@ -1116,7 +1146,6 @@ var Watcher = function () {
   return Watcher;
 }();
 
-// D:\OutPut\VUE\vue\src\core\instance\lifecycle.js
 function mountComponent(vm, hydrating) {
   // 产生一个代理对象（VUE开发环境会使用Proxy产生一个代理对象，发布环境就是vue对象自己）
   // 调用生成的render函数绑定的this就是它。（whth(this)）
@@ -1195,9 +1224,11 @@ function setComponentHook(vnode, vm) {
     vnode.data.hook = {
       insert: function insert(vnode) {
         log('component vnode', vnode);
-        new Comp({
-          template: '<li>这是个待办项</li>'
-        }).$mount(vnode.elm);
+
+        var app = new Comp();
+        app._parent = vm;
+
+        app.$mount(vnode.elm);
       }
     };
   }
@@ -1515,7 +1546,6 @@ function addDirective(el, name, rawName, value, arg, modifiers) {
   el.plain = false;
 }
 
-//D:\OutPut\VUE\vue\src\compiler\parser\index.js
 function html2ast(templte) {
   var root = void 0;
   var parent = void 0;
@@ -1620,7 +1650,6 @@ function makeAttrsMap(attrs) {
   return map;
 }
 
-// D:\OutPut\VUE\vue\src\compiler\codegen\index.js
 function ast2render(ast) {
   var renderStr = '';
 
@@ -1668,10 +1697,6 @@ function createRenderStrElemnet(node) {
 
   // 解析指令
   str += getDirectiveStr(node);
-
-  if (node.tag == 'todo-item') {
-    //str += getComponentStr(node)
-  }
 
   str += "}";
 
@@ -1781,11 +1806,6 @@ function renderToFunction(renderStr) {
 
 // D:\OutPut\VUE\vue\src\platforms\web\util\index.js
 
-/**
- * Query an element selector if it's not an element already.
- */
-
-// D:\OutPut\VUE\vue\src\platforms\web\util\index.js
 function query(el) {
   if (typeof el === 'string') {
     var selected = document.querySelector(el);
@@ -1824,8 +1844,6 @@ function getOuterHTML(el) {
 //       return el
 //     }
 //   }
-
-// D:\OutPut\VUE\vue\src\core\observer\index.js
 
 var Observer = function () {
   function Observer(value) {
@@ -1951,8 +1969,6 @@ function defineReactive(obj, key, val, shallow) {
   });
 }
 
-//D:\OutPut\VUE\vue\src\core\instance\state.js
-
 function initState(vm) {
   vm._watchers = [];
   var opts = vm.$options;
@@ -2059,10 +2075,6 @@ function proxy(target, sourceKey, key) {
   Object.defineProperty(target, key, sharedPropertyDefinition);
 }
 
-/**
- * 简单的i18n国际化插件
- * @param {*} Xiao
- */
 function i18n (Xiao$$1) {
 
   // 扩展一个实例方法
@@ -2112,10 +2124,7 @@ var Xiao = function () {
   // FIXME 还不知道有啥用【应该了为了保证计算属性缓存起来用的】
   // _watcherCompued: Object
 
-  // 数据修改之后的监听器
-
-
-  // 渲染虚拟dom需要用到的。（VUE里面应该是$createElement）
+  // 数据
   function Xiao(options) {
     classCallCheck(this, Xiao);
 
@@ -2123,15 +2132,23 @@ var Xiao = function () {
       warn('Xiao is a constructor and should be called with the `new` keyword');
     }
 
-    this.$options = options || Object.create(null);
+    // 复制属性
+    this.$options = extend(Object.create(null), options);
+
     this._uid = uid++;
 
-    log('main start', this);
+    log('创建组件', this);
 
     this._init(this.$options);
   }
 
-  // 数据
+  // 子组件的时候，设置当前的父组件
+
+
+  // 数据修改之后的监听器
+
+
+  // 渲染虚拟dom需要用到的。（VUE里面应该是$createElement）
 
 
   createClass(Xiao, [{
@@ -2258,7 +2275,7 @@ var Xiao = function () {
 
         function newClass() {
           classCallCheck(this, newClass);
-          return possibleConstructorReturn(this, (newClass.__proto__ || Object.getPrototypeOf(newClass)).apply(this, arguments));
+          return possibleConstructorReturn(this, (newClass.__proto__ || Object.getPrototypeOf(newClass)).call(this, definition));
         }
 
         return newClass;

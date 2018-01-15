@@ -2,6 +2,7 @@
 // D:\OutPut\VUE\vue\src\core\instance\index.js
 
 import { warn, error, log, isFunction, toArray } from './util'
+import { extend } from './shared/util'
 import { mountComponent } from './lifecycle'
 import { compileToFunction } from './compiler'
 import { query, getOuterHTML } from './util/web'
@@ -46,21 +47,26 @@ class Xiao {
   _renderWatcher: Watcher
   _watchers: Array<any>
 
+  // 子组件的时候，设置当前的父组件
+  _parent: ?Xiao
+
   // 计算属性相关的watcher
   // FIXME 还不知道有啥用【应该了为了保证计算属性缓存起来用的】
   // _watcherCompued: Object
 
-  constructor(options: Object) {
+  constructor(options?: Object) {
     if (process.env.NODE_ENV !== 'production' &&
       !(this instanceof Xiao)
     ) {
       warn('Xiao is a constructor and should be called with the `new` keyword')
     }
 
-    this.$options = options || Object.create(null)
+    // 复制属性
+    this.$options = extend(Object.create(null), options)
+
     this._uid = uid++
 
-    log('main start', this)
+    log('创建组件', this)
 
     this._init(this.$options)
   }
@@ -172,6 +178,9 @@ class Xiao {
     }
 
     const newClass = class extends Xiao {
+      constructor() {
+        super(definition)
+      }
     }
 
     for (let key in definition) {

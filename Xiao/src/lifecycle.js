@@ -88,9 +88,11 @@ function setComponentHook(vnode: any, vm: Xiao) {
     vnode.data.hook = {
       insert: (vnode) => {
         log('component vnode', vnode)
-        new Comp({
-          template: '<li>这是个待办项</li>'
-        }).$mount(vnode.elm)
+
+        let app =new Comp()
+        app._parent = vm
+
+        app.$mount(vnode.elm)
       }
     }
   }

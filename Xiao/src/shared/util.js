@@ -7,3 +7,15 @@
  * with ...rest (https://flow.org/blog/2017/05/07/Strict-Function-Call-Arity/)
  */
 export function noop(a?: any, b?: any, c?: any) { }
+
+
+/**
+ * Mix properties into target object.
+ */
+export function extend (to: Object, _from: ?Object): Object {
+  for (const key in _from) {
+    to[key] = _from[key]
+  }
+  return to
+}
+
