@@ -27,10 +27,11 @@
 * [支持show指令支持指令表达式](https://github.com/xwjie/VueStudyNote/issues/10)
 * [实现插件](https://github.com/xwjie/VueStudyNote/issues/11)
 * [实现国际化i18n插件](https://github.com/xwjie/VueStudyNote/issues/12)
+* 支持bind指令(https://github.com/xwjie/VueStudyNote/issues/15)
 * 支持if指令
 * 数据绑定
 * 双向数据绑定
-* 实现支持组件
+* 实现支持组件[1](https://github.com/xwjie/VueStudyNote/issues/13) [2](https://github.com/xwjie/VueStudyNote/issues/14)
 * 实现组件支持插槽
 * 实现支持自定义指令
 * 实现支持filter
