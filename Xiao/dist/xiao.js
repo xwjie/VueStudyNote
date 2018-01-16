@@ -193,16 +193,24 @@ function isReserved(str) {
  * Define a property.
  */
 
+
+/**
+ * Parse simple path.
+ */
+
 function vnode(sel, data, children, text, elm) {
     var key = data === undefined ? undefined : data.key;
     return { sel: sel, data: data, children: children,
         text: text, elm: elm, key: key };
 }
 
+//# sourceMappingURL=vnode.js.map
+
 var array = Array.isArray;
 function primitive(s) {
     return typeof s === 'string' || typeof s === 'number';
 }
+//# sourceMappingURL=is.js.map
 
 function createElement(tagName) {
     return document.createElement(tagName);
@@ -266,6 +274,12 @@ var htmlDomApi = {
     isText: isText,
     isComment: isComment,
 };
+
+//# sourceMappingURL=htmldomapi.js.map
+
+//# sourceMappingURL=h.js.map
+
+//# sourceMappingURL=thunk.js.map
 
 function isUndef(s) { return s === undefined; }
 function isDef(s) { return s !== undefined; }
@@ -565,6 +579,7 @@ function init(modules, domApi) {
         return vnode$$1;
     };
 }
+//# sourceMappingURL=snabbdom.js.map
 
 function unwrapExports (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
@@ -598,7 +613,7 @@ function updateClass(oldVnode, vnode) {
 }
 exports.classModule = { create: updateClass, update: updateClass };
 exports.default = exports.classModule;
-
+//# sourceMappingURL=class.js.map
 });
 
 var _class$1 = unwrapExports(_class);
@@ -629,7 +644,7 @@ function updateProps(oldVnode, vnode) {
 }
 exports.propsModule = { create: updateProps, update: updateProps };
 exports.default = exports.propsModule;
-
+//# sourceMappingURL=props.js.map
 });
 
 var props$1 = unwrapExports(props);
@@ -720,7 +735,7 @@ exports.styleModule = {
     remove: applyRemoveStyle
 };
 exports.default = exports.styleModule;
-
+//# sourceMappingURL=style.js.map
 });
 
 var style$1 = unwrapExports(style);
@@ -869,7 +884,7 @@ exports.eventListenersModule = {
     destroy: updateEventListeners
 };
 exports.default = exports.eventListenersModule;
-
+//# sourceMappingURL=eventlisteners.js.map
 });
 
 var eventlisteners$1 = unwrapExports(eventlisteners);
@@ -884,7 +899,7 @@ function vnode(sel, data, children, text, elm) {
 }
 exports.vnode = vnode;
 exports.default = vnode;
-
+//# sourceMappingURL=vnode.js.map
 });
 
 unwrapExports(vnode_1);
@@ -897,7 +912,7 @@ function primitive(s) {
     return typeof s === 'string' || typeof s === 'number';
 }
 exports.primitive = primitive;
-
+//# sourceMappingURL=is.js.map
 });
 
 unwrapExports(is);
@@ -962,7 +977,7 @@ function h(sel, b, c) {
 exports.h = h;
 
 exports.default = h;
-
+//# sourceMappingURL=h.js.map
 });
 
 var h$3 = unwrapExports(h_1);
@@ -1030,6 +1045,11 @@ var Dep = function () {
   return Dep;
 }();
 
+// the current target watcher being evaluated.
+// this is globally unique because there could be only one
+// watcher being evaluated at any time.
+
+
 Dep.target = null;
 var targetStack = [];
 
@@ -1041,8 +1061,6 @@ function pushTarget(_target) {
 function popTarget() {
   Dep.target = targetStack.pop();
 }
-
-// D:\OutPut\VUE\vue\src\core\observer\index.js
 
 var Observer = function () {
   function Observer(value) {
@@ -1202,6 +1220,7 @@ _Set = function () {
   }]);
   return Set;
 }();
+// }
 
 var Watcher = function () {
   function Watcher(vm, renderFunction) {
@@ -1250,8 +1269,6 @@ var Watcher = function () {
   }]);
   return Watcher;
 }();
-
-//D:\OutPut\VUE\vue\src\core\instance\state.js
 
 function initState(vm) {
   vm._watchers = [];
@@ -1477,6 +1494,14 @@ function setContext(vnode, vm) {
   }
 }
 
+/**
+ * 实现组件功能
+ *
+ * 采用snabbdom的hook，在insert和update的时候更新数据。
+ *
+ * @param {*} vnode
+ * @param {*} vm
+ */
 function setComponentHook(vnode, vm) {
   if (!vnode.sel) {
     return;
@@ -1486,28 +1511,29 @@ function setComponentHook(vnode, vm) {
   var Comp = Xiao.component(vnode.sel);
 
   if (Comp) {
-    log('组件', Comp);
-
     vnode.data.hook = {
       insert: function insert(vnode) {
         log('component vnode', vnode);
 
+        // 创建子组件实例
         var app = new Comp();
         app.$parent = vm;
 
-        // 把虚拟节点的数据代理到当前vue里面
         var propsData = vnode.data.attrs;
 
+        // 把计算后的props数据代理到当前vue里面
         initProps(app, propsData);
 
+        // 保存到vnode中，更新的时候需要取出来用
         vnode.childContext = app;
 
+        // 渲染
         app.$mount(vnode.elm);
       },
       update: function update(oldvnode, vnode) {
-
         var app = oldvnode.childContext;
 
+        // 更新update属性
         updateProps(app, vnode.data.attrs);
 
         vnode.childContext = app;
@@ -1516,6 +1542,7 @@ function setComponentHook(vnode, vm) {
     };
   }
 
+  // 递归
   if (vnode.children) {
     vnode.children.forEach(function (e) {
       setComponentHook(e, vm);
@@ -1829,7 +1856,6 @@ function addDirective(el, name, rawName, value, arg, modifiers) {
   el.plain = false;
 }
 
-//D:\OutPut\VUE\vue\src\compiler\parser\index.js
 function html2ast(templte) {
   var root = void 0;
   var parent = void 0;
@@ -1934,7 +1960,6 @@ function makeAttrsMap(attrs) {
   return map;
 }
 
-// D:\OutPut\VUE\vue\src\compiler\codegen\index.js
 function ast2render(ast) {
   var renderStr = '';
 
@@ -2096,11 +2121,6 @@ function renderToFunction(renderStr) {
 
 // D:\OutPut\VUE\vue\src\platforms\web\util\index.js
 
-/**
- * Query an element selector if it's not an element already.
- */
-
-// D:\OutPut\VUE\vue\src\platforms\web\util\index.js
 function query(el) {
   if (typeof el === 'string') {
     var selected = document.querySelector(el);
@@ -2140,10 +2160,6 @@ function getOuterHTML(el) {
 //     }
 //   }
 
-/**
- * 简单的i18n国际化插件
- * @param {*} Xiao
- */
 function i18n (Xiao$$1) {
 
   // 扩展一个实例方法
@@ -2172,7 +2188,6 @@ function i18n (Xiao$$1) {
 
 // D:\OutPut\VUE\vue\src\core\instance\index.js
 
-//
 var uid = 100;
 
 // fixme

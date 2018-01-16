@@ -20,7 +20,7 @@
 // 定义名为 todo-item 的新组件
 Xiao.component('todo-item', {
   props:['text','count'],
-  template: '<li x-red="count>1">这是个待办项:{{text}}</li>'
+  template: '<li x-red="count %2 == 0">这是个待办项:{{text}}</li>'
 })
 
 var app = new Xiao({
@@ -38,15 +38,15 @@ var app = new Xiao({
 app.$mount("#demo1");
 
 var count = 1;
-setTimeout(function(){
+setInterval(function(){
 	app.msg1 = "消息1:" + count;
 	app.msg2 = "消息2:" + count*2;
 	app.msg3 = "消息3:" + count*3;
-	app.count2 = 0;
-	app.count1 = 2;
-	app.subdata.count111 = 2
+	app.count2++;
+	app.count1++;
+	app.subdata.count111++;
 	count++;
-}, 3000);
+}, 1000);
 
 </script>
 

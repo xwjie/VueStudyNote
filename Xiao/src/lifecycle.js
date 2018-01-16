@@ -72,6 +72,14 @@ function setContext(vnode: any, vm: Xiao) {
   }
 }
 
+/**
+ * 实现组件功能
+ *
+ * 采用snabbdom的hook，在insert和update的时候更新数据。
+ *
+ * @param {*} vnode
+ * @param {*} vm
+ */
 function setComponentHook(vnode: any, vm: Xiao) {
   if (!vnode.sel) {
     return
@@ -81,28 +89,29 @@ function setComponentHook(vnode: any, vm: Xiao) {
   const Comp = Xiao.component(vnode.sel)
 
   if (Comp) {
-    log('组件', Comp)
-
     vnode.data.hook = {
       insert: (vnode) => {
         log('component vnode', vnode)
 
+        // 创建子组件实例
         let app = new Comp()
         app.$parent = vm
 
-        // 把虚拟节点的数据代理到当前vue里面
         const propsData = vnode.data.attrs
 
+        // 把计算后的props数据代理到当前vue里面
         initProps(app, propsData)
 
+        // 保存到vnode中，更新的时候需要取出来用
         vnode.childContext = app
 
+        // 渲染
         app.$mount(vnode.elm)
       },
       update: (oldvnode, vnode) => {
-
         const app = oldvnode.childContext
 
+        // 更新update属性
         updateProps(app, vnode.data.attrs)
 
         vnode.childContext = app
@@ -111,6 +120,7 @@ function setComponentHook(vnode: any, vm: Xiao) {
     }
   }
 
+  // 递归
   if (vnode.children) {
     vnode.children.forEach(function (e) {
       setComponentHook(e, vm)
