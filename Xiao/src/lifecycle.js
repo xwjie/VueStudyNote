@@ -97,7 +97,7 @@ function setComponentHook(vnode: any, vm: Xiao) {
         let app = new Comp()
         app.$parent = vm
 
-        const propsData = vnode.data.attrs
+        const propsData = vnode.data.props
 
         // 把计算后的props数据代理到当前vue里面
         initProps(app, propsData)
@@ -112,7 +112,7 @@ function setComponentHook(vnode: any, vm: Xiao) {
         const app = oldvnode.childContext
 
         // 更新update属性
-        updateProps(app, vnode.data.attrs)
+        updateProps(app, vnode.data.props)
 
         vnode.childContext = app
       }

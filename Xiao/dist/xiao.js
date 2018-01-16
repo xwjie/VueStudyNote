@@ -1433,7 +1433,6 @@ function proxy(target, sourceKey, key) {
   Object.defineProperty(target, key, sharedPropertyDefinition);
 }
 
-// D:\OutPut\VUE\vue\src\core\instance\lifecycle.js
 function mountComponent(vm, hydrating) {
   // 产生一个代理对象（VUE开发环境会使用Proxy产生一个代理对象，发布环境就是vue对象自己）
   // 调用生成的render函数绑定的this就是它。（whth(this)）
@@ -1519,7 +1518,7 @@ function setComponentHook(vnode, vm) {
         var app = new Comp();
         app.$parent = vm;
 
-        var propsData = vnode.data.attrs;
+        var propsData = vnode.data.props;
 
         // 把计算后的props数据代理到当前vue里面
         initProps(app, propsData);
@@ -1534,7 +1533,7 @@ function setComponentHook(vnode, vm) {
         var app = oldvnode.childContext;
 
         // 更新update属性
-        updateProps(app, vnode.data.attrs);
+        updateProps(app, vnode.data.props);
 
         vnode.childContext = app;
       }
@@ -1960,6 +1959,7 @@ function makeAttrsMap(attrs) {
   return map;
 }
 
+// D:\OutPut\VUE\vue\src\compiler\codegen\index.js
 function ast2render(ast) {
   var renderStr = '';
 
@@ -2000,7 +2000,10 @@ function createRenderStr(ast) {
 function createRenderStrElemnet(node) {
   log('createRenderStrElemnet', node);
 
-  var str = 'h(' + JSON.stringify(node.tag) + ",{";
+  // snabbdom 的语法，类名放在tag上。'div#container.two.classes'
+  var tag = getTagAndClassName(node);
+
+  var str = 'h(' + tag + ',{';
 
   // 解析属性
   str += genAttrStr(node);
@@ -2026,31 +2029,89 @@ function createRenderStrElemnet(node) {
 }
 
 /**
+ * 得到带类名的TAG名
+ *
+ * 返回如 “div.classes” （静态） 或者 “div." + nowClass (动态)
+ *
+ * TODO : 没有支持id和多class 如 'div#container.two.classes'
+ *
+ */
+function getTagAndClassName(node) {
+  var tag = JSON.stringify(node.tag);
+  var attrs = node.attrsMap;
+
+  if (!attrs) {
+    return tag;
+  }
+
+  //FIXME 大小写会有bug
+
+  // 如果有class属性
+  var v = attrs['class'];
+  if (v) {
+    return JSON.stringify(node.tag + '.' + v);
+  }
+
+  // 如果有动态绑定的class属性
+  v = attrs[':class'];
+
+  if (v) {
+    return JSON.stringify(node.tag + '.') + '+' + v;
+  }
+
+  return tag;
+}
+
+/**
  * 解析属性
  * @param {*} node
  */
 function genAttrStr(node) {
   var attrs = node.attrsMap;
 
+  if (!attrs) {
+    return "";
+  }
+
+  var propsStr = '';
+  var styleStr = '';
+
+  // why not use for..in, see eslint `no-restricted-syntax`
+  Object.keys(attrs).forEach(function (attrname) {
+    var str = '';
+    // 如果是数据绑定，则后面的是表达式
+    if (attrname.charAt(0) == ':') {
+      str = JSON.stringify(attrname.substr(1)) + ':' + attrs[attrname] + ',';
+      attrname = attrname.substr(1).toLocaleLowerCase();
+    } else {
+      str = JSON.stringify(attrname) + ':' + JSON.stringify(attrs[attrname]) + ',';
+    }
+
+    // class已经处理了。
+    if (attrname !== 'class') {
+      if (isStyle(attrname)) {
+        styleStr += str;
+      } else {
+        propsStr += str;
+      }
+    }
+  });
+
   var str = '';
 
-  if (attrs) {
-    str += 'attrs:{';
+  if (propsStr != '') {
+    str += 'props:{' + propsStr + '},';
+  }
 
-    // why not use for..in, see eslint `no-restricted-syntax`
-    Object.keys(attrs).forEach(function (attrname) {
-      // 如果是数据绑定，则后面的是表达式
-      if (attrname.charAt(0) == ':') {
-        str += JSON.stringify(attrname.substr(1)) + ':' + attrs[attrname] + ',';
-      } else {
-        str += JSON.stringify(attrname) + ':' + JSON.stringify(attrs[attrname]) + ',';
-      }
-    });
-
-    str += '},';
+  if (styleStr != '') {
+    str += 'style:{' + styleStr + '},';
   }
 
   return str;
+}
+
+function isStyle(name) {
+  return name === 'style';
 }
 
 /**

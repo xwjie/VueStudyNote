@@ -44,7 +44,10 @@ function createRenderStr(ast: ASTNode): string {
 function createRenderStrElemnet(node: any): string {
   log('createRenderStrElemnet', node)
 
-  let str: string = 'h(' + JSON.stringify(node.tag) + ",{"
+  // snabbdom 的语法，类名放在tag上。'div#container.two.classes'
+  let tag = getTagAndClassName(node)
+
+  let str: string = `h(${tag},{`
 
   // 解析属性
   str += genAttrStr(node)
@@ -62,12 +65,45 @@ function createRenderStrElemnet(node: any): string {
     })
 
     str += ']'
-
   }
 
   str += ')'
 
   return str
+}
+
+/**
+ * 得到带类名的TAG名
+ *
+ * 返回如 “div.classes” （静态） 或者 “div." + nowClass (动态)
+ *
+ * TODO : 没有支持id和多class 如 'div#container.two.classes'
+ *
+ */
+function getTagAndClassName(node: any) {
+  let tag = JSON.stringify(node.tag)
+  let attrs = node.attrsMap
+
+  if (!attrs) {
+    return tag
+  }
+
+  //FIXME 大小写会有bug
+
+  // 如果有class属性
+  let v = attrs['class']
+  if (v) {
+    return JSON.stringify(node.tag + '.' + v)
+  }
+
+  // 如果有动态绑定的class属性
+  v = attrs[':class']
+
+  if (v) {
+    return JSON.stringify(node.tag + '.') + '+' + v
+  }
+
+  return tag
 }
 
 /**
@@ -77,28 +113,53 @@ function createRenderStrElemnet(node: any): string {
 function genAttrStr(node: any) {
   let attrs = node.attrsMap
 
-  let str = '';
+  if (!attrs) {
+    return ""
+  }
 
-  if (attrs) {
-    str += 'attrs:{'
+  let propsStr: string = ''
+  let styleStr: string = ''
 
-    // why not use for..in, see eslint `no-restricted-syntax`
-    Object.keys(attrs).forEach(attrname => {
-      // 如果是数据绑定，则后面的是表达式
-      if (attrname.charAt(0) == ':') {
-        str += JSON.stringify(attrname.substr(1)) + ':' + attrs[attrname] + ','
+  // why not use for..in, see eslint `no-restricted-syntax`
+  Object.keys(attrs).forEach(attrname => {
+    let str = ''
+    // 如果是数据绑定，则后面的是表达式
+    if (attrname.charAt(0) == ':') {
+      str = JSON.stringify(attrname.substr(1)) + ':' + attrs[attrname] + ','
+      attrname = attrname.substr(1).toLocaleLowerCase()
+    }
+    else {
+      str = JSON.stringify(attrname) + ':' + JSON.stringify(attrs[attrname]) + ','
+    }
+
+    // class已经处理了。
+    if (attrname !== 'class') {
+      if (isStyle(attrname)) {
+        styleStr += str
       }
       else {
-        str += JSON.stringify(attrname) + ':' + JSON.stringify(attrs[attrname]) + ','
+        propsStr += str
       }
-    })
+    }
+  })
 
-    str += '},'
+  let str = '';
+
+  if (propsStr != '') {
+    str += `props:{${propsStr}},`
+  }
+
+  if (styleStr != '') {
+    str += `style:{${styleStr}},`
   }
 
   return str;
 }
 
+
+function isStyle(name: string) {
+  return name === 'style'
+}
 
 /**
  * 解析指令

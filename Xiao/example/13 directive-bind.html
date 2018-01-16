@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Xiao框架之helloworld</title>
+	<script src="../dist/xiao.js"></script>
+	<style>
+		.c1 {
+			color: blue;
+		}
+		
+		.c2 {
+			color: red;
+		}
+	</style>
+</head>
+<body>
+<h1>bind指令测试</h1>
+<div id="demo1">
+	<input :value="value" :class="nowClass"/><br/>
+	<input value="this is a string value" class="c1"/>
+</div>
+
+<script>
+
+var app = new Xiao({
+	data:{
+		value: "这里变量",
+		nowClass: "c2"
+	}
+});
+
+app.$mount("#demo1");
+
+setTimeout(function(){
+	app.value = "修改了数据";
+	app.nowClass = "c1"
+}, 1000);
+
+</script>
+
+</body>
+</html>
