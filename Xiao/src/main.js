@@ -48,6 +48,9 @@ class Xiao {
   _renderWatcher: Watcher
   _watchers: Array<any>
 
+  // 渲染次数，自己跟踪用
+  _renderCount: number = 0
+
   // 子组件的时候，设置当前的父组件
   $parent: ?Xiao
 
@@ -182,10 +185,6 @@ class Xiao {
       constructor() {
         super(definition)
       }
-    }
-
-    for (let key in definition) {
-      newClass[key] = definition[key]
     }
 
     globalComponent[id] = newClass

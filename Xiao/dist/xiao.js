@@ -1343,7 +1343,7 @@ function initComputed(vm) {
   }
 }
 
-function initProps(vm) {
+function initProps(vm, propsData) {
   var propsOptions = vm.$options.props;
 
   if (!propsOptions) {
@@ -1351,9 +1351,8 @@ function initProps(vm) {
   }
 
   log('initProps propsOptions', propsOptions);
-  log('initProps vm.$options.propsData', vm.$options.propsData);
+  log('initProps propsData', propsData);
 
-  var propsData = vm.$options.propsData || {};
   var props = vm._props = {};
 
   // cache prop keys so that future props updates can iterate using Array
@@ -1387,6 +1386,17 @@ function initProps(vm) {
   }
 }
 
+/**
+ * 更新子组件的props属性，就是直接赋值一次
+ *
+ * @param {*} vm
+ * @param {*} propsData
+ */
+function updateProps(vm, propsData) {
+  log('updateProps propsData', propsData);
+  extend(vm, propsData);
+}
+
 var sharedPropertyDefinition = {
   enumerable: true,
   configurable: true,
@@ -1413,8 +1423,6 @@ function mountComponent(vm, hydrating) {
   vm._renderWatcher = new Watcher(vm, updateComponent);
 }
 
-var renderCount = 1;
-
 function updateComponent(vm) {
   var proxy$$1 = vm;
 
@@ -1434,7 +1442,7 @@ function updateComponent(vm) {
   // 上一次渲染的虚拟dom
   var preNode = vm.$options.oldvnode;
 
-  log('[lifecycle] \u7B2C' + renderCount + '\u6B21\u6E32\u67D3');
+  log('[lifecycle][uid:' + vm._uid + '] \u7B2C' + ++vm._renderCount + '\u6B21\u6E32\u67D3');
 
   if (preNode) {
     vnode = patch(preNode, vnode);
@@ -1444,9 +1452,7 @@ function updateComponent(vm) {
 
   log('vnode', vnode);
 
-  renderCount++;
-
-  // save
+  // 保存起来，下次patch需要用到
   vm.$options.oldvnode = vnode;
 }
 
@@ -1490,12 +1496,23 @@ function setComponentHook(vnode, vm) {
         app.$parent = vm;
 
         // 把虚拟节点的数据代理到当前vue里面
-        app.$options.propsData = vnode.data.attrs;
+        var propsData = vnode.data.attrs;
 
-        initProps(app);
+        initProps(app, propsData);
+
+        vnode.childContext = app;
 
         app.$mount(vnode.elm);
+      },
+      update: function update(oldvnode, vnode) {
+
+        var app = oldvnode.childContext;
+
+        updateProps(app, vnode.data.attrs);
+
+        vnode.childContext = app;
       }
+
     };
   }
 
@@ -1996,7 +2013,8 @@ function genAttrStr(node) {
     str += 'attrs:{';
 
     // why not use for..in, see eslint `no-restricted-syntax`
-    Object.keys(attrs).every(function (attrname) {
+    Object.keys(attrs).forEach(function (attrname) {
+      // 如果是数据绑定，则后面的是表达式
       if (attrname.charAt(0) == ':') {
         str += JSON.stringify(attrname.substr(1)) + ':' + attrs[attrname] + ',';
       } else {
@@ -2175,9 +2193,16 @@ var Xiao = function () {
   // FIXME 还不知道有啥用【应该了为了保证计算属性缓存起来用的】
   // _watcherCompued: Object
 
-  // 渲染虚拟dom需要用到的。（VUE里面应该是$createElement）
+  // 渲染次数，自己跟踪用
+
+
+  // 数据修改之后的监听器
+
+
+  // 数据
   function Xiao(options) {
     classCallCheck(this, Xiao);
+    this._renderCount = 0;
 
     if ("development" !== 'production' && !(this instanceof Xiao)) {
       warn('Xiao is a constructor and should be called with the `new` keyword');
@@ -2196,10 +2221,7 @@ var Xiao = function () {
   // 子组件的时候，设置当前的父组件
 
 
-  // 数据修改之后的监听器
-
-
-  // 数据
+  // 渲染虚拟dom需要用到的。（VUE里面应该是$createElement）
 
 
   createClass(Xiao, [{
@@ -2331,10 +2353,6 @@ var Xiao = function () {
 
         return newClass;
       }(Xiao);
-
-      for (var key in definition) {
-        newClass[key] = definition[key];
-      }
 
       globalComponent[id] = newClass;
       log('globalComponent', globalComponent);

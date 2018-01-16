@@ -1,7 +1,7 @@
 /* @flow */
 import Xiao from './main'
 import { isPlainObject, log, warn, hasOwn, isReserved } from './util'
-import { noop } from './shared/util'
+import { noop, extend } from './shared/util'
 import { observe, defineReactive } from './observer'
 import Watcher from './observer/watcher'
 import Dep from './observer/dep'
@@ -101,7 +101,7 @@ function initComputed(vm: Xiao) {
 }
 
 
-export function initProps(vm: Xiao) {
+export function initProps(vm: Xiao, propsData: Object) {
   const propsOptions = vm.$options.props
 
   if (!propsOptions) {
@@ -109,9 +109,8 @@ export function initProps(vm: Xiao) {
   }
 
   log('initProps propsOptions', propsOptions)
-  log('initProps vm.$options.propsData', vm.$options.propsData)
+  log('initProps propsData', propsData)
 
-  const propsData = vm.$options.propsData || {}
   const props = vm._props = {}
 
   // cache prop keys so that future props updates can iterate using Array
@@ -145,6 +144,17 @@ export function initProps(vm: Xiao) {
   }
 }
 
+
+/**
+ * 更新子组件的props属性，就是直接赋值一次
+ *
+ * @param {*} vm
+ * @param {*} propsData
+ */
+export function updateProps(vm: Xiao, propsData: Object) {
+  log('updateProps propsData', propsData)
+  extend(vm, propsData)
+}
 
 const sharedPropertyDefinition = {
   enumerable: true,

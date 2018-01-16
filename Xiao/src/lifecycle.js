@@ -3,7 +3,7 @@ import Xiao from './main'
 import { warn, log } from './util/debug'
 import { h, patch } from './compiler/snabbdom'
 import { observe, defineReactive } from './observer'
-import { initProps } from './states'
+import { initProps, updateProps } from './states'
 
 import Watcher from './observer/watcher'
 
@@ -16,8 +16,6 @@ export function mountComponent(
   // 调用生成的render函数绑定的this就是它。（whth(this)）
   vm._renderWatcher = new Watcher(vm, updateComponent);
 }
-
-let renderCount: number = 1;
 
 function updateComponent(vm: Xiao) {
   let proxy = vm
@@ -38,7 +36,7 @@ function updateComponent(vm: Xiao) {
   // 上一次渲染的虚拟dom
   let preNode = vm.$options.oldvnode;
 
-  log(`[lifecycle] 第${renderCount}次渲染`)
+  log(`[lifecycle][uid:${vm._uid}] 第${++vm._renderCount}次渲染`)
 
   if (preNode) {
     vnode = patch(preNode, vnode)
@@ -49,9 +47,7 @@ function updateComponent(vm: Xiao) {
 
   log('vnode', vnode)
 
-  renderCount++;
-
-  // save
+  // 保存起来，下次patch需要用到
   vm.$options.oldvnode = vnode;
 }
 
@@ -95,12 +91,23 @@ function setComponentHook(vnode: any, vm: Xiao) {
         app.$parent = vm
 
         // 把虚拟节点的数据代理到当前vue里面
-        app.$options.propsData = vnode.data.attrs
+        const propsData = vnode.data.attrs
 
-        initProps(app)
+        initProps(app, propsData)
+
+        vnode.childContext = app
 
         app.$mount(vnode.elm)
+      },
+      update: (oldvnode, vnode) => {
+
+        const app = oldvnode.childContext
+
+        updateProps(app, vnode.data.attrs)
+
+        vnode.childContext = app
       }
+
     }
   }
 

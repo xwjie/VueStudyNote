@@ -83,7 +83,8 @@ function genAttrStr(node: any) {
     str += 'attrs:{'
 
     // why not use for..in, see eslint `no-restricted-syntax`
-    Object.keys(attrs).every(attrname => {
+    Object.keys(attrs).forEach(attrname => {
+      // 如果是数据绑定，则后面的是表达式
       if (attrname.charAt(0) == ':') {
         str += JSON.stringify(attrname.substr(1)) + ':' + attrs[attrname] + ','
       }
