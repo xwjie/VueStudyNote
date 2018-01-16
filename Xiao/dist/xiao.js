@@ -2379,9 +2379,7 @@ function initGlobaleDedirectives() {
   Xiao.directive('red', function (el, binding) {
     var originalDisplay = el.__vOriginalBGColor = el.style.backgroundColor === 'red' ? '' : el.style.backgroundColor;
 
-    if (binding.value) {
-      el.style.backgroundColor = 'red'; // binding.value
-    }
+    el.style.backgroundColor = binding.value ? originalDisplay : 'red';
   });
 
   // 演示和隐藏指令

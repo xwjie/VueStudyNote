@@ -5,13 +5,13 @@
 	<script src="../dist/xiao.js"></script>
 </head>
 <body>
-<h1>简单组件测试</h1>
+<h1>组件props测试</h1>
 <div id="demo1">
 	<ol>
 	  <!-- 创建一个 todo-item 组件的实例 -->
 	  <todo-item :text="msg1" :count='count1'></todo-item>
 	  <todo-item :text="msg2" :count='count2'></todo-item>
-	  <todo-item :text="msg3" :count='count3'></todo-item>
+	  <todo-item :text="msg3" :count='subdata.count111'></todo-item>
 	</ol>
 </div>
 
@@ -30,7 +30,9 @@ var app = new Xiao({
 		msg3: "父组件消息3",
 		count1: 1,
 		count2: 2,
-		count3: 3,
+		subdata:{
+			count111 : 0
+		}
 	}
 });
 app.$mount("#demo1");
@@ -42,6 +44,7 @@ setTimeout(function(){
 	app.msg3 = "消息3:" + count*3;
 	app.count2 = 0;
 	app.count1 = 2;
+	app.subdata.count111 = 2
 	count++;
 }, 3000);
 
