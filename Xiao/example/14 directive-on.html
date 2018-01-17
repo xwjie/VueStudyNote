@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Xiao框架之helloworld</title>
+	<script src="../dist/xiao.js"></script>
+</head>
+<body>
+<h1>@（on）指令测试</h1>
+<div id="demo1">
+	<button @click="click1">{{btnText}}</button><br/>
+	<button @click="click2(count>1)">按钮2</button><br/>
+	<button @click="btnText='改变值'">按钮3</button>
+</div>
+<script>
+var app = new Xiao({
+	data:{
+		btnText: "按钮1",
+		count:2
+	},
+	methods:{
+		click1 : function(e){
+			console.log('按钮1', e);
+		},
+		click2 : function(flag){
+			console.log('按钮2:' + this.count, flag);
+		},
+	}
+});
+
+app.$mount("#demo1");
+
+setTimeout(function(){
+	app.count = 1;
+}, 3000);
+
+</script>
+
+</body>
+</html>

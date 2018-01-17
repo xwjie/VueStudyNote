@@ -1,7 +1,7 @@
 /* @flow */
 import Xiao from './main'
 import { isPlainObject, log, warn, hasOwn, isReserved } from './util'
-import { noop, extend } from './shared/util'
+import { noop, extend, bind } from './shared/util'
 import { observe, defineReactive } from './observer'
 import Watcher from './observer/watcher'
 import Dep from './observer/dep'
@@ -13,7 +13,7 @@ export function initState(vm: Xiao) {
   const opts = vm.$options
 
   //if (opts.props) initProps(vm, opts.props)
-  //if (opts.methods) initMethods(vm, opts.methods)
+  if (opts.methods) initMethods(vm, opts.methods)
 
   initData(vm)
   initComputed(vm)
@@ -101,6 +101,7 @@ function initComputed(vm: Xiao) {
 }
 
 
+
 export function initProps(vm: Xiao, propsData: Object) {
   const propsOptions = vm.$options.props
 
@@ -162,6 +163,13 @@ const sharedPropertyDefinition = {
   get: noop,
   set: noop
 }
+
+function initMethods(vm: any, methods: Object) {
+  for (const key in methods) {
+    vm[key] = methods[key] == null ? noop : bind(methods[key], vm)
+  }
+}
+
 
 export function proxy(target: Object, sourceKey: string, key: string) {
   sharedPropertyDefinition.get = function proxyGetter() {

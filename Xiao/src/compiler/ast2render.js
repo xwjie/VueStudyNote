@@ -119,22 +119,33 @@ function genAttrStr(node: any) {
 
   let propsStr: string = ''
   let styleStr: string = ''
+  let onStr: string = ''
 
   // why not use for..in, see eslint `no-restricted-syntax`
   Object.keys(attrs).forEach(attrname => {
     let str = ''
+    let isEvent = false
+    const val = attrs[attrname].trim()
+
     // 如果是数据绑定，则后面的是表达式
     if (attrname.charAt(0) == ':') {
-      str = JSON.stringify(attrname.substr(1)) + ':' + attrs[attrname] + ','
+      str = JSON.stringify(attrname.substr(1)) + ':' + val + ','
+      attrname = attrname.substr(1).toLocaleLowerCase()
+    }
+    else if (attrname.charAt(0) == '@') {
+      str = JSON.stringify(attrname.substr(1)) + ':' + getFunctionStr(val) + ','
+      isEvent = true
       attrname = attrname.substr(1).toLocaleLowerCase()
     }
     else {
-      str = JSON.stringify(attrname) + ':' + JSON.stringify(attrs[attrname]) + ','
+      str = JSON.stringify(attrname) + ':' + JSON.stringify(val) + ','
     }
 
     // class已经处理了。
     if (attrname !== 'class') {
-      if (isStyle(attrname)) {
+      if (isEvent) {
+        onStr += str
+      } else if (isStyle(attrname)) {
         styleStr += str
       }
       else {
@@ -153,12 +164,29 @@ function genAttrStr(node: any) {
     str += `style:{${styleStr}},`
   }
 
+  if (onStr != '') {
+    str += `on:{${onStr}},`
+  }
+
   return str;
 }
 
 
 function isStyle(name: string) {
   return name === 'style'
+}
+
+function isFuncNameStr(name: string): boolean {
+  return /[-A-Za-z0-9_]+$/.test(name)
+}
+
+function getFunctionStr(funcStr: string): string {
+  // 如果只是函数名，加一个（）调用
+  if (isFuncNameStr(funcStr)) {
+    funcStr += '(event)'
+  }
+
+  return `function($event){${funcStr}} `
 }
 
 /**

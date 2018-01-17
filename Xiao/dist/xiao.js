@@ -23,6 +23,19 @@ function extend(to, _from) {
   return to;
 }
 
+/**
+ * Simple bind, faster than native
+ */
+function bind(fn, ctx) {
+  function boundFn(a) {
+    var l = arguments.length;
+    return l ? l > 1 ? fn.apply(ctx, arguments) : fn.call(ctx, a) : fn.call(ctx);
+  }
+  // record original fn length
+  boundFn._length = fn.length;
+  return boundFn;
+}
+
 //copy from D:\OutPut\VUE\vue\src\core\util\debug.js
 
 var warn = noop;
@@ -193,24 +206,16 @@ function isReserved(str) {
  * Define a property.
  */
 
-
-/**
- * Parse simple path.
- */
-
 function vnode(sel, data, children, text, elm) {
     var key = data === undefined ? undefined : data.key;
     return { sel: sel, data: data, children: children,
         text: text, elm: elm, key: key };
 }
 
-//# sourceMappingURL=vnode.js.map
-
 var array = Array.isArray;
 function primitive(s) {
     return typeof s === 'string' || typeof s === 'number';
 }
-//# sourceMappingURL=is.js.map
 
 function createElement(tagName) {
     return document.createElement(tagName);
@@ -274,12 +279,6 @@ var htmlDomApi = {
     isText: isText,
     isComment: isComment,
 };
-
-//# sourceMappingURL=htmldomapi.js.map
-
-//# sourceMappingURL=h.js.map
-
-//# sourceMappingURL=thunk.js.map
 
 function isUndef(s) { return s === undefined; }
 function isDef(s) { return s !== undefined; }
@@ -579,7 +578,6 @@ function init(modules, domApi) {
         return vnode$$1;
     };
 }
-//# sourceMappingURL=snabbdom.js.map
 
 function unwrapExports (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
@@ -613,7 +611,7 @@ function updateClass(oldVnode, vnode) {
 }
 exports.classModule = { create: updateClass, update: updateClass };
 exports.default = exports.classModule;
-//# sourceMappingURL=class.js.map
+
 });
 
 var _class$1 = unwrapExports(_class);
@@ -644,7 +642,7 @@ function updateProps(oldVnode, vnode) {
 }
 exports.propsModule = { create: updateProps, update: updateProps };
 exports.default = exports.propsModule;
-//# sourceMappingURL=props.js.map
+
 });
 
 var props$1 = unwrapExports(props);
@@ -735,7 +733,7 @@ exports.styleModule = {
     remove: applyRemoveStyle
 };
 exports.default = exports.styleModule;
-//# sourceMappingURL=style.js.map
+
 });
 
 var style$1 = unwrapExports(style);
@@ -884,7 +882,7 @@ exports.eventListenersModule = {
     destroy: updateEventListeners
 };
 exports.default = exports.eventListenersModule;
-//# sourceMappingURL=eventlisteners.js.map
+
 });
 
 var eventlisteners$1 = unwrapExports(eventlisteners);
@@ -899,7 +897,7 @@ function vnode(sel, data, children, text, elm) {
 }
 exports.vnode = vnode;
 exports.default = vnode;
-//# sourceMappingURL=vnode.js.map
+
 });
 
 unwrapExports(vnode_1);
@@ -912,7 +910,7 @@ function primitive(s) {
     return typeof s === 'string' || typeof s === 'number';
 }
 exports.primitive = primitive;
-//# sourceMappingURL=is.js.map
+
 });
 
 unwrapExports(is);
@@ -977,7 +975,7 @@ function h(sel, b, c) {
 exports.h = h;
 
 exports.default = h;
-//# sourceMappingURL=h.js.map
+
 });
 
 var h$3 = unwrapExports(h_1);
@@ -1045,11 +1043,6 @@ var Dep = function () {
   return Dep;
 }();
 
-// the current target watcher being evaluated.
-// this is globally unique because there could be only one
-// watcher being evaluated at any time.
-
-
 Dep.target = null;
 var targetStack = [];
 
@@ -1061,6 +1054,8 @@ function pushTarget(_target) {
 function popTarget() {
   Dep.target = targetStack.pop();
 }
+
+// D:\OutPut\VUE\vue\src\core\observer\index.js
 
 var Observer = function () {
   function Observer(value) {
@@ -1220,7 +1215,6 @@ _Set = function () {
   }]);
   return Set;
 }();
-// }
 
 var Watcher = function () {
   function Watcher(vm, renderFunction) {
@@ -1270,12 +1264,14 @@ var Watcher = function () {
   return Watcher;
 }();
 
+//D:\OutPut\VUE\vue\src\core\instance\state.js
+
 function initState(vm) {
   vm._watchers = [];
   var opts = vm.$options;
 
   //if (opts.props) initProps(vm, opts.props)
-  //if (opts.methods) initMethods(vm, opts.methods)
+  if (opts.methods) initMethods(vm, opts.methods);
 
   initData(vm);
   initComputed(vm);
@@ -1421,6 +1417,12 @@ var sharedPropertyDefinition = {
   set: noop
 };
 
+function initMethods(vm, methods) {
+  for (var key in methods) {
+    vm[key] = methods[key] == null ? noop : bind(methods[key], vm);
+  }
+}
+
 function proxy(target, sourceKey, key) {
   sharedPropertyDefinition.get = function proxyGetter() {
     return this[sourceKey][key];
@@ -1433,6 +1435,7 @@ function proxy(target, sourceKey, key) {
   Object.defineProperty(target, key, sharedPropertyDefinition);
 }
 
+// D:\OutPut\VUE\vue\src\core\instance\lifecycle.js
 function mountComponent(vm, hydrating) {
   // 产生一个代理对象（VUE开发环境会使用Proxy产生一个代理对象，发布环境就是vue对象自己）
   // 调用生成的render函数绑定的this就是它。（whth(this)）
@@ -1855,6 +1858,7 @@ function addDirective(el, name, rawName, value, arg, modifiers) {
   el.plain = false;
 }
 
+//D:\OutPut\VUE\vue\src\compiler\parser\index.js
 function html2ast(templte) {
   var root = void 0;
   var parent = void 0;
@@ -2075,21 +2079,31 @@ function genAttrStr(node) {
 
   var propsStr = '';
   var styleStr = '';
+  var onStr = '';
 
   // why not use for..in, see eslint `no-restricted-syntax`
   Object.keys(attrs).forEach(function (attrname) {
     var str = '';
+    var isEvent = false;
+    var val = attrs[attrname].trim();
+
     // 如果是数据绑定，则后面的是表达式
     if (attrname.charAt(0) == ':') {
-      str = JSON.stringify(attrname.substr(1)) + ':' + attrs[attrname] + ',';
+      str = JSON.stringify(attrname.substr(1)) + ':' + val + ',';
+      attrname = attrname.substr(1).toLocaleLowerCase();
+    } else if (attrname.charAt(0) == '@') {
+      str = JSON.stringify(attrname.substr(1)) + ':' + getFunctionStr(val) + ',';
+      isEvent = true;
       attrname = attrname.substr(1).toLocaleLowerCase();
     } else {
-      str = JSON.stringify(attrname) + ':' + JSON.stringify(attrs[attrname]) + ',';
+      str = JSON.stringify(attrname) + ':' + JSON.stringify(val) + ',';
     }
 
     // class已经处理了。
     if (attrname !== 'class') {
-      if (isStyle(attrname)) {
+      if (isEvent) {
+        onStr += str;
+      } else if (isStyle(attrname)) {
         styleStr += str;
       } else {
         propsStr += str;
@@ -2107,11 +2121,29 @@ function genAttrStr(node) {
     str += 'style:{' + styleStr + '},';
   }
 
+  if (onStr != '') {
+    str += 'on:{' + onStr + '},';
+  }
+
   return str;
 }
 
 function isStyle(name) {
   return name === 'style';
+}
+
+function isFuncNameStr(name) {
+  return (/[-A-Za-z0-9_]+$/.test(name)
+  );
+}
+
+function getFunctionStr(funcStr) {
+  // 如果只是函数名，加一个（）调用
+  if (isFuncNameStr(funcStr)) {
+    funcStr += '(event)';
+  }
+
+  return 'function($event){' + funcStr + '} ';
 }
 
 /**
@@ -2182,6 +2214,11 @@ function renderToFunction(renderStr) {
 
 // D:\OutPut\VUE\vue\src\platforms\web\util\index.js
 
+/**
+ * Query an element selector if it's not an element already.
+ */
+
+// D:\OutPut\VUE\vue\src\platforms\web\util\index.js
 function query(el) {
   if (typeof el === 'string') {
     var selected = document.querySelector(el);
@@ -2221,6 +2258,10 @@ function getOuterHTML(el) {
 //     }
 //   }
 
+/**
+ * 简单的i18n国际化插件
+ * @param {*} Xiao
+ */
 function i18n (Xiao$$1) {
 
   // 扩展一个实例方法
@@ -2249,6 +2290,7 @@ function i18n (Xiao$$1) {
 
 // D:\OutPut\VUE\vue\src\core\instance\index.js
 
+//
 var uid = 100;
 
 // fixme
