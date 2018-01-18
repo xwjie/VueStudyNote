@@ -36,6 +36,6 @@
 * 实现组件支持插槽
 * 实现支持自定义指令
 * 实现支持filter
-* 支持wath属性
+* [实现属性的观察（监听）](https://github.com/xwjie/VueStudyNote/issues/18)
 * [支持computed属性](https://github.com/xwjie/VueStudyNote/issues/8)
 

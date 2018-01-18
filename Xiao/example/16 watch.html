@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Xiao框架之helloworld</title>
+	<script src="../dist/xiao.js"></script>
+</head>
+<body>
+<h1>watch测试</h1>
+<div id="demo">{{ fullName }}</div>
+<script>
+var app = new Xiao({
+  el: '#demo',
+  data: {
+    firstName: 'Foo',
+    lastName: 'Bar',
+    fullName: 'Foo Bar'
+  },
+  watch: {
+    firstName: function (val, oldvalue) {
+      console.log('firstName', oldvalue, val);
+      this.fullName = val + ' ' + this.lastName
+    },
+    lastName: function (val, oldvalue) {
+      console.log('lastName', oldvalue, val);
+      this.fullName = this.firstName + ' ' + val
+    }
+  }
+})
+
+setTimeout(function(){
+	app.firstName = 'xx';
+	app.lastName = 'yy';
+}, 2000);
+
+</script>
+
+</body>
+</html>

@@ -5,20 +5,39 @@ import Xiao from '../main'
 import type { SimpleSet } from '../shared/set'
 import { _Set as Set } from '../shared/set'
 
+let uid = 0
+
 export default class Watcher {
 
   vm: Xiao
 
   getter: Function
 
-  depIds: SimpleSet;
+  depIds: SimpleSet
 
-  constructor(vm: Xiao, renderFunction: Function) {
+  cb: ?Function
+
+  value: ?any
+
+  _uid: number
+
+  /**
+   *
+   * @param {*} vm
+   * @param {*} option
+   *  getter: 函数，为render函数或者属性的get函数
+   *  cb ： 回调函数，可以为空
+   */
+  constructor(vm: Xiao, option: Object) {
     this.vm = vm
-    this.getter = renderFunction
+    this._uid = ++uid
+
+    this.getter = option.getter
+    this.cb = option.cb
+
     this.depIds = new Set()
 
-    log('[Watcher] _INIT_')
+    log(`[Watcher${this._uid}] _INIT_`)
 
     this.get()
   }
@@ -26,7 +45,23 @@ export default class Watcher {
   get() {
     try {
       pushTarget(this)
-      this.getter.call(this.vm, this.vm)
+      const value = this.getter.call(this.vm, this.vm)
+
+      // 监控属性的时候，回调不为空
+      if (this.cb) {
+        const oldValue = this.value
+
+        if (value !== oldValue) {
+          try {
+            this.cb.call(this.vm, value, oldValue)
+          } catch (error) {
+
+          }
+        }
+      }
+
+      // 保存最新值
+      this.value = value
     }
     finally {
       popTarget()
@@ -44,7 +79,7 @@ export default class Watcher {
   }
 
   update() {
-    log('[Watcher] update')
+    log(`[Watcher${this._uid}] update`)
 
     // fixme
     this.get();

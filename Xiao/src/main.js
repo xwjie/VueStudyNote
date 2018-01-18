@@ -131,6 +131,38 @@ class Xiao {
   }
 
 
+  /**
+   * 观察某个属性
+   *
+   * 把属性的get方法拿出来，调用get的时候和会对应的新建的watch关联起来（注册了依赖关系）
+   * 属性修改的时候，就会调用所有的watch，然后就会调用回调。
+   * （这里的回调其实就是用户写的观察函数）
+   *
+   * @param {*} key
+   * @param {*} cb
+   */
+  $watchField(key: string, cb: any) {
+    const getter = Object.getOwnPropertyDescriptor(this, key).get
+    this.$watch(getter, cb)
+  }
+
+  /**
+   * 观察某个方法，调用这个方法之后，会执行callback
+   *
+   * @param {*} getter
+   * @param {*} cb
+   */
+  $watch(getter: Function, cb: any) {
+    new Watcher(this, {
+      getter,
+      cb
+    })
+
+    // fixme
+    //return function unwatchFn() {
+    //  watcher.teardown()
+    //}
+  }
 
   /**
    * 注册全局指令

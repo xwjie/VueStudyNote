@@ -19,6 +19,9 @@ export function initState(vm: Xiao) {
   initComputed(vm)
 
   //initProps(vm)
+
+  // 必须在data和computed之后
+  if (opts.watch) initWatch(vm, opts.watch)
 }
 
 /**
@@ -170,6 +173,11 @@ function initMethods(vm: any, methods: Object) {
   }
 }
 
+function initWatch(vm: Xiao, watch: Object){
+  for (const key in watch) {
+    vm.$watchField(key, watch[key])
+  }
+}
 
 export function proxy(target: Object, sourceKey: string, key: string) {
   sharedPropertyDefinition.get = function proxyGetter() {

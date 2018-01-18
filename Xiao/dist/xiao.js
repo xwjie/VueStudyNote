@@ -1216,15 +1216,29 @@ _Set = function () {
   return Set;
 }();
 
+var uid$2 = 0;
+
 var Watcher = function () {
-  function Watcher(vm, renderFunction) {
+
+  /**
+   *
+   * @param {*} vm
+   * @param {*} option
+   *  getter: 函数，为render函数或者属性的get函数
+   *  cb ： 回调函数，可以为空
+   */
+  function Watcher(vm, option) {
     classCallCheck(this, Watcher);
 
     this.vm = vm;
-    this.getter = renderFunction;
+    this._uid = ++uid$2;
+
+    this.getter = option.getter;
+    this.cb = option.cb;
+
     this.depIds = new _Set();
 
-    log('[Watcher] _INIT_');
+    log('[Watcher' + this._uid + '] _INIT_');
 
     this.get();
   }
@@ -1234,7 +1248,19 @@ var Watcher = function () {
     value: function get$$1() {
       try {
         pushTarget(this);
-        this.getter.call(this.vm, this.vm);
+        var value = this.getter.call(this.vm, this.vm);
+
+        var oldValue = this.value;
+
+        // 保存最新值
+        this.value = value;
+
+        // 监控属性的时候，回调不为空
+        if (this.cb) {
+          if (value !== oldValue) {
+            this.cb.call(this.vm, value, oldValue);
+          }
+        }
       } finally {
         popTarget();
       }
@@ -1255,7 +1281,7 @@ var Watcher = function () {
   }, {
     key: 'update',
     value: function update() {
-      log('[Watcher] update');
+      log('[Watcher' + this._uid + '] update');
 
       // fixme
       this.get();
@@ -1277,6 +1303,9 @@ function initState(vm) {
   initComputed(vm);
 
   //initProps(vm)
+
+  // 必须在data和computed之后
+  if (opts.watch) initWatch(vm, opts.watch);
 }
 
 /**
@@ -1423,6 +1452,12 @@ function initMethods(vm, methods) {
   }
 }
 
+function initWatch(vm, watch) {
+  for (var key in watch) {
+    vm.$watchField(key, watch[key]);
+  }
+}
+
 function proxy(target, sourceKey, key) {
   sharedPropertyDefinition.get = function proxyGetter() {
     return this[sourceKey][key];
@@ -1439,7 +1474,7 @@ function proxy(target, sourceKey, key) {
 function mountComponent(vm, hydrating) {
   // 产生一个代理对象（VUE开发环境会使用Proxy产生一个代理对象，发布环境就是vue对象自己）
   // 调用生成的render函数绑定的this就是它。（whth(this)）
-  vm._renderWatcher = new Watcher(vm, updateComponent);
+  vm._renderWatcher = new Watcher(vm, { getter: updateComponent });
 }
 
 function updateComponent(vm) {
@@ -2472,6 +2507,33 @@ var Xiao = function () {
     key: '$forceUpdate',
     value: function $forceUpdate() {
       this._renderWatcher.update();
+    }
+  }, {
+    key: '$watchField',
+    value: function $watchField(key, cb) {
+      var getter = Object.getOwnPropertyDescriptor(this, key).get;
+      this.$watch(getter, cb);
+    }
+
+    /**
+     * 监听某个方法，调用这个方法之后，会执行callback
+     *
+     * @param {*} getter
+     * @param {*} cb
+     */
+
+  }, {
+    key: '$watch',
+    value: function $watch(getter, cb) {
+      var watcher = new Watcher(this, {
+        getter: getter,
+        cb: cb
+      });
+
+      // fixme
+      //return function unwatchFn() {
+      //  watcher.teardown()
+      //}
     }
 
     /**

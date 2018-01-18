@@ -14,7 +14,7 @@ export function mountComponent(
 ) {
   // 产生一个代理对象（VUE开发环境会使用Proxy产生一个代理对象，发布环境就是vue对象自己）
   // 调用生成的render函数绑定的this就是它。（whth(this)）
-  vm._renderWatcher = new Watcher(vm, updateComponent);
+  vm._renderWatcher = new Watcher(vm, { getter: updateComponent });
 }
 
 function updateComponent(vm: Xiao) {
