@@ -2020,9 +2020,40 @@ function createRenderStrElemnet(node) {
   if (node.children) {
     str += ',[';
 
+    // 保存上一次if指令，处理只有if没有else的场景
+    var lastDir = void 0;
+
     node.children.forEach(function (child) {
-      str += createRenderStr(child) + ',';
+      // 如果这里节点有if指令
+      var dir = getIfElseDirective(child);
+
+      console.log('dir:', dir);
+
+      if (dir) {
+        if (dir.name == 'if') {
+          str += '(' + dir.exp + ')?';
+          lastDir = dir;
+        } else if (dir.name == 'else') {
+          str += ':';
+        }
+      }
+
+      str += createRenderStr(child);
+
+      if (dir) {
+        if (dir.name == 'else') {
+          str += ',';
+          lastDir = null;
+        }
+      } else if (lastDir) {
+        str += ':"",';
+        lastDir = null;
+      }
     });
+
+    if (lastDir) {
+      str += ':"",';
+    }
 
     str += ']';
   }
@@ -2030,6 +2061,41 @@ function createRenderStrElemnet(node) {
   str += ')';
 
   return str;
+}
+
+/**
+ * 得到该节点的if/else指令
+ * @param {*} node
+ */
+function getIfElseDirective(node) {
+  var attrs = node.attrsMap;
+
+  if (!attrs) {
+    return;
+  }
+
+  var dir = void 0;
+
+  // why not use for..in, see eslint `no-restricted-syntax`
+  Object.keys(attrs).some(function (attrname) {
+    // 如果是数据绑定，则后面的是表达式
+    if (attrname == 'x-if') {
+      dir = {
+        name: 'if',
+        exp: attrs[attrname].trim()
+      };
+      return true;
+    } else if (attrname == 'x-else') {
+      dir = {
+        name: 'else'
+      };
+      return true;
+    }
+
+    return false;
+  });
+
+  return dir;
 }
 
 /**
@@ -2159,7 +2225,13 @@ function getDirectiveStr(node) {
     str += 'directives:[';
 
     // why not use for..in, see eslint `no-restricted-syntax`
-    dirs.forEach(function (dir) {
+    for (var i = 0; i < dirs.length; i++) {
+      var dir = dirs[i];
+
+      if (dir.name == 'x-if' || dir.name == 'x-else') {
+        continue;
+      }
+
       str += '{';
       for (var key in dir) {
         str += JSON.stringify(key) + ':';
@@ -2181,7 +2253,7 @@ function getDirectiveStr(node) {
         }
       }
       str += '},';
-    });
+    }
 
     str += '],';
   }

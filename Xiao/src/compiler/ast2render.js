@@ -60,9 +60,41 @@ function createRenderStrElemnet(node: any): string {
   if (node.children) {
     str += ',['
 
+    // 保存上一次if指令，处理只有if没有else的场景
+    let lastDir
+
     node.children.forEach(child => {
-      str += createRenderStr(child) + ','
+      // 如果这里节点有if指令
+      let dir = getIfElseDirective(child)
+
+      console.log('dir:', dir)
+
+      if (dir) {
+        if (dir.name == 'if') {
+          str += `(${dir.exp})?`
+          lastDir = dir
+        } else if (dir.name == 'else') {
+          str += `:`
+        }
+      }
+
+      str += createRenderStr(child)
+
+      if (dir) {
+        if (dir.name == 'else') {
+          str += `,`
+          lastDir = null
+        }
+      }
+      else if (lastDir) {
+        str += `:"",`
+        lastDir = null
+      }
     })
+
+    if (lastDir) {
+      str += `:"",`
+    }
 
     str += ']'
   }
@@ -71,6 +103,43 @@ function createRenderStrElemnet(node: any): string {
 
   return str
 }
+
+
+/**
+ * 得到该节点的if/else指令
+ * @param {*} node
+ */
+function getIfElseDirective(node: any): ?Object {
+  let attrs = node.attrsMap
+
+  if (!attrs) {
+    return
+  }
+
+  let dir
+
+  // why not use for..in, see eslint `no-restricted-syntax`
+  Object.keys(attrs).some(attrname => {
+    // 如果是数据绑定，则后面的是表达式
+    if (attrname == 'x-if') {
+      dir = {
+        name: 'if',
+        exp: attrs[attrname].trim()
+      }
+      return true
+    } else if (attrname == 'x-else') {
+      dir = {
+        name: 'else'
+      }
+      return true
+    }
+
+    return false
+  })
+
+  return dir
+}
+
 
 /**
  * 得到带类名的TAG名
@@ -171,7 +240,6 @@ function genAttrStr(node: any) {
   return str;
 }
 
-
 function isStyle(name: string) {
   return name === 'style'
 }
@@ -202,7 +270,14 @@ function getDirectiveStr(node: any) {
     str += 'directives:['
 
     // why not use for..in, see eslint `no-restricted-syntax`
-    dirs.forEach(dir => {
+    for (let i = 0; i < dirs.length; i++) {
+      const dir = dirs[i]
+
+
+      if (dir.name == 'x-if' || dir.name == 'x-else') {
+        continue
+      }
+
       str += '{'
       for (let key in dir) {
         str += JSON.stringify(key) + ':'
@@ -224,12 +299,12 @@ function getDirectiveStr(node: any) {
         }
       }
       str += '},'
-    })
+    }
 
     str += '],'
   }
 
-  return str;
+  return str
 }
 
 function createRenderStrText(node: any): string {
