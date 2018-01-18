@@ -29,7 +29,7 @@
 * [实现国际化i18n插件](https://github.com/xwjie/VueStudyNote/issues/12)
 * [支持 :（bind）指令](https://github.com/xwjie/VueStudyNote/issues/15)
 * [支持 @（on）指令](https://github.com/xwjie/VueStudyNote/issues/16)
-* 支持if指令
+* [支持 if/else指令](https://github.com/xwjie/VueStudyNote/issues/17)
 * 数据绑定
 * 双向数据绑定
 * 实现支持组件[1](https://github.com/xwjie/VueStudyNote/issues/13) [2](https://github.com/xwjie/VueStudyNote/issues/14)

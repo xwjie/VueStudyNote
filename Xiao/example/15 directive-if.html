@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Xiao框架之helloworld</title>
+	<script src="../dist/xiao.js"></script>
+</head>
+<body>
+<h1>if, else指令测试</h1>
+<div id="demo1">
+<h1 x-if="ok">Yes</h1>
+<h1 x-else>No</h1>
+<h1 x-if="ok">只有if</h1>
+</div>
+<script>
+var app = new Xiao({
+	data:{
+		ok:true
+	}
+});
+
+app.$mount("#demo1");
+
+setTimeout(function(){
+	app.ok = false;
+}, 2000);
+
+</script>
+
+</body>
+</html>
