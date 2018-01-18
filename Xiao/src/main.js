@@ -141,7 +141,7 @@ class Xiao {
    * @param {*} key
    * @param {*} cb
    */
-  $watchField(key: string, cb: any) {
+  $watchField(key: string, cb: Function) {
     const getter = Object.getOwnPropertyDescriptor(this, key).get
     this.$watch(getter, cb)
   }
@@ -152,7 +152,7 @@ class Xiao {
    * @param {*} getter
    * @param {*} cb
    */
-  $watch(getter: Function, cb: any) {
+  $watch(getter: Function, cb: Function) {
     new Watcher(this, {
       getter,
       cb

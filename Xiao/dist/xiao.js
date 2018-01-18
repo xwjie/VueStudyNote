@@ -1250,17 +1250,19 @@ var Watcher = function () {
         pushTarget(this);
         var value = this.getter.call(this.vm, this.vm);
 
-        var oldValue = this.value;
+        // 监控属性的时候，回调不为空
+        if (this.cb) {
+          var oldValue = this.value;
+
+          if (value !== oldValue) {
+            try {
+              this.cb.call(this.vm, value, oldValue);
+            } catch (error) {}
+          }
+        }
 
         // 保存最新值
         this.value = value;
-
-        // 监控属性的时候，回调不为空
-        if (this.cb) {
-          if (value !== oldValue) {
-            this.cb.call(this.vm, value, oldValue);
-          }
-        }
       } finally {
         popTarget();
       }
@@ -2508,6 +2510,18 @@ var Xiao = function () {
     value: function $forceUpdate() {
       this._renderWatcher.update();
     }
+
+    /**
+     * 观察某个属性
+     *
+     * 把属性的get方法拿出来，调用get的时候和会对应的新建的watch关联起来（注册了依赖关系）
+     * 属性修改的时候，就会调用所有的watch，然后就会调用回调。
+     * （这里的回调其实就是用户写的观察函数）
+     *
+     * @param {*} key
+     * @param {*} cb
+     */
+
   }, {
     key: '$watchField',
     value: function $watchField(key, cb) {
@@ -2516,7 +2530,7 @@ var Xiao = function () {
     }
 
     /**
-     * 监听某个方法，调用这个方法之后，会执行callback
+     * 观察某个方法，调用这个方法之后，会执行callback
      *
      * @param {*} getter
      * @param {*} cb
@@ -2525,7 +2539,7 @@ var Xiao = function () {
   }, {
     key: '$watch',
     value: function $watch(getter, cb) {
-      var watcher = new Watcher(this, {
+      new Watcher(this, {
         getter: getter,
         cb: cb
       });
