@@ -1,5 +1,5 @@
 # snabbdom demo
 
-Ö´ĞĞ `webpack` ´ò°ü´úÂë¡£´ò¿ªhtmlÒ³Ãæ¡£
+æ‰§è¡Œ `webpack` æ‰“åŒ…ä»£ç ã€‚æ‰“å¼€htmlé¡µé¢ã€‚
 
 

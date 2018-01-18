@@ -1,16 +1,16 @@
 # rollup
 
-[rollup](https://rollupjs.org)ÊÇÒ»¿î´úÂë´ò°ü¹¤¾ß£¬Ö÷ÒªÎªÁË½â¾ö `tree-shaking`¡£
+[rollup](https://rollupjs.org)æ˜¯ä¸€æ¬¾ä»£ç æ‰“åŒ…å·¥å…·ï¼Œä¸»è¦ä¸ºäº†è§£å†³ `tree-shaking`ã€‚
 
-# °²×°
+# å®‰è£…
 ```
 npm install rollup --global
 ```
 
 
-# ²âÊÔ
+# æµ‹è¯•
 
-ĞÂ½¨´úÂë `main.js` ºÍ `foo.js`
+æ–°å»ºä»£ç  `main.js` å’Œ `foo.js`
 
 ```javascript
 // src/main.js
@@ -27,16 +27,16 @@ export default 'hello world!';
 ```
 
 
-ÓÃÒÔÏÂÃüÁîÀ´±àÒë 
+ç”¨ä»¥ä¸‹å‘½ä»¤æ¥ç¼–è¯‘ 
 
 ```
 rollup src/main.js -f cjs
 ```
 
-»áÖ±½ÓÊä³öµ½¿ØÖÆÌ¨£º
+ä¼šç›´æ¥è¾“å‡ºåˆ°æ§åˆ¶å°ï¼š
 
 ```
-src/main.js ¡ú stdout...
+src/main.js â†’ stdout...
 'use strict';
 
 // src/foo.js
@@ -52,12 +52,12 @@ created stdout in 32ms
 ```
 
 
-¿ÉÒÔÊ¹ÓÃ `rollup src/main.js -o bundle.js -f cjs` Êä³öµ½ÎÄ¼ş `bundle.js` ¡£
+å¯ä»¥ä½¿ç”¨ `rollup src/main.js -o bundle.js -f cjs` è¾“å‡ºåˆ°æ–‡ä»¶ `bundle.js` ã€‚
 
 
-# Ê¹ÓÃÅäÖÃÎÄ¼ş
+# ä½¿ç”¨é…ç½®æ–‡ä»¶
 
-Ä¬ÈÏÅäÖÃÎÄ¼şÎª `rollup.config.js` , Ê¹ÓÃ `rollup -c` »òÕß `rollup --config` ÔËĞĞ¡£
+é»˜è®¤é…ç½®æ–‡ä»¶ä¸º `rollup.config.js` , ä½¿ç”¨ `rollup -c` æˆ–è€… `rollup --config` è¿è¡Œã€‚
 
 ```
 // rollup.config.js
@@ -70,7 +70,7 @@ export default {
 };
 ```
 
-ÕâÀï»¹¿ÉÒÔ·µ»ØÒ»¸öÊı×é£¬Èç£º
+è¿™é‡Œè¿˜å¯ä»¥è¿”å›ä¸€ä¸ªæ•°ç»„ï¼Œå¦‚ï¼š
 
 ```javascript
 export default [{
@@ -88,12 +88,12 @@ export default [{
 }];
 ```
 
-¸ü¼ÓºÃµÄÏ°¹ßÊÇ°Ñ¿ª·¢»·¾³ºÍÉú²ú»·¾³·Ö¿ªÅäÖÃ¡£Èç `rollup.config.dev.js` ºÍ `rollup.config.pro.js`¡£È»ºóÊ¹ÓÃ `rollup --config rollup.config.dev.js` ÔËĞĞ¡£
+æ›´åŠ å¥½çš„ä¹ æƒ¯æ˜¯æŠŠå¼€å‘ç¯å¢ƒå’Œç”Ÿäº§ç¯å¢ƒåˆ†å¼€é…ç½®ã€‚å¦‚ `rollup.config.dev.js` å’Œ `rollup.config.pro.js`ã€‚ç„¶åä½¿ç”¨ `rollup --config rollup.config.dev.js` è¿è¡Œã€‚
 
 
-# °Ñes6´úÂë±àÒë³ÉÍøÒ³ÒıÈëÎÄ¼ş
+# æŠŠes6ä»£ç ç¼–è¯‘æˆç½‘é¡µå¼•å…¥æ–‡ä»¶
 
-ĞèÒªÊ¹ÓÃ `umd` »òÕß `iife` ¸ñÊ½£¬ÍÆ¼öÊ¹ÓÃ `umd` ¸ñÊ½£¬´ËÊ±ĞèÒªÖÆ¶¨ `name` £¬¾ÍÊÇÄãµÄÄ£¿éÃû×Ö£¬Èç `Xiao`¡£
+éœ€è¦ä½¿ç”¨ `umd` æˆ–è€… `iife` æ ¼å¼ï¼Œæ¨èä½¿ç”¨ `umd` æ ¼å¼ï¼Œæ­¤æ—¶éœ€è¦åˆ¶å®š `name` ï¼Œå°±æ˜¯ä½ çš„æ¨¡å—åå­—ï¼Œå¦‚ `Xiao`ã€‚
 
 ```
 export default [{
@@ -140,4 +140,4 @@ package.json
 
 ```
 
-ÔËĞĞ `npm run build` ¼´¿É
+è¿è¡Œ `npm run build` å³å¯
