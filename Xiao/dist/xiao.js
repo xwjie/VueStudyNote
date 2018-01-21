@@ -1480,8 +1480,7 @@ function proxy(target, sourceKey, key) {
  */
 function initEvent(vm, on) {
   log('initEvent', on);
-
-  var events = vm._events = on;
+  vm._events = on;
 }
 
 // D:\OutPut\VUE\vue\src\core\instance\lifecycle.js
@@ -2254,8 +2253,12 @@ function isStyle(name) {
   return name === 'style';
 }
 
+/**
+ * FIXME 判断字符串是不是只有方法名
+ * @param {*} name
+ */
 function isFuncNameStr(name) {
-  return (/[-A-Za-z0-9_]+$/.test(name)
+  return (/^[-A-Za-z0-9_]+$/.test(name)
   );
 }
 
@@ -2461,6 +2464,9 @@ var Xiao = function () {
   // FIXME 还不知道有啥用【应该了为了保证计算属性缓存起来用的】
   // _watcherCompued: Object
 
+  // 事件
+
+
   // 渲染次数，自己跟踪用
 
 
@@ -2578,6 +2584,7 @@ var Xiao = function () {
   }, {
     key: '$emit',
     value: function $emit(event) {
+      // 无需绑定this，方法生成的时候已经绑定了
       this._events[event]();
     }
 

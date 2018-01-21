@@ -247,8 +247,12 @@ function isStyle(name: string) {
   return name === 'style'
 }
 
+/**
+ * FIXME 判断字符串是不是只有方法名
+ * @param {*} name
+ */
 function isFuncNameStr(name: string): boolean {
-  return /[-A-Za-z0-9_]+$/.test(name)
+  return /^[-A-Za-z0-9_]+$/.test(name)
 }
 
 function getFunctionStr(funcStr: string): string {
