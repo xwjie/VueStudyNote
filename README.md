@@ -30,11 +30,10 @@
 * [支持 :（bind）指令](https://github.com/xwjie/VueStudyNote/issues/15)
 * [支持 @（on）指令](https://github.com/xwjie/VueStudyNote/issues/16)
 * [支持 if/else指令](https://github.com/xwjie/VueStudyNote/issues/17)
-* 数据绑定
+* [支持 $emit ](https://github.com/xwjie/VueStudyNote/issues/20)
 * 双向数据绑定
 * 实现支持组件[1](https://github.com/xwjie/VueStudyNote/issues/13) [2](https://github.com/xwjie/VueStudyNote/issues/14)
 * 实现组件支持插槽
-* 实现支持自定义指令
 * 实现支持filter
 * [实现属性的观察（监听）](https://github.com/xwjie/VueStudyNote/issues/18)
 * [支持computed属性](https://github.com/xwjie/VueStudyNote/issues/8)

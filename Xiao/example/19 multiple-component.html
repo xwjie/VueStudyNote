@@ -5,16 +5,33 @@
 	<script src="../dist/xiao.js"></script>
 </head>
 <body>
-<h1>$emit测试</h1>
+<h1>多层组件测试</h1>
 <div id="counter-event-example">
-  <p>{{ total }}</p>
-  <button-counter @increment="incrementTotal"></button-counter>
+  <p>第一层组件{{ total }}</p>
+  <button-counter @increment="incrementTotal"></button-counter><br/>
   <button-counter @increment="incrementTotal2"></button-counter>
 </div>
 <script>
 
+Xiao.component('button-counter-child', {
+  template: '<button @click="incrementCounter">第三层组件{{ counter }}</button>',
+  data: function () {
+    return {
+      counter: 0
+    }
+  },
+  methods: {
+    incrementCounter: function () {
+      console.log('incrementCounter')
+      this.counter += 1
+      this.$emit('click2')
+    }
+  },
+})
+
+
 Xiao.component('button-counter', {
-  template: '<button @click="incrementCounter">{{ counter }}</button>',
+  template: '<span>第2层组件{{counter}}<button-counter-child @click2="incrementCounter"></button-counter-child></span>',
   data: function () {
     return {
       counter: 0
@@ -29,6 +46,8 @@ Xiao.component('button-counter', {
   },
 })
 
+
+
 new Xiao({
   el: '#counter-event-example',
   data: {
@@ -42,8 +61,7 @@ new Xiao({
       this.total -= 1
     }
   }
-})
-</script>
+})</script>
 
 </body>
 </html>
