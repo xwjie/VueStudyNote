@@ -173,7 +173,7 @@ function initMethods(vm: any, methods: Object) {
   }
 }
 
-function initWatch(vm: Xiao, watch: Object){
+function initWatch(vm: Xiao, watch: Object) {
   for (const key in watch) {
     vm.$watchField(key, watch[key])
   }
@@ -189,4 +189,15 @@ export function proxy(target: Object, sourceKey: string, key: string) {
   }
 
   Object.defineProperty(target, key, sharedPropertyDefinition)
+}
+
+/**
+ * 绑定事件
+ *
+ * @param {*} vm
+ * @param {*} on
+ */
+export function initEvent(vm: any, on: Object) {
+  log('initEvent', on)
+  vm._events = on
 }

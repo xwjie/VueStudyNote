@@ -58,6 +58,9 @@ class Xiao {
   // FIXME 还不知道有啥用【应该了为了保证计算属性缓存起来用的】
   // _watcherCompued: Object
 
+  // 事件
+  _events: any
+
   constructor(options?: Object) {
     if (process.env.NODE_ENV !== 'production' &&
       !(this instanceof Xiao)
@@ -162,6 +165,16 @@ class Xiao {
     //return function unwatchFn() {
     //  watcher.teardown()
     //}
+  }
+
+  /**
+   * 调用事件
+   *
+   * @param {*} event
+   */
+  $emit(event: String) {
+    // 无需绑定this，方法生成的时候已经绑定了
+    this._events[event]()
   }
 
   /**

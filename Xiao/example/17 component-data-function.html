@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Xiao框架之子组件data方法</title>
+	<script src="../dist/xiao.js"></script>
+</head>
+<body>
+<h1>子组件data方法测试</h1>
+<div id="counter-event-example">
+  <button-counter></button-counter>
+  <button-counter></button-counter>
+</div>
+<script>
+
+Xiao.component('button-counter', {
+  template: '<button @click="incrementCounter">{{ counter }}</button>',
+  data: function () {
+    return {
+      counter: 1
+    }
+  },
+  methods: {
+    incrementCounter: function () {
+      console.log('incrementCounter')
+      this.counter += 1
+    }
+  },
+})
+
+new Xiao({
+  el: '#counter-event-example',
+})
+</script>
+
+</body>
+</html>

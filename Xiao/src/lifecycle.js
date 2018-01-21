@@ -3,7 +3,7 @@ import Xiao from './main'
 import { warn, log } from './util/debug'
 import { h, patch } from './compiler/snabbdom'
 import { observe, defineReactive } from './observer'
-import { initProps, updateProps } from './states'
+import { initProps, updateProps, initEvent } from './states'
 
 import Watcher from './observer/watcher'
 
@@ -101,6 +101,11 @@ function setComponentHook(vnode: any, vm: Xiao) {
 
         // 把计算后的props数据代理到当前vue里面
         initProps(app, propsData)
+
+        // 绑定事件
+        if(vnode.data.on){
+          initEvent(app, vnode.data.on)
+        }
 
         // 保存到vnode中，更新的时候需要取出来用
         vnode.childContext = app

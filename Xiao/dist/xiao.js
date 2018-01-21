@@ -1472,6 +1472,18 @@ function proxy(target, sourceKey, key) {
   Object.defineProperty(target, key, sharedPropertyDefinition);
 }
 
+/**
+ * 绑定事件
+ *
+ * @param {*} vm
+ * @param {*} on
+ */
+function initEvent(vm, on) {
+  log('initEvent', on);
+
+  var events = vm._events = on;
+}
+
 // D:\OutPut\VUE\vue\src\core\instance\lifecycle.js
 function mountComponent(vm, hydrating) {
   // 产生一个代理对象（VUE开发环境会使用Proxy产生一个代理对象，发布环境就是vue对象自己）
@@ -1562,6 +1574,11 @@ function setComponentHook(vnode, vm) {
 
         // 把计算后的props数据代理到当前vue里面
         initProps(app, propsData);
+
+        // 绑定事件
+        if (vnode.data.on) {
+          initEvent(app, vnode.data.on);
+        }
 
         // 保存到vnode中，更新的时候需要取出来用
         vnode.childContext = app;
@@ -2418,17 +2435,10 @@ var globalComponent = Object.create(null);
 
 var Xiao = function () {
 
-  // 计算属性相关的watcher
-  // FIXME 还不知道有啥用【应该了为了保证计算属性缓存起来用的】
-  // _watcherCompued: Object
-
-  // 渲染次数，自己跟踪用
+  // 子组件的时候，设置当前的父组件
 
 
-  // 数据修改之后的监听器
-
-
-  // 数据
+  // 渲染虚拟dom需要用到的。（VUE里面应该是$createElement）
   function Xiao(options) {
     classCallCheck(this, Xiao);
     this._renderCount = 0;
@@ -2447,10 +2457,17 @@ var Xiao = function () {
     this._init(this.$options);
   }
 
-  // 子组件的时候，设置当前的父组件
+  // 计算属性相关的watcher
+  // FIXME 还不知道有啥用【应该了为了保证计算属性缓存起来用的】
+  // _watcherCompued: Object
+
+  // 渲染次数，自己跟踪用
 
 
-  // 渲染虚拟dom需要用到的。（VUE里面应该是$createElement）
+  // 数据修改之后的监听器
+
+
+  // 数据
 
 
   createClass(Xiao, [{
@@ -2550,6 +2567,18 @@ var Xiao = function () {
       //return function unwatchFn() {
       //  watcher.teardown()
       //}
+    }
+
+    /**
+     * 调用事件
+     *
+     * @param {*} event
+     */
+
+  }, {
+    key: '$emit',
+    value: function $emit(event) {
+      this._events[event]();
     }
 
     /**

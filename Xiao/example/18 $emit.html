@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Xiao框架之emit</title>
+	<script src="../dist/xiao.js"></script>
+</head>
+<body>
+<h1>$emit测试</h1>
+<div id="counter-event-example">
+  <p>{{ total }}</p>
+  <button-counter @increment="incrementTotal"></button-counter>
+  <button-counter @increment="incrementTotal2"></button-counter>
+</div>
+<script>
+
+Xiao.component('button-counter', {
+  template: '<button @click="incrementCounter">{{ counter }}</button>',
+  data: function () {
+    return {
+      counter: 0
+    }
+  },
+  methods: {
+    incrementCounter: function () {
+      console.log('incrementCounter')
+      this.counter += 1
+      this.$emit('increment')
+    }
+  },
+})
+
+
+
+new Xiao({
+  el: '#counter-event-example',
+  data: {
+    total: 0
+  },
+  methods: {
+    incrementTotal: function () {
+      this.total += 1
+    },
+    incrementTotal2: function () {
+      this.total -= 1
+    }
+  }
+})</script>
+
+</body>
+</html>
