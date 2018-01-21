@@ -90,6 +90,9 @@ function createRenderStrElemnet(node: any): string {
         str += `:"",`
         lastDir = null
       }
+      else{
+        str += `,`
+      }
     })
 
     if (lastDir) {

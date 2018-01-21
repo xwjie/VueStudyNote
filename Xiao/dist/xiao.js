@@ -2085,6 +2085,8 @@ function createRenderStrElemnet(node) {
       } else if (lastDir) {
         str += ':"",';
         lastDir = null;
+      } else {
+        str += ',';
       }
     });
 
