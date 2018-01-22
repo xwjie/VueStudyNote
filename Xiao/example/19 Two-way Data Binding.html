@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Xiao框架之helloworld</title>
+	<script src="../dist/xiao.js"></script>
+</head>
+<body>
+<h1>双向绑定测试</h1>
+<div id="demo">
+当前输入值{{something}}<br/>
+<input
+  :value="something"
+  @input="something = $event.target.value">
+</div>
+<script>
+var app = new Xiao({
+  el: '#demo',
+  data: {
+    something: '自定义组件可以设置model属性'
+  }
+})
+
+</script>
+
+</body>
+</html>

@@ -31,7 +31,7 @@
 * [支持 @（on）指令](https://github.com/xwjie/VueStudyNote/issues/16)
 * [支持 if/else指令](https://github.com/xwjie/VueStudyNote/issues/17)
 * [支持 $emit ](https://github.com/xwjie/VueStudyNote/issues/20)
-* 双向数据绑定
+* 双向数据绑定 [1](https://github.com/xwjie/VueStudyNote/issues/21) [2](https://github.com/xwjie/VueStudyNote/issues/22)
 * 实现支持组件[1](https://github.com/xwjie/VueStudyNote/issues/13) [2](https://github.com/xwjie/VueStudyNote/issues/14)
 * 实现组件支持插槽
 * 实现支持filter

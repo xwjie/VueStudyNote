@@ -2062,11 +2062,11 @@ function createRenderStrElemnet(node) {
 
   var str = 'h(' + tag + ',{';
 
-  // 解析属性
-  str += genAttrStr(node);
-
   // 解析指令
   str += getDirectiveStr(node);
+
+  // 解析属性
+  str += genAttrStr(node);
 
   str += "}";
 
@@ -2287,7 +2287,12 @@ function getDirectiveStr(node) {
     for (var i = 0; i < dirs.length; i++) {
       var dir = dirs[i];
 
-      if (dir.name == 'x-if' || dir.name == 'x-else') {
+      // 把x-model转换为
+      // <input :value="name" @input="if($event.target.composing)return;name=$event.target.value.trim()"/>
+      if (dir.name == 'x-model') {
+        parseModel(node, dir);
+        continue;
+      } else if (alreadyDeal(dir.name)) {
         continue;
       }
 
@@ -2318,6 +2323,19 @@ function getDirectiveStr(node) {
   }
 
   return str;
+}
+
+function alreadyDeal(dirname) {
+  return dirname == 'x-if' || dirname == 'x-else';
+}
+
+// FIXME 这里只处理了Input，还有其他的类型
+// 把x-model转换为
+// <input :value="name" @input="if($event.target.composing)return;name=$event.target.value.trim()"/>
+function parseModel(node, dir) {
+  var attrs = node.attrsMap || (node.attrsMap = Object.create(null));
+  attrs[':value'] = dir.value;
+  attrs['@input'] = 'if($event.target.composing)return;' + dir.value + '=$event.target.value.trim()';
 }
 
 function createRenderStrText(node) {

@@ -49,11 +49,11 @@ function createRenderStrElemnet(node: any): string {
 
   let str: string = `h(${tag},{`
 
-  // 解析属性
-  str += genAttrStr(node)
-
   // 解析指令
   str += getDirectiveStr(node)
+
+  // 解析属性
+  str += genAttrStr(node)
 
   str += "}"
 
@@ -90,7 +90,7 @@ function createRenderStrElemnet(node: any): string {
         str += `:"",`
         lastDir = null
       }
-      else{
+      else {
         str += `,`
       }
     })
@@ -280,8 +280,13 @@ function getDirectiveStr(node: any) {
     for (let i = 0; i < dirs.length; i++) {
       const dir = dirs[i]
 
-
-      if (dir.name == 'x-if' || dir.name == 'x-else') {
+      // 把x-model转换为
+      // <input :value="name" @input="if($event.target.composing)return;name=$event.target.value.trim()"/>
+      if (dir.name == 'x-model') {
+        parseModel(node, dir)
+        continue
+      }
+      else if (alreadyDeal(dir.name)) {
         continue
       }
 
@@ -312,6 +317,20 @@ function getDirectiveStr(node: any) {
   }
 
   return str
+}
+
+function alreadyDeal(dirname: string): boolean {
+  return dirname == 'x-if' || dirname == 'x-else'
+}
+
+
+// FIXME 这里只处理了Input，还有其他的类型
+// 把x-model转换为
+// <input :value="name" @input="if($event.target.composing)return;name=$event.target.value.trim()"/>
+function parseModel(node: Object, dir: Object) {
+  let attrs = node.attrsMap || (node.attrsMap = Object.create(null))
+  attrs[':value'] = dir.value
+  attrs['@input'] = `if($event.target.composing)return;${dir.value}=$event.target.value.trim()`
 }
 
 function createRenderStrText(node: any): string {
