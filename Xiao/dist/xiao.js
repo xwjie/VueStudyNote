@@ -1388,11 +1388,7 @@ function initComputed(vm) {
 }
 
 function initProps(vm, propsData) {
-  var propsOptions = vm.$options.props;
-
-  if (!propsOptions) {
-    return;
-  }
+  var propsOptions = vm.$options.props || propsData;
 
   log('initProps propsOptions', propsOptions);
   log('initProps propsData', propsData);
@@ -1498,7 +1494,7 @@ function updateComponent(vm) {
 
   // 新的虚拟节点
   // 指令的信息已经自动附带再vnode里面
-  var vnode = vm.$render.call(proxy$$1);
+  var vnode = vm.$render.call(proxy$$1, h);
 
   // 把实例绑定到vnode中，处理指令需要用到
   setContext(vnode, vm);
@@ -2499,23 +2495,24 @@ var Xiao = function () {
     value: function $mount(el, hydrating) {
       // get dom element
       var element = query(el);
-
-      // get template string
-      if (!this.$options.template) {
-        this.$options.template = getOuterHTML(element);
-      }
-
-      if (!this.$options.template && !element) {
-        warn('options.el && options.template all null');
-        return;
-      }
-
       this.$el = element;
+
       log('$mount', this);
 
       // generate render function
       if (!this.$options.render) {
+        // get template string
+        if (!this.$options.template) {
+          this.$options.template = getOuterHTML(element);
+        }
+
+        if (!this.$options.template && !element) {
+          warn('options.el && options.template all null');
+          return;
+        }
+
         // compiler template to render function
+
         var _compileToFunction = compileToFunction(this.$options.template),
             render = _compileToFunction.render;
 
@@ -2523,9 +2520,14 @@ var Xiao = function () {
 
         // save to this.$render
         this.$render = render;
-      } else if (!isFunction(this.$options.render)) {
-        error('this.$options.render must be function');
-        return;
+      } else {
+        // 如果设置了render函数，判断是否是函数
+        if (!isFunction(this.$options.render)) {
+          error('this.$options.render must be function');
+          return;
+        }
+
+        this.$render = this.$options.render;
       }
 
       mountComponent(this, hydrating);

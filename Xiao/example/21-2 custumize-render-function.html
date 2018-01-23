@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Xiao框架</title>
+	<script src="../dist/xiao.js"></script>
+</head>
+<body>
+<h1>自定义render函数测试</h1><hr/>
+<div id="demo">
+	<anchored-heading level="1" text='hello world'></anchored-heading>
+</div>
+<script>
+Xiao.component('anchored-heading', {
+  props:['level', 'text'],
+  render: function (createElement) {
+    console.log('createElement');
+    return createElement(
+      'h' + this.level,   
+      this.text 
+    )
+  }
+})
+
+var app = new Xiao({
+  el: '#demo',
+})
+
+
+</script>
+
+</body>
+</html>

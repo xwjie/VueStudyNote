@@ -81,22 +81,22 @@ class Xiao {
   $mount(el: Element | string, hydrating?: boolean) {
     // get dom element
     let element = query(el)
-
-    // get template string
-    if (!this.$options.template) {
-      this.$options.template = getOuterHTML(element)
-    }
-
-    if (!this.$options.template && !element) {
-      warn('options.el && options.template all null')
-      return
-    }
-
     this.$el = element
+
     log('$mount', this)
 
     // generate render function
     if (!this.$options.render) {
+      // get template string
+      if (!this.$options.template) {
+        this.$options.template = getOuterHTML(element)
+      }
+
+      if (!this.$options.template && !element) {
+        warn('options.el && options.template all null')
+        return
+      }
+
       // compiler template to render function
       const { render } = compileToFunction(this.$options.template)
 
@@ -104,9 +104,14 @@ class Xiao {
 
       // save to this.$render
       this.$render = render
-    } else if (!isFunction(this.$options.render)) {
-      error('this.$options.render must be function')
-      return
+    } else {
+      // 如果设置了render函数，判断是否是函数
+      if (!isFunction(this.$options.render)) {
+        error('this.$options.render must be function')
+        return
+      }
+
+      this.$render = this.$options.render
     }
 
     mountComponent(this, hydrating)

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Xiao框架</title>
+	<script src="../dist/xiao.js"></script>
+</head>
+<body>
+<h1>自定义render函数测试</h1><hr/>
+<div id="demo">
+</div>
+<script>
+
+var app = new Xiao({
+  render: function (createElement) {
+      return createElement(
+        'h' + this.level,   
+        this.text
+      )
+  },
+  data:{
+    level:1,
+    text: '自定义render函数'
+  },
+  el: '#demo',
+})
+
+
+</script>
+
+</body>
+</html>

@@ -25,7 +25,7 @@ function updateComponent(vm: Xiao) {
 
   // 新的虚拟节点
   // 指令的信息已经自动附带再vnode里面
-  let vnode = vm.$render.call(proxy)
+  let vnode = vm.$render.call(proxy, h)
 
   // 把实例绑定到vnode中，处理指令需要用到
   setContext(vnode, vm)
