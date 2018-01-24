@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Xiao框架之helloworld</title>
+	<script src="../dist/xiao.js"></script>
+	<style>
+	</style>
+</head>
+<body>
+
+<div id="demo1">
+{{message}} + {{message2}}
+</div>
+
+<script>
+var vm = new Xiao({
+  el: '#demo1',
+  data: {
+    message: '123',
+    message2: '456'
+  }
+})
+
+vm.message = 'new message1' // 更改数据
+console.log(vm.$el.textContent)
+
+setTimeout(function(){
+	vm.message = 'new message2' // 更改数据
+	vm.message2 = '89';
+	console.log(vm.$el.textContent)
+}, 1000);
+
+//Vue.nextTick(function () {
+//  vm.$el.textContent === 'new message' // true
+//})
+
+</script>
+
+</body>
+</html>

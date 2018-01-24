@@ -4,6 +4,7 @@ import Dep, { pushTarget, popTarget } from './dep'
 import Xiao from '../main'
 import type { SimpleSet } from '../shared/set'
 import { _Set as Set } from '../shared/set'
+import {queueWatcher} from './scheduler'
 
 let uid = 0
 
@@ -82,7 +83,9 @@ export default class Watcher {
     log(`[Watcher${this._uid}] update`)
 
     // fixme
-    this.get();
+    // this.get();
+    // 放队列里面执行
+    queueWatcher(this)
   }
 }
 

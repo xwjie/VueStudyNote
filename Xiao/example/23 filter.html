@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Xiao框架之helloworld</title>
+	<script src="../dist/xiao.js"></script>
+</head>
+<body>
+<h1>多重filter，带参数的filter测试</h1>
+<div id="demo">
+  <!-- 在双花括号中 -->
+  {{ message | capitalize | wrap('-') }}
+
+  <!-- 在 `v-bind` 中 -->
+  <div v-bind:title="message | capitalize | wrap('===')">看他的提示</div>
+</div>
+<script>
+
+Vue.filter('capitalize', function (value) {
+  if (!value) return ''
+  value = value.toString()
+  return value.charAt(0).toUpperCase() + value.slice(1)
+})
+
+/**
+  * 带参数的Filter
+  */
+Xiao.filter('wrap', function (value, str) {
+  value = value.toString()
+  return str + value + str;
+})
+
+var app = new Xiao({
+  el: '#demo',
+  data:{
+    message : 'hello'
+  }
+})
+
+</script>
+
+</body>
+</html>
