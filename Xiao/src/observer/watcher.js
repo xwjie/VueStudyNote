@@ -20,7 +20,7 @@ export default class Watcher {
 
   value: ?any
 
-  _uid: number
+  id: number
 
   /**
    *
@@ -31,14 +31,14 @@ export default class Watcher {
    */
   constructor(vm: Xiao, option: Object) {
     this.vm = vm
-    this._uid = ++uid
+    this.id = ++uid
 
     this.getter = option.getter
     this.cb = option.cb
 
     this.depIds = new Set()
 
-    log(`[Watcher${this._uid}] _INIT_`)
+    log(`[Watcher${this.id}] _INIT_`)
 
     this.get()
   }
@@ -80,7 +80,7 @@ export default class Watcher {
   }
 
   update() {
-    log(`[Watcher${this._uid}] update`)
+    log(`[Watcher${this.id}] update`)
 
     // fixme
     // this.get();

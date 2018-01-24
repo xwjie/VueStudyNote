@@ -61,3 +61,10 @@ export function toArray (list: any, start?: number): Array<any> {
   }
   return ret
 }
+
+
+
+/* istanbul ignore next */
+export function isNative (Ctor: any): boolean {
+  return typeof Ctor === 'function' && /native code/.test(Ctor.toString())
+}

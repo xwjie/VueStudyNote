@@ -192,6 +192,11 @@ function toArray(list, start) {
   return ret;
 }
 
+/* istanbul ignore next */
+function isNative(Ctor) {
+  return typeof Ctor === 'function' && /native code/.test(Ctor.toString());
+}
+
 // copy D:\OutPut\VUE\vue\src\core\util\lang.js
 
 /**
@@ -205,6 +210,104 @@ function isReserved(str) {
 /**
  * Define a property.
  */
+
+var callbacks = [];
+var pending = false;
+
+function flushCallbacks() {
+  pending = false;
+  var copies = callbacks.slice(0);
+  callbacks.length = 0;
+  for (var i = 0; i < copies.length; i++) {
+    copies[i]();
+  }
+}
+
+// Here we have async deferring wrappers using both micro and macro tasks.
+// In < 2.4 we used micro tasks everywhere, but there are some scenarios where
+// micro tasks have too high a priority and fires in between supposedly
+// sequential events (e.g. #4521, #6690) or even between bubbling of the same
+// event (#6566). However, using macro tasks everywhere also has subtle problems
+// when state is changed right before repaint (e.g. #6813, out-in transitions).
+// Here we use micro task by default, but expose a way to force macro task when
+// needed (e.g. in event handlers attached by v-on).
+var microTimerFunc = void 0;
+var macroTimerFunc = void 0;
+var useMacroTask = false;
+
+// Determine (macro) Task defer implementation.
+// Technically setImmediate should be the ideal choice, but it's only available
+// in IE. The only polyfill that consistently queues the callback after all DOM
+// events triggered in the same loop is by using MessageChannel.
+/* istanbul ignore if */
+if (typeof setImmediate !== 'undefined' && isNative(setImmediate)) {
+  macroTimerFunc = function macroTimerFunc() {
+    setImmediate(flushCallbacks);
+  };
+} else if (typeof MessageChannel !== 'undefined' && (isNative(MessageChannel) ||
+// PhantomJS
+MessageChannel.toString() === '[object MessageChannelConstructor]')) {
+  var channel = new MessageChannel();
+  var port = channel.port2;
+  channel.port1.onmessage = flushCallbacks;
+  macroTimerFunc = function macroTimerFunc() {
+    port.postMessage(1);
+  };
+} else {
+  /* istanbul ignore next */
+  macroTimerFunc = function macroTimerFunc() {
+    setTimeout(flushCallbacks, 0);
+  };
+}
+
+// Determine MicroTask defer implementation.
+/* istanbul ignore next, $flow-disable-line */
+if (typeof Promise !== 'undefined' && isNative(Promise)) {
+  var p = Promise.resolve();
+  microTimerFunc = function microTimerFunc() {
+    p.then(flushCallbacks);
+  };
+} else {
+  // fallback to macro
+  microTimerFunc = macroTimerFunc;
+}
+
+/**
+ * Wrap a function so that if any code inside triggers state change,
+ * the changes are queued using a Task instead of a MicroTask.
+ */
+
+
+function nextTick(cb, ctx) {
+  log('nextTick', cb);
+
+  var _resolve = void 0;
+  callbacks.push(function () {
+    if (cb) {
+      try {
+        cb.call(ctx);
+      } catch (e) {
+        console.log('nextTick', e);
+      }
+    } else if (_resolve) {
+      _resolve(ctx);
+    }
+  });
+  if (!pending) {
+    pending = true;
+    if (useMacroTask) {
+      macroTimerFunc();
+    } else {
+      microTimerFunc();
+    }
+  }
+  // $flow-disable-line
+  if (!cb && typeof Promise !== 'undefined') {
+    return new Promise(function (resolve) {
+      _resolve = resolve;
+    });
+  }
+}
 
 function vnode(sel, data, children, text, elm) {
     var key = data === undefined ? undefined : data.key;
@@ -1216,6 +1319,56 @@ _Set = function () {
   return Set;
 }();
 
+// 当前已有的id队列
+var has = {};
+
+// 队列
+var queue = [];
+
+// 是否等待刷新
+var waiting = false;
+
+function flushSchedulerQueue() {
+  log('flushSchedulerQueue start');
+  var watcher = void 0,
+      id = void 0;
+  queue.sort(function (a, b) {
+    return a.id - b.id;
+  });
+
+  // do not cache length because more watchers might be pushed
+  // as we run existing watchers
+  for (var index = 0; index < queue.length; index++) {
+    watcher = queue[index];
+    id = watcher.id;
+    has[id] = null;
+    watcher.get();
+  }
+
+  // 清空
+  queue.length = 0;
+
+  waiting = false;
+
+  log('flushSchedulerQueue end');
+}
+
+function queueWatcher(watcher) {
+  var id = watcher.id;
+  log('queueWatcher', id);
+
+  // 队列里面没有
+  if (has[id] == null) {
+    queue.push(watcher);
+  }
+
+  // 防止重复提交
+  if (!waiting) {
+    waiting = true;
+    nextTick(flushSchedulerQueue);
+  }
+}
+
 var uid$2 = 0;
 
 var Watcher = function () {
@@ -1231,14 +1384,14 @@ var Watcher = function () {
     classCallCheck(this, Watcher);
 
     this.vm = vm;
-    this._uid = ++uid$2;
+    this.id = ++uid$2;
 
     this.getter = option.getter;
     this.cb = option.cb;
 
     this.depIds = new _Set();
 
-    log('[Watcher' + this._uid + '] _INIT_');
+    log('[Watcher' + this.id + '] _INIT_');
 
     this.get();
   }
@@ -1283,10 +1436,12 @@ var Watcher = function () {
   }, {
     key: 'update',
     value: function update() {
-      log('[Watcher' + this._uid + '] update');
+      log('[Watcher' + this.id + '] update');
 
       // fixme
-      this.get();
+      // this.get();
+      // 放队列里面执行
+      queueWatcher(this);
     }
   }]);
   return Watcher;
@@ -1388,7 +1543,11 @@ function initComputed(vm) {
 }
 
 function initProps(vm, propsData) {
-  var propsOptions = vm.$options.props || propsData;
+  var propsOptions = vm.$options.props;
+
+  if (!propsOptions) {
+    return;
+  }
 
   log('initProps propsOptions', propsOptions);
   log('initProps propsData', propsData);
