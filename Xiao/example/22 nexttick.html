@@ -9,7 +9,7 @@
 <body>
 
 <div id="demo1">
-{{message}} + {{message2}}
+{{message}} + {{message2}}  + {{message3}}
 </div>
 
 <script>
@@ -17,7 +17,8 @@ var vm = new Xiao({
   el: '#demo1',
   data: {
     message: '123',
-    message2: '456'
+    message2: '456',
+    message3: '789'
   }
 })
 
@@ -27,6 +28,7 @@ console.log(vm.$el.textContent)
 setTimeout(function(){
 	vm.message = 'new message2' // 更改数据
 	vm.message2 = '89';
+	vm.message3 = '222';
 	console.log(vm.$el.textContent)
 }, 1000);
 

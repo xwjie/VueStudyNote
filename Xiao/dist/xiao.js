@@ -1329,7 +1329,7 @@ var queue = [];
 var waiting = false;
 
 function flushSchedulerQueue() {
-  log('flushSchedulerQueue start');
+  log('flushSchedulerQueue start', queue.length);
   var watcher = void 0,
       id = void 0;
   queue.sort(function (a, b) {
@@ -1359,6 +1359,7 @@ function queueWatcher(watcher) {
 
   // 队列里面没有
   if (has[id] == null) {
+    has[id] = true;
     queue.push(watcher);
   }
 

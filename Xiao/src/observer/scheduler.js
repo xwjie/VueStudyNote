@@ -17,7 +17,7 @@ let flushing = false
 let waiting = false
 
 function flushSchedulerQueue() {
-  log('flushSchedulerQueue start')
+  log('flushSchedulerQueue start', queue.length)
   let watcher, id
   flushing = true
 
@@ -47,6 +47,7 @@ export function queueWatcher(watcher: Watcher) {
 
   // 队列里面没有
   if (has[id] == null) {
+    has[id] = true
     queue.push(watcher)
   }
 
