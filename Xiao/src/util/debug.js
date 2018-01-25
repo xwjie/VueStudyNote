@@ -5,6 +5,8 @@ import { noop } from '../shared/util'
 
 export let warn = noop
 export let log = noop
+export let logstart = noop
+export let logend = noop
 export let error = noop
 
 if (process.env.NODE_ENV !== 'production') {
@@ -13,4 +15,6 @@ if (process.env.NODE_ENV !== 'production') {
   }
 
   log = console.log
+  logstart = console.group
+  logend = console.groupEnd
 }

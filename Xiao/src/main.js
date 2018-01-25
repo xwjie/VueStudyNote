@@ -26,6 +26,9 @@ const globalPlugins: Array<Function | Object> = []
 // 全局组件
 const globalComponent: Object = Object.create(null)
 
+// 全局Filter
+const globalFilter: Object = Object.create(null)
+
 class Xiao {
   _uid: number
 
@@ -172,6 +175,10 @@ class Xiao {
     //}
   }
 
+  _f(filtername: string) {
+    return Xiao.filter(filtername)
+  }
+
   /**
    * 调用事件
    *
@@ -241,6 +248,18 @@ class Xiao {
     log('globalComponent', globalComponent)
 
     return newClass
+  }
+
+  static filter(filtername: string, fn: ?Function): ?Function {
+    log('注册filter', filtername)
+
+    if (globalFilter[filtername]) {
+      return globalFilter[filtername]
+    }
+
+    globalFilter[filtername] = fn
+
+    return fn
   }
 
 }//Xiao

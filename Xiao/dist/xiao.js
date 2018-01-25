@@ -40,6 +40,8 @@ function bind(fn, ctx) {
 
 var warn = noop;
 var log = noop;
+var logstart = noop;
+var logend = noop;
 var error = noop;
 
 {
@@ -48,6 +50,8 @@ var error = noop;
   };
 
   log = console.log;
+  logstart = console.group;
+  logend = console.groupEnd;
 }
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
@@ -1329,7 +1333,7 @@ var queue = [];
 var waiting = false;
 
 function flushSchedulerQueue() {
-  log('flushSchedulerQueue start', queue.length);
+  logstart('flushSchedulerQueue, queue size: ' + queue.length);
   var watcher = void 0,
       id = void 0;
   queue.sort(function (a, b) {
@@ -1350,7 +1354,7 @@ function flushSchedulerQueue() {
 
   waiting = false;
 
-  log('flushSchedulerQueue end');
+  logend();
 }
 
 function queueWatcher(watcher) {
@@ -1970,7 +1974,7 @@ function parseText(text, re) {
 
     // tag token
     var exp = match[1].trim();
-    tokens.push(exp);
+    tokens.push(createExpressStr(exp));
 
     lastIndex = index + match[0].length;
   }
@@ -1983,6 +1987,33 @@ function parseText(text, re) {
   return {
     expression: tokens.join('+')
   };
+}
+
+/**
+ * 处理filter表达式
+ * 如：message | capitalize | wrap('===')
+ * @param {*} exp
+ */
+function createExpressStr(exp) {
+  // 数组反转，然后递归生成嵌套函数调用表达式
+  return wrapExpressStr(exp.split('|').reverse());
+}
+
+function wrapExpressStr(arr) {
+  var str = arr[0].trim();
+
+  if (arr.length == 1) {
+    return str;
+  }
+
+  // 如果是有参数的filter, 如 wrap('===')
+  var i = str.indexOf('(');
+
+  if (i == -1) {
+    return '_f("' + str + '")(' + wrapExpressStr(arr.slice(1)) + ')';
+  } else {
+    return '_f("' + str.substr(0, i) + '")(' + wrapExpressStr(arr.slice(1)) + ',' + str.substr(i + 1);
+  }
 }
 
 var argRE = /:(.*)$/;
@@ -2366,7 +2397,7 @@ function genAttrStr(node) {
 
     // 如果是数据绑定，则后面的是表达式
     if (attrname.charAt(0) == ':') {
-      str = JSON.stringify(attrname.substr(1)) + ':' + val + ',';
+      str = JSON.stringify(attrname.substr(1)) + ':' + createExpressStr(val) + ',';
       attrname = attrname.substr(1).toLocaleLowerCase();
     } else if (attrname.charAt(0) == '@') {
       str = JSON.stringify(attrname.substr(1)) + ':' + getFunctionStr(val) + ',';
@@ -2498,7 +2529,7 @@ function createRenderStrText(node) {
 
   if (node.isComment) {
     //return JSON.stringify(node.text)
-    return '';
+    return '""';
   } else {
     return node.text;
   }
@@ -2609,6 +2640,9 @@ var globalPlugins = [];
 
 // 全局组件
 var globalComponent = Object.create(null);
+
+// 全局Filter
+var globalFilter = Object.create(null);
 
 var Xiao = function () {
 
@@ -2754,6 +2788,11 @@ var Xiao = function () {
       //  watcher.teardown()
       //}
     }
+  }, {
+    key: '_f',
+    value: function _f(filtername) {
+      return Xiao.filter(filtername);
+    }
 
     /**
      * 调用事件
@@ -2842,6 +2881,19 @@ var Xiao = function () {
       log('globalComponent', globalComponent);
 
       return newClass;
+    }
+  }, {
+    key: 'filter',
+    value: function filter(filtername, fn) {
+      log('注册filter', filtername);
+
+      if (globalFilter[filtername]) {
+        return globalFilter[filtername];
+      }
+
+      globalFilter[filtername] = fn;
+
+      return fn;
     }
   }]);
   return Xiao;

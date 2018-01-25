@@ -11,11 +11,12 @@
   {{ message | capitalize | wrap('-') }}
 
   <!-- 在 `v-bind` 中 -->
-  <div v-bind:title="message | capitalize | wrap('===')">看他的提示</div>
+  <div :title="message | capitalize | wrap('===')">看他的提示{{message | capitalize}}</div>
 </div>
 <script>
 
-Vue.filter('capitalize', function (value) {
+
+Xiao.filter('capitalize', function (value) {
   if (!value) return ''
   value = value.toString()
   return value.charAt(0).toUpperCase() + value.slice(1)
@@ -24,6 +25,7 @@ Vue.filter('capitalize', function (value) {
 /**
   * 带参数的Filter
   */
+
 Xiao.filter('wrap', function (value, str) {
   value = value.toString()
   return str + value + str;

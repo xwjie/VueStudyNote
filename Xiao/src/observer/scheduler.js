@@ -2,7 +2,7 @@
 /* @flow */
 
 import Watcher from './watcher'
-import { log, nextTick } from '../util'
+import { log, logstart, logend, nextTick } from '../util'
 
 // 当前已有的id队列
 let has: { [key: number]: ?true } = {}
@@ -17,7 +17,7 @@ let flushing = false
 let waiting = false
 
 function flushSchedulerQueue() {
-  log('flushSchedulerQueue start', queue.length)
+  logstart(`flushSchedulerQueue, queue size: ${queue.length}`)
   let watcher, id
   flushing = true
 
@@ -38,7 +38,7 @@ function flushSchedulerQueue() {
   flushing = false
   waiting = false
 
-  log('flushSchedulerQueue end')
+  logend()
 }
 
 export function queueWatcher(watcher: Watcher) {

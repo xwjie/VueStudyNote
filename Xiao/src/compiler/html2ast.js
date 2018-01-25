@@ -33,7 +33,7 @@ function html2ast(templte: string): ?ASTElement {
       parent = parentStack.pop()
     },
     chars: function (text) {
-      if(text = text.trim()){
+      if (text = text.trim()) {
         createTextlement(text, parent)
       }
     },
@@ -62,7 +62,7 @@ function createASTElement(
   }
 
   // 解析属性（指令等）
-  processAttrs (e, attrs)
+  processAttrs(e, attrs)
 
   if (parent) {
     parent.children.push(e)
@@ -95,6 +95,7 @@ function createTextlement(
   return e
 }
 
+
 const defaultTagRE = /\{\{((?:.|\n)+?)\}\}/g
 
 function createCommentlement(
@@ -115,7 +116,7 @@ function createCommentlement(
 
 function makeAttrsMap(attrs: Array<Object>): Object {
   const map = {}
-  for (let i = 0, l = attrs.length ;i < l ;i++) {
+  for (let i = 0, l = attrs.length; i < l; i++) {
     map[attrs[i].name] = attrs[i].value
   }
   return map

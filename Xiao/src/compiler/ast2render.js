@@ -1,5 +1,6 @@
 /* @flow */
 import { log, warn } from '../util'
+import { createExpressStr } from '../util/text-parser'
 
 // D:\OutPut\VUE\vue\src\compiler\codegen\index.js
 function ast2render(ast: ?ASTElement): string {
@@ -201,7 +202,7 @@ function genAttrStr(node: any) {
 
     // 如果是数据绑定，则后面的是表达式
     if (attrname.charAt(0) == ':') {
-      str = JSON.stringify(attrname.substr(1)) + ':' + val + ','
+      str = JSON.stringify(attrname.substr(1)) + ':' + createExpressStr(val) + ','
       attrname = attrname.substr(1).toLocaleLowerCase()
     }
     else if (attrname.charAt(0) == '@') {
@@ -337,7 +338,7 @@ function createRenderStrText(node: any): string {
 
   if (node.isComment) {
     //return JSON.stringify(node.text)
-    return ''
+    return '""'
   }
   else {
     return node.text
