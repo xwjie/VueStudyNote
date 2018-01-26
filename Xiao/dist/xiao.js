@@ -2324,13 +2324,28 @@ function createRenderStrElemnet(node) {
 
   // 插槽使用 _t 函数, 参数为插槽名字
   if (node.tag == 'slot') {
+    log('slot node', node);
     var slot = node.attrsMap.name || "default";
-    str = '_t("' + slot + '",{';
-  } else {
-    // snabbdom 的语法，类名放在tag上。'div#container.two.classes'
-    var tagWithIdClass = getTagAndClassName(node);
-    str = 'h(' + tagWithIdClass + ',{';
+    str = '_t("' + slot + '",[';
+
+    if (node.children && node.children.length > 0) {
+      // 生成插槽默认的子组件的渲染函数
+      for (var i = 0; i < node.children.length; i++) {
+        str += createRenderStr(node.children[i]);
+
+        if (i != node.children.length - 1) {
+          str += ',';
+        }
+      }
+    }
+
+    str += '])';
+    return str;
   }
+
+  // snabbdom 的语法，类名放在tag上。'div#container.two.classes'
+  var tagWithIdClass = getTagAndClassName(node);
+  str = 'h(' + tagWithIdClass + ',{';
 
   // 解析指令
   str += getDirectiveStr(node);
@@ -2895,9 +2910,9 @@ var Xiao = function () {
 
   }, {
     key: '_t',
-    value: function _t(slot, data, child) {
+    value: function _t(slot, child) {
       // 如果父节点没有制定插槽内容，那么返回默认值
-      return this.$slots[slot] || this.h(child);
+      return this.$slots[slot] || child;
     }
 
     /**

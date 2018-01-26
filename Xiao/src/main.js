@@ -192,9 +192,9 @@ class Xiao {
    * vue里面是 _t = renderSlot
    * @param {*} slot
    */
-  _t(slot: string, data: ?any, child: ?any){
+  _t(slot: string, child: ?any){
     // 如果父节点没有制定插槽内容，那么返回默认值
-    return this.$slots[slot] || this.h(child)
+    return this.$slots[slot] || child
   }
 
   /**

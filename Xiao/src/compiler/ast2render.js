@@ -49,14 +49,29 @@ function createRenderStrElemnet(node: any): string {
 
   // 插槽使用 _t 函数, 参数为插槽名字
   if (node.tag == 'slot') {
+    log('slot node', node)
     const slot = node.attrsMap.name || "default"
-    str = `_t("${slot}",{`
+    str = `_t("${slot}",[`
+
+    if (node.children && node.children.length > 0) {
+      // 生成插槽默认的子组件的渲染函数
+      for (let i = 0; i < node.children.length; i++) {
+        str += createRenderStr(node.children[i])
+
+        if (i != node.children.length - 1) {
+          str += ','
+        }
+      }
+    }
+
+    str += '])'
+    return str
   }
-  else {
-    // snabbdom 的语法，类名放在tag上。'div#container.two.classes'
-    let tagWithIdClass = getTagAndClassName(node)
-    str = `h(${tagWithIdClass},{`
-  }
+
+
+  // snabbdom 的语法，类名放在tag上。'div#container.two.classes'
+  let tagWithIdClass = getTagAndClassName(node)
+  str = `h(${tagWithIdClass},{`
 
   // 解析指令
   str += getDirectiveStr(node)
