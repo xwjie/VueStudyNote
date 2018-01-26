@@ -136,6 +136,34 @@ var possibleConstructorReturn = function (self, call) {
   return call && (typeof call === "object" || typeof call === "function") ? call : self;
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var toConsumableArray = function (arr) {
+  if (Array.isArray(arr)) {
+    for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+
+    return arr2;
+  } else {
+    return Array.from(arr);
+  }
+};
+
 var isFunction = function isFunction(f) {
   return typeof f == 'function';
 };
@@ -1660,6 +1688,13 @@ function updateComponent(vm) {
   // 指令的信息已经自动附带再vnode里面
   var vnode = vm.$render.call(proxy$$1, h);
 
+  log('before expandSlotArray: ', vnode);
+
+  // 插槽后child里面应该为节点的可能变成了数据，所以要单独处理一下
+  expandSlotArray(vnode);
+
+  log('after expandSlotArray: ', vnode);
+
   // 把实例绑定到vnode中，处理指令需要用到
   setContext(vnode, vm);
 
@@ -1699,6 +1734,7 @@ function setContext(vnode, vm) {
 
   if (vnode.children) {
     vnode.children.forEach(function (e) {
+      log('setContext', e, vnode);
       setContext(e, vm);
     }, this);
   }
@@ -1734,6 +1770,9 @@ function setComponentHook(vnode, vm) {
         // 把计算后的props数据代理到当前vue里面
         initProps(app, propsData);
 
+        // 处理插槽，把插槽归类
+        resolveSlots(app, vnode.children);
+
         // 绑定事件
         if (vnode.data.on) {
           initEvent(app, vnode.data.on);
@@ -1762,6 +1801,43 @@ function setComponentHook(vnode, vm) {
     vnode.children.forEach(function (e) {
       setComponentHook(e, vm);
     }, this);
+  }
+}
+
+/**
+ * 归类插槽
+ *
+ * @param {*} vm
+ * @param {*} children
+ */
+function resolveSlots(vm, children) {
+  log('resolveSlots', children);
+  vm.$slots = {};
+
+  children.forEach(function (vnode) {
+    var slotname = 'default';
+
+    if (vnode.data.props && vnode.data.props.slot) {
+      slotname = vnode.data.props.slot;
+      delete vnode.data.props.slot;
+    }
+
+    (vm.$slots[slotname] || (vm.$slots[slotname] = [])).push(vnode);
+  });
+
+  log('resolveSlots end', vm.$slots);
+}
+
+function expandSlotArray(vnode) {
+  var children = vnode.children;
+
+  if (!children) return;
+
+  for (var i = 0; i < children.length; i++) {
+    // 把对应位置的数组打散
+    if (Array.isArray(children[i])) {
+      children.splice.apply(children, [i, 1].concat(toConsumableArray(children[i])));
+    }
   }
 }
 
@@ -2244,10 +2320,17 @@ function createRenderStr(ast) {
 function createRenderStrElemnet(node) {
   log('createRenderStrElemnet', node);
 
-  // snabbdom 的语法，类名放在tag上。'div#container.two.classes'
-  var tag = getTagAndClassName(node);
+  var str = void 0;
 
-  var str = 'h(' + tag + ',{';
+  // 插槽使用 _t 函数, 参数为插槽名字
+  if (node.tag == 'slot') {
+    var slot = node.attrsMap.name || "default";
+    str = '_t("' + slot + '",{';
+  } else {
+    // snabbdom 的语法，类名放在tag上。'div#container.two.classes'
+    var tagWithIdClass = getTagAndClassName(node);
+    str = 'h(' + tagWithIdClass + ',{';
+  }
 
   // 解析指令
   str += getDirectiveStr(node);
@@ -2646,10 +2729,20 @@ var globalFilter = Object.create(null);
 
 var Xiao = function () {
 
-  // 子组件的时候，设置当前的父组件
+  // 计算属性相关的watcher
+  // FIXME 还不知道有啥用【应该了为了保证计算属性缓存起来用的】
+  // _watcherCompued: Object
+
+  // 事件
 
 
-  // 渲染虚拟dom需要用到的。（VUE里面应该是$createElement）
+  // 渲染次数，自己跟踪用
+
+
+  // 数据修改之后的监听器
+
+
+  // 数据
   function Xiao(options) {
     classCallCheck(this, Xiao);
     this._renderCount = 0;
@@ -2668,20 +2761,13 @@ var Xiao = function () {
     this._init(this.$options);
   }
 
-  // 计算属性相关的watcher
-  // FIXME 还不知道有啥用【应该了为了保证计算属性缓存起来用的】
-  // _watcherCompued: Object
-
-  // 事件
+  // 插槽，数据结构为：数组的对象
 
 
-  // 渲染次数，自己跟踪用
+  // 子组件的时候，设置当前的父组件
 
 
-  // 数据修改之后的监听器
-
-
-  // 数据
+  // 渲染虚拟dom需要用到的。（VUE里面应该是$createElement）
 
 
   createClass(Xiao, [{
@@ -2788,10 +2874,30 @@ var Xiao = function () {
       //  watcher.teardown()
       //}
     }
+
+    /**
+     * 拿到filter的调用方法
+     *
+     * @param {*} filtername
+     */
+
   }, {
     key: '_f',
     value: function _f(filtername) {
       return Xiao.filter(filtername);
+    }
+
+    /**
+     * 插槽
+     * vue里面是 _t = renderSlot
+     * @param {*} slot
+     */
+
+  }, {
+    key: '_t',
+    value: function _t(slot, data, child) {
+      // 如果父节点没有制定插槽内容，那么返回默认值
+      return this.$slots[slot] || this.h(child);
     }
 
     /**
@@ -2882,6 +2988,14 @@ var Xiao = function () {
 
       return newClass;
     }
+
+    /**
+     * 全局注册filter
+     *
+     * @param {*} filtername
+     * @param {*} fn
+     */
+
   }, {
     key: 'filter',
     value: function filter(filtername, fn) {

@@ -45,10 +45,18 @@ function createRenderStr(ast: ASTNode): string {
 function createRenderStrElemnet(node: any): string {
   log('createRenderStrElemnet', node)
 
-  // snabbdom 的语法，类名放在tag上。'div#container.two.classes'
-  let tag = getTagAndClassName(node)
+  let str: string
 
-  let str: string = `h(${tag},{`
+  // 插槽使用 _t 函数, 参数为插槽名字
+  if (node.tag == 'slot') {
+    const slot = node.attrsMap.name || "default"
+    str = `_t("${slot}",{`
+  }
+  else {
+    // snabbdom 的语法，类名放在tag上。'div#container.two.classes'
+    let tagWithIdClass = getTagAndClassName(node)
+    str = `h(${tagWithIdClass},{`
+  }
 
   // 解析指令
   str += getDirectiveStr(node)

@@ -64,6 +64,9 @@ class Xiao {
   // 事件
   _events: any
 
+  // 插槽，数据结构为：数组的对象
+  $slots: Object
+
   constructor(options?: Object) {
     if (process.env.NODE_ENV !== 'production' &&
       !(this instanceof Xiao)
@@ -175,8 +178,23 @@ class Xiao {
     //}
   }
 
+  /**
+   * 拿到filter的调用方法
+   *
+   * @param {*} filtername
+   */
   _f(filtername: string) {
     return Xiao.filter(filtername)
+  }
+
+  /**
+   * 插槽
+   * vue里面是 _t = renderSlot
+   * @param {*} slot
+   */
+  _t(slot: string, data: ?any, child: ?any){
+    // 如果父节点没有制定插槽内容，那么返回默认值
+    return this.$slots[slot] || this.h(child)
   }
 
   /**
@@ -250,6 +268,12 @@ class Xiao {
     return newClass
   }
 
+  /**
+   * 全局注册filter
+   *
+   * @param {*} filtername
+   * @param {*} fn
+   */
   static filter(filtername: string, fn: ?Function): ?Function {
     log('注册filter', filtername)
 

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Xiao框架之helloworld</title>
+	<script src="../dist/xiao.js"></script>
+</head>
+<body>
+<h1>slot测试</h1>
+<div id="demo">
+  <h1>我是父组件的标题</h1>
+  <my-component>
+    <p>这是一些初始内容{{message}}</p>
+    <p>这是更多的初始内容</p>
+    <h3 slot="header">这是父组件放到子组件头插槽的数据</h3>
+  </my-component>
+</div>
+<script>
+
+Xiao.component('my-component', {
+	data: function(){
+		return {
+			aa: 'child message'
+		}
+	},
+	template: `
+	<div>
+	  <slot name="header"></slot>
+	  <h2>我是子组件的标题{{aa}}</h2>
+	  <slot>
+	    只有在没有要分发的内容时才会显示。
+	  </slot>
+	  <slot name="foot"><h2>默认的foot slot：{{aa}}</h2></slot>
+	</div>	
+	`
+})
+
+var app = new Xiao({
+  el: '#demo',
+  data:{
+    message : 'parent message'
+  }
+})
+
+</script>
+
+</body>
+</html>

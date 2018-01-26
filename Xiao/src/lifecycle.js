@@ -27,6 +27,13 @@ function updateComponent(vm: Xiao) {
   // 指令的信息已经自动附带再vnode里面
   let vnode = vm.$render.call(proxy, h)
 
+  log('before expandSlotArray: ', vnode)
+
+  // 插槽后child里面应该为节点的可能变成了数据，所以要单独处理一下
+  expandSlotArray(vnode)
+
+  log('after expandSlotArray: ', vnode)
+
   // 把实例绑定到vnode中，处理指令需要用到
   setContext(vnode, vm)
 
@@ -67,6 +74,7 @@ function setContext(vnode: any, vm: Xiao) {
 
   if (vnode.children) {
     vnode.children.forEach(function (e) {
+      log('setContext', e, vnode)
       setContext(e, vm)
     }, this)
   }
@@ -102,8 +110,11 @@ function setComponentHook(vnode: any, vm: Xiao) {
         // 把计算后的props数据代理到当前vue里面
         initProps(app, propsData)
 
+        // 处理插槽，把插槽归类
+        resolveSlots(app, vnode.children)
+
         // 绑定事件
-        if(vnode.data.on){
+        if (vnode.data.on) {
           initEvent(app, vnode.data.on)
         }
 
@@ -132,4 +143,42 @@ function setComponentHook(vnode: any, vm: Xiao) {
     }, this)
   }
 
+}
+
+/**
+ * 归类插槽
+ *
+ * @param {*} vm
+ * @param {*} children
+ */
+function resolveSlots(vm: Xiao, children: Array<any>) {
+  log('resolveSlots', children)
+  vm.$slots = {}
+
+  children.forEach(vnode => {
+    let slotname = 'default'
+
+    if (vnode.data.props && vnode.data.props.slot) {
+      slotname = vnode.data.props.slot
+      delete vnode.data.props.slot
+    }
+
+    (vm.$slots[slotname] || (vm.$slots[slotname] = [])).push(vnode)
+  })
+
+  log('resolveSlots end', vm.$slots)
+}
+
+
+function expandSlotArray(vnode: any) {
+  const children = vnode.children
+
+  if (!children) return
+
+  for (let i = 0; i < children.length; i++) {
+    // 把对应位置的数组打散
+    if (Array.isArray(children[i])) {
+      children.splice(i, 1, ...children[i])
+    }
+  }
 }
