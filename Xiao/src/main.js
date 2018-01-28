@@ -188,12 +188,13 @@ class Xiao {
   }
 
   /**
-   * 插槽
+   * 插槽渲染函数
+   *
    * vue里面是 _t = renderSlot
    * @param {*} slot
    */
   _t(slot: string, child: ?any){
-    // 如果父节点没有制定插槽内容，那么返回默认值
+    // 如果父节点没有制定插槽内容，那么返回默认值(是个数组)
     return this.$slots[slot] || child
   }
 

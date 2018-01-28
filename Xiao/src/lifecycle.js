@@ -17,6 +17,11 @@ export function mountComponent(
   vm._renderWatcher = new Watcher(vm, { getter: updateComponent });
 }
 
+/**
+ * 渲染组件
+ *
+ * @param {*} vm
+ */
 function updateComponent(vm: Xiao) {
   let proxy = vm
 
@@ -29,7 +34,7 @@ function updateComponent(vm: Xiao) {
 
   log('before expandSlotArray: ', vnode)
 
-  // 插槽后child里面应该为节点的可能变成了数据，所以要单独处理一下
+  // 插槽渲染函数_t执行后，child里面应该为节点的可能变成了数组，所以要打算处理一下
   expandSlotArray(vnode)
 
   log('after expandSlotArray: ', vnode)
@@ -74,7 +79,6 @@ function setContext(vnode: any, vm: Xiao) {
 
   if (vnode.children) {
     vnode.children.forEach(function (e) {
-      log('setContext', e, vnode)
       setContext(e, vm)
     }, this)
   }
@@ -152,7 +156,8 @@ function setComponentHook(vnode: any, vm: Xiao) {
  * @param {*} children
  */
 function resolveSlots(vm: Xiao, children: Array<any>) {
-  log('resolveSlots', children)
+  log('resolveSlots[插槽分类]', children)
+
   vm.$slots = {}
 
   children.forEach(vnode => {
@@ -166,7 +171,7 @@ function resolveSlots(vm: Xiao, children: Array<any>) {
     (vm.$slots[slotname] || (vm.$slots[slotname] = [])).push(vnode)
   })
 
-  log('resolveSlots end', vm.$slots)
+  log('resolveSlots[插槽分类] end', vm.$slots)
 }
 
 
@@ -179,6 +184,13 @@ function expandSlotArray(vnode: any) {
     // 把对应位置的数组打散
     if (Array.isArray(children[i])) {
       children.splice(i, 1, ...children[i])
+    }
+
+    // 单独处理纯文本，包装为对象，否则会出错
+    if (typeof children[i] == 'string') {
+      children[i] = {
+        text: children[i]
+      }
     }
   }
 }

@@ -1678,6 +1678,11 @@ function mountComponent(vm, hydrating) {
   vm._renderWatcher = new Watcher(vm, { getter: updateComponent });
 }
 
+/**
+ * 渲染组件
+ *
+ * @param {*} vm
+ */
 function updateComponent(vm) {
   var proxy$$1 = vm;
 
@@ -1690,7 +1695,7 @@ function updateComponent(vm) {
 
   log('before expandSlotArray: ', vnode);
 
-  // 插槽后child里面应该为节点的可能变成了数据，所以要单独处理一下
+  // 插槽渲染函数_t执行后，child里面应该为节点的可能变成了数组，所以要打算处理一下
   expandSlotArray(vnode);
 
   log('after expandSlotArray: ', vnode);
@@ -1734,7 +1739,6 @@ function setContext(vnode, vm) {
 
   if (vnode.children) {
     vnode.children.forEach(function (e) {
-      log('setContext', e, vnode);
       setContext(e, vm);
     }, this);
   }
@@ -1811,7 +1815,8 @@ function setComponentHook(vnode, vm) {
  * @param {*} children
  */
 function resolveSlots(vm, children) {
-  log('resolveSlots', children);
+  log('resolveSlots[插槽分类]', children);
+
   vm.$slots = {};
 
   children.forEach(function (vnode) {
@@ -1825,7 +1830,7 @@ function resolveSlots(vm, children) {
     (vm.$slots[slotname] || (vm.$slots[slotname] = [])).push(vnode);
   });
 
-  log('resolveSlots end', vm.$slots);
+  log('resolveSlots[插槽分类] end', vm.$slots);
 }
 
 function expandSlotArray(vnode) {
@@ -1837,6 +1842,13 @@ function expandSlotArray(vnode) {
     // 把对应位置的数组打散
     if (Array.isArray(children[i])) {
       children.splice.apply(children, [i, 1].concat(toConsumableArray(children[i])));
+    }
+
+    // 单独处理纯文本，包装为对象，否则会出错
+    if (typeof children[i] == 'string') {
+      children[i] = {
+        text: children[i]
+      };
     }
   }
 }
@@ -2317,6 +2329,14 @@ function createRenderStr(ast) {
   return str;
 }
 
+/**
+ * 根据元素AST生成渲染函数。
+ *
+ * 如果是插槽，生成 _t(插槽名字, [默认插槽内容])
+ * 否则生成 h(tag, 属性。。。)
+ *
+ * @param {*} node
+ */
 function createRenderStrElemnet(node) {
   log('createRenderStrElemnet', node);
 
@@ -2903,7 +2923,8 @@ var Xiao = function () {
     }
 
     /**
-     * 插槽
+     * 插槽渲染函数
+     *
      * vue里面是 _t = renderSlot
      * @param {*} slot
      */
@@ -2911,7 +2932,7 @@ var Xiao = function () {
   }, {
     key: '_t',
     value: function _t(slot, child) {
-      // 如果父节点没有制定插槽内容，那么返回默认值
+      // 如果父节点没有制定插槽内容，那么返回默认值(是个数组)
       return this.$slots[slot] || child;
     }
 

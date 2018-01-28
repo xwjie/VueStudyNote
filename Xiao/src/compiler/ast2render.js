@@ -42,6 +42,14 @@ function createRenderStr(ast: ASTNode): string {
 }
 
 
+/**
+ * 根据元素AST生成渲染函数。
+ *
+ * 如果是插槽，生成 _t(插槽名字, [默认插槽内容])
+ * 否则生成 h(tag, 属性。。。)
+ *
+ * @param {*} node
+ */
 function createRenderStrElemnet(node: any): string {
   log('createRenderStrElemnet', node)
 
