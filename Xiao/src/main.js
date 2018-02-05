@@ -67,7 +67,7 @@ class Xiao {
   // 插槽，数据结构为：数组的对象
   $slots: Object
 
-  constructor(options?: Object) {
+  constructor(options?: Object, parent?: Xiao) {
     if (process.env.NODE_ENV !== 'production' &&
       !(this instanceof Xiao)
     ) {
@@ -76,6 +76,9 @@ class Xiao {
 
     // 复制属性
     this.$options = extend(Object.create(null), options)
+    
+    // 父节点
+    this.$parent = parent
 
     this._uid = uid++
 
@@ -193,7 +196,7 @@ class Xiao {
    * vue里面是 _t = renderSlot
    * @param {*} slot
    */
-  _t(slot: string, child: ?any){
+  _t(slot: string, child: ?any) {
     // 如果父节点没有制定插槽内容，那么返回默认值(是个数组)
     return this.$slots[slot] || child
   }
@@ -258,8 +261,8 @@ class Xiao {
     }
 
     const newClass = class extends Xiao {
-      constructor() {
-        super(definition)
+      constructor(parent: Xiao) {
+        super(definition, parent)
       }
     }
 
@@ -325,5 +328,15 @@ initGlobaleDedirectives()
 
 // 注册默认插件
 Xiao.use(i18n)
+
+// 注册coomponent组件
+Xiao.component('component', {
+  props: ['is'],
+  watch: {
+    is: function (val, oldval) {
+      log(`动态组件，切换为：${val}`)
+    }
+  }
+});
 
 export default Xiao

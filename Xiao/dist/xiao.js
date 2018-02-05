@@ -45,10 +45,7 @@ var logend = noop;
 var error = noop;
 
 {
-  error = warn = function warn(msg) {
-    console.error('[Xiao warn]: ' + msg);
-  };
-
+  error = warn = console.error;
   log = console.log;
   logstart = console.group;
   logend = console.groupEnd;
@@ -1495,7 +1492,10 @@ function initState(vm) {
   //initProps(vm)
 
   // 必须在data和computed之后
-  if (opts.watch) initWatch(vm, opts.watch);
+  // 因为子组件有props，所以子组件的watch需要在处理了props之后才能调用
+  if (!vm.$parent) {
+    initWatch(vm);
+  }
 }
 
 /**
@@ -1642,9 +1642,12 @@ function initMethods(vm, methods) {
   }
 }
 
-function initWatch(vm, watch) {
-  for (var key in watch) {
-    vm.$watchField(key, watch[key]);
+function initWatch(vm) {
+  var watch = vm.$options.watch;
+  if (watch) {
+    for (var key in watch) {
+      vm.$watchField(key, watch[key]);
+    }
   }
 }
 
@@ -1766,13 +1769,15 @@ function setComponentHook(vnode, vm) {
         log('component vnode', vnode);
 
         // 创建子组件实例
-        var app = new Comp();
-        app.$parent = vm;
+        var app = new Comp(vm);
 
         var propsData = vnode.data.props;
 
         // 把计算后的props数据代理到当前vue里面
         initProps(app, propsData);
+
+        // 处理了子组件的props之后处理watch
+        initWatch(app);
 
         // 处理插槽，把插槽归类
         resolveSlots(app, vnode.children);
@@ -1798,7 +1803,7 @@ function setComponentHook(vnode, vm) {
       }
 
     };
-  }
+  } //组件
 
   // 递归
   if (vnode.children) {
@@ -1822,7 +1827,7 @@ function resolveSlots(vm, children) {
   children.forEach(function (vnode) {
     var slotname = 'default';
 
-    if (vnode.data.props && vnode.data.props.slot) {
+    if (vnode.data && vnode.data.props && vnode.data.props.slot) {
       slotname = vnode.data.props.slot;
       delete vnode.data.props.slot;
     }
@@ -2778,7 +2783,7 @@ var Xiao = function () {
 
 
   // 数据
-  function Xiao(options) {
+  function Xiao(options, parent) {
     classCallCheck(this, Xiao);
     this._renderCount = 0;
 
@@ -2788,6 +2793,9 @@ var Xiao = function () {
 
     // 复制属性
     this.$options = extend(Object.create(null), options);
+
+    // 父节点
+    this.$parent = parent;
 
     this._uid = uid++;
 
@@ -3011,9 +3019,9 @@ var Xiao = function () {
       var newClass = function (_Xiao) {
         inherits(newClass, _Xiao);
 
-        function newClass() {
+        function newClass(parent) {
           classCallCheck(this, newClass);
-          return possibleConstructorReturn(this, (newClass.__proto__ || Object.getPrototypeOf(newClass)).call(this, definition));
+          return possibleConstructorReturn(this, (newClass.__proto__ || Object.getPrototypeOf(newClass)).call(this, definition, parent));
         }
 
         return newClass;
@@ -3081,6 +3089,16 @@ initGlobaleDedirectives();
 
 // 注册默认插件
 Xiao.use(i18n);
+
+// 注册coomponent组件
+Xiao.component('component', {
+  props: ['is'],
+  watch: {
+    is: function is(val, oldval) {
+      log('\u52A8\u6001\u7EC4\u4EF6\uFF0C\u5207\u6362\u4E3A\uFF1A' + val);
+    }
+  }
+});
 
 return Xiao;
 

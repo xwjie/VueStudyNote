@@ -21,7 +21,10 @@ export function initState(vm: Xiao) {
   //initProps(vm)
 
   // 必须在data和computed之后
-  if (opts.watch) initWatch(vm, opts.watch)
+  // 因为子组件有props，所以子组件的watch需要在处理了props之后才能调用
+  if (!vm.$parent) {
+    initWatch(vm)
+  }
 }
 
 /**
@@ -173,9 +176,12 @@ function initMethods(vm: any, methods: Object) {
   }
 }
 
-function initWatch(vm: Xiao, watch: Object) {
-  for (const key in watch) {
-    vm.$watchField(key, watch[key])
+export function initWatch(vm: Xiao) {
+  const watch = vm.$options.watch
+  if (watch) {
+    for (const key in watch) {
+      vm.$watchField(key, watch[key])
+    }
   }
 }
 

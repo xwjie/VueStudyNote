@@ -10,10 +10,7 @@ export let logend = noop
 export let error = noop
 
 if (process.env.NODE_ENV !== 'production') {
-  error = warn = (msg) => {
-    console.error(`[Xiao warn]: ${msg}`)
-  }
-
+  error = warn = console.error
   log = console.log
   logstart = console.group
   logend = console.groupEnd

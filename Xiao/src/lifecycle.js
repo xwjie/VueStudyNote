@@ -3,7 +3,7 @@ import Xiao from './main'
 import { warn, log } from './util/debug'
 import { h, patch } from './compiler/snabbdom'
 import { observe, defineReactive } from './observer'
-import { initProps, updateProps, initEvent } from './states'
+import { initProps, updateProps, initEvent, initWatch } from './states'
 
 import Watcher from './observer/watcher'
 
@@ -106,13 +106,15 @@ function setComponentHook(vnode: any, vm: Xiao) {
         log('component vnode', vnode)
 
         // 创建子组件实例
-        let app = new Comp()
-        app.$parent = vm
+        let app = new Comp(vm)
 
         const propsData = vnode.data.props
 
         // 把计算后的props数据代理到当前vue里面
         initProps(app, propsData)
+
+        // 处理了子组件的props之后处理watch
+        initWatch(app)
 
         // 处理插槽，把插槽归类
         resolveSlots(app, vnode.children)
@@ -138,7 +140,7 @@ function setComponentHook(vnode: any, vm: Xiao) {
       }
 
     }
-  }
+  }//组件
 
   // 递归
   if (vnode.children) {
@@ -163,7 +165,8 @@ function resolveSlots(vm: Xiao, children: Array<any>) {
   children.forEach(vnode => {
     let slotname = 'default'
 
-    if (vnode.data.props && vnode.data.props.slot) {
+    // 文本的时候没有data
+    if (vnode.data && vnode.data.props && vnode.data.props.slot) {
       slotname = vnode.data.props.slot
       delete vnode.data.props.slot
     }
