@@ -35,6 +35,8 @@
 * 实现支持组件[1](https://github.com/xwjie/VueStudyNote/issues/13) [2](https://github.com/xwjie/VueStudyNote/issues/14)
 * [实现组件支持插槽](https://github.com/xwjie/VueStudyNote/issues/26)
 * 支持template
+* 支持作用域插槽
+* 动态组件
 * [实现异步消息队列，实现nextTick](https://github.com/xwjie/VueStudyNote/issues/24)
 * [实现支持filter](https://github.com/xwjie/VueStudyNote/issues/25)
 * [实现属性的观察（监听）](https://github.com/xwjie/VueStudyNote/issues/18)
